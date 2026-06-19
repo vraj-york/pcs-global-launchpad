@@ -1,0 +1,66 @@
+import type { ShopItem } from '@/types/developer';
+
+export const SHOP_ITEMS: ShopItem[] = [
+  {
+    id: 'crown-gold',
+    name: 'Golden Crown',
+    description: 'A regal crown for the tallest towers in the skyline.',
+    price: '$3',
+    category: 'crown',
+  },
+  {
+    id: 'crown-silver',
+    name: 'Silver Crown',
+    description: 'Subtle prestige for established contributors.',
+    price: '$2',
+    category: 'crown',
+  },
+  {
+    id: 'aura-blue',
+    name: 'Azure Aura',
+    description: 'Cool cyan glow radiating from your building base.',
+    price: '$2',
+    category: 'aura',
+    previewColor: '#22d3ee',
+    auraType: 'blue',
+  },
+  {
+    id: 'aura-gold',
+    name: 'Solar Aura',
+    description: 'Warm amber halo for standout profiles.',
+    price: '$3',
+    category: 'aura',
+    previewColor: '#fbbf24',
+    auraType: 'gold',
+  },
+  {
+    id: 'aura-purple',
+    name: 'Violet Aura',
+    description: 'Magenta pulse for the night-shift coders.',
+    price: '$2',
+    category: 'aura',
+    previewColor: '#e879f9',
+    auraType: 'purple',
+  },
+  {
+    id: 'roof-antenna',
+    name: 'Signal Antenna',
+    description: 'Blinking beacon visible from across the city.',
+    price: '$1',
+    category: 'roof',
+  },
+  {
+    id: 'roof-flag',
+    name: 'Banner Flag',
+    description: 'Wave your language colors from the rooftop.',
+    price: '$1',
+    category: 'roof',
+  },
+  {
+    id: 'roof-spire',
+    name: 'Neon Spire',
+    description: 'Vertical light beam piercing the fog.',
+    price: '$3',
+    category: 'roof',
+  },
+];
