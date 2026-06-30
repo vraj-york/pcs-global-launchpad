@@ -1,4 +1,4 @@
-import { ALL_ACHIEVEMENTS } from '@/data/mockAchievements';
+import { useDevelopersContext } from '@/context/DevelopersContext';
 import type { Achievement } from '@/types/developer';
 import { formatDate } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -8,11 +8,12 @@ interface AchievementsTabProps {
 }
 
 export function AchievementsTab({ unlocked }: AchievementsTabProps) {
+  const { achievementsCatalog } = useDevelopersContext();
   const unlockedIds = new Set(unlocked.map((a) => a.id));
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-      {ALL_ACHIEVEMENTS.map((achievement) => {
+      {achievementsCatalog.map((achievement) => {
         const isUnlocked = unlockedIds.has(achievement.id);
         const unlockData = unlocked.find((a) => a.id === achievement.id);
 

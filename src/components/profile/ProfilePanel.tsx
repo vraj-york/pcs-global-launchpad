@@ -6,7 +6,7 @@ import { AchievementsTab } from '@/components/profile/AchievementsTab';
 import { ContributionHeatmap } from '@/components/profile/ContributionHeatmap';
 import { ProfileStatsCards } from '@/components/profile/ProfileStatsCards';
 import { TopReposTab } from '@/components/profile/TopReposTab';
-import { getDeveloperById } from '@/data/mockDevelopers';
+import { useDevelopersContext } from '@/context/DevelopersContext';
 import { useCityStore } from '@/store/useCityStore';
 import { formatDate } from '@/lib/utils';
 
@@ -15,6 +15,7 @@ export function ProfilePanel() {
   const setSelectedDeveloper = useCityStore((s) => s.setSelectedDeveloper);
   const openShop = useCityStore((s) => s.openShop);
   const clearFlyTarget = useCityStore((s) => s.clearFlyTarget);
+  const { getDeveloperById } = useDevelopersContext();
 
   const developer = selectedDeveloperId ? getDeveloperById(selectedDeveloperId) : null;
   const open = !!developer;

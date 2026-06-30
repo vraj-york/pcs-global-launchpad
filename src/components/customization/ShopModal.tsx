@@ -1,5 +1,4 @@
-import { getDeveloperById } from '@/data/mockDevelopers';
-import { SHOP_ITEMS } from '@/data/mockShopItems';
+import { useDevelopersContext } from '@/context/DevelopersContext';
 import { useCityStore } from '@/store/useCityStore';
 import {
   Dialog,
@@ -15,6 +14,7 @@ export function ShopModal() {
   const shopPreviewDeveloperId = useCityStore((s) => s.shopPreviewDeveloperId);
   const equipItem = useCityStore((s) => s.equipItem);
   const getEffectiveCustomization = useCityStore((s) => s.getEffectiveCustomization);
+  const { getDeveloperById, shopItems, updateCustomization } = useDevelopersContext();
 
   const developer = shopPreviewDeveloperId
     ? getDeveloperById(shopPreviewDeveloperId)
@@ -43,38 +43,45 @@ export function ShopModal() {
     }
   };
 
-  const handleEquip = (itemId: string) => {
+  const handleEquip = async (itemId: string) => {
     if (!developer) return;
-    // TODO: wire to payment backend
+
+    let patch: Parameters<typeof updateCustomization>[1] = {};
+
     switch (itemId) {
       case 'crown-gold':
       case 'crown-silver':
-        equipItem(developer.id, { crown: !isEquipped(itemId) });
+        patch = { crown: !isEquipped(itemId) };
+        equipItem(developer.id, patch);
         break;
       case 'aura-blue':
-        equipItem(developer.id, {
-          aura: isEquipped(itemId) ? 'none' : 'blue',
-        });
+        patch = { aura: isEquipped(itemId) ? 'none' : 'blue' };
+        equipItem(developer.id, patch);
         break;
       case 'aura-gold':
-        equipItem(developer.id, {
-          aura: isEquipped(itemId) ? 'none' : 'gold',
-        });
+        patch = { aura: isEquipped(itemId) ? 'none' : 'gold' };
+        equipItem(developer.id, patch);
         break;
       case 'aura-purple':
-        equipItem(developer.id, {
-          aura: isEquipped(itemId) ? 'none' : 'purple',
-        });
+        patch = { aura: isEquipped(itemId) ? 'none' : 'purple' };
+        equipItem(developer.id, patch);
         break;
       case 'roof-antenna':
       case 'roof-flag':
       case 'roof-spire':
-        equipItem(developer.id, {
-          roofEffect: isEquipped(itemId)
-            ? undefined
-            : itemId.replace('roof-', ''),
-        });
+        patch = {
+          roofEffect: isEquipped(itemId) ? undefined : itemId.replace('roof-', ''),
+        };
+        equipItem(developer.id, patch);
         break;
+      default:
+        return;
+    }
+
+    try {
+      await updateCustomization(developer.id, patch);
+    } catch {
+      // Local equip still applies; API sync is best-effort for demo
     }
   };
 
@@ -99,7 +106,7 @@ export function ShopModal() {
         </DialogHeader>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          {SHOP_ITEMS.map((item) => (
+          {shopItems.map((item) => (
             <ShopItemCard
               key={item.id}
               item={item}

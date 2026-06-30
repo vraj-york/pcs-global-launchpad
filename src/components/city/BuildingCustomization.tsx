@@ -1,11 +1,9 @@
 import { useMemo } from 'react';
 import {
-  mockDevelopers,
-  getContributionRange,
-  getRepoCountRange,
   normalizeContributions,
   normalizeRepoCount,
 } from '@/data/mockDevelopers';
+import { useDevelopersContext } from '@/context/DevelopersContext';
 import { useCityStore } from '@/store/useCityStore';
 import { GRID_SCALE } from '@/components/city/BuildingInstances';
 
@@ -18,12 +16,13 @@ const AURA_COLORS = {
 export function BuildingCustomization() {
   const equippedItems = useCityStore((s) => s.equippedItems);
   const getEffectiveCustomization = useCityStore((s) => s.getEffectiveCustomization);
+  const { developers, getContributionRange, getRepoCountRange } = useDevelopersContext();
 
   const customized = useMemo(() => {
     const contribRange = getContributionRange();
     const repoRange = getRepoCountRange();
 
-    return mockDevelopers
+    return developers
       .map((dev) => {
         const customization = getEffectiveCustomization(dev);
         const hasVisual =
@@ -57,7 +56,7 @@ export function BuildingCustomization() {
       x: number;
       z: number;
     }>;
-  }, [equippedItems, getEffectiveCustomization]);
+  }, [developers, equippedItems, getEffectiveCustomization, getContributionRange, getRepoCountRange]);
 
   return (
     <group>

@@ -1,0 +1,5 @@
+[
+  { "ParameterKey": "EnvironmentName", "ParameterValue": "devcity" },
+  { "ParameterKey": "CustomDomainName", "ParameterValue": "" },
+  { "ParameterKey": "AcmCertificateArn", "ParameterValue": "" }
+]

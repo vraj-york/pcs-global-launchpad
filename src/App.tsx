@@ -16,23 +16,24 @@ import { ProfilePanel } from '@/components/profile/ProfilePanel';
 import { CameraModeToggle, HoverLabel } from '@/components/ui-overlay/CameraModeToggle';
 import { ControlsHUD } from '@/components/ui-overlay/ControlsHUD';
 import { Navbar } from '@/components/ui-overlay/Navbar';
-import { mockDevelopers } from '@/data/mockDevelopers';
+import { DevelopersProvider, useDevelopersContext } from '@/context/DevelopersContext';
 import { useCityStore } from '@/store/useCityStore';
 
 function HoverLabelOverlay() {
   const hoveredId = useCityStore((s) => s.hoveredDeveloperId);
   const selectedId = useCityStore((s) => s.selectedDeveloperId);
+  const { getDeveloperById } = useDevelopersContext();
 
   const activeId = hoveredId && hoveredId !== selectedId ? hoveredId : null;
   if (!activeId) return null;
 
-  const dev = mockDevelopers.find((d) => d.id === activeId);
+  const dev = getDeveloperById(activeId);
   if (!dev) return null;
 
   return <HoverLabel username={dev.username} />;
 }
 
-export default function App() {
+function DevCityApp() {
   return (
     <TooltipProvider delayDuration={200}>
       <div className="relative h-screen w-screen overflow-hidden bg-[#0a0e1a]">
@@ -48,5 +49,13 @@ export default function App() {
         <ShopModal />
       </div>
     </TooltipProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <DevelopersProvider>
+      <DevCityApp />
+    </DevelopersProvider>
   );
 }

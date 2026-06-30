@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { searchDevelopers } from '@/data/mockDevelopers';
+import { useDevelopersContext } from '@/context/DevelopersContext';
 import { useCityStore } from '@/store/useCityStore';
 import type { Developer } from '@/types/developer';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,7 @@ export function SearchBar() {
   const searchQuery = useCityStore((s) => s.searchQuery);
   const setSearchQuery = useCityStore((s) => s.setSearchQuery);
   const flyToDeveloper = useCityStore((s) => s.flyToDeveloper);
+  const { searchDevelopers } = useDevelopersContext();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 

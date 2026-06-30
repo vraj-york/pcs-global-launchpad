@@ -1,0 +1,13 @@
+[
+  { "ParameterKey": "EnvironmentName", "ParameterValue": "devcity" },
+  { "ParameterKey": "VpcCidr", "ParameterValue": "10.0.0.0/16" },
+  { "ParameterKey": "ContainerPort", "ParameterValue": "3000" },
+  { "ParameterKey": "DesiredCount", "ParameterValue": "1" },
+  { "ParameterKey": "EcrRepositoryUri", "ParameterValue": "your-account-id.dkr.ecr.your-region.amazonaws.com/devcity-api" },
+  { "ParameterKey": "EcrImageTag", "ParameterValue": "latest" },
+  { "ParameterKey": "CorsOrigins", "ParameterValue": "*" },
+  { "ParameterKey": "DbUsername", "ParameterValue": "devcity" },
+  { "ParameterKey": "DbPassword", "ParameterValue": "your-db-password-placeholder" },
+  { "ParameterKey": "DbName", "ParameterValue": "devcity" },
+  { "ParameterKey": "InstanceClass", "ParameterValue": "db.t3.micro" }
+]

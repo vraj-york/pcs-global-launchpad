@@ -2,12 +2,10 @@ import { useRef, useEffect, useMemo } from 'react';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import {
-  mockDevelopers,
-  getContributionRange,
-  getRepoCountRange,
   normalizeContributions,
   normalizeRepoCount,
 } from '@/data/mockDevelopers';
+import { useDevelopersContext } from '@/context/DevelopersContext';
 import { useCityStore } from '@/store/useCityStore';
 
 const GRID_SCALE = 3;
@@ -23,11 +21,15 @@ interface BuildingData {
   index: number;
 }
 
-function computeBuildingData(): BuildingData[] {
+function computeBuildingData(
+  developers: ReturnType<typeof useDevelopersContext>['developers'],
+  getContributionRange: () => { min: number; max: number },
+  getRepoCountRange: () => { min: number; max: number },
+): BuildingData[] {
   const contribRange = getContributionRange();
   const repoRange = getRepoCountRange();
 
-  return mockDevelopers.map((dev, index) => {
+  return developers.map((dev, index) => {
     const height = normalizeContributions(
       dev.contributions,
       contribRange.min,
@@ -128,7 +130,11 @@ function BuildingWindows({ buildings }: { buildings: BuildingData[] }) {
 export function BuildingInstances() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const buildings = useMemo(() => computeBuildingData(), []);
+  const { developers, getContributionRange, getRepoCountRange } = useDevelopersContext();
+  const buildings = useMemo(
+    () => computeBuildingData(developers, getContributionRange, getRepoCountRange),
+    [developers, getContributionRange, getRepoCountRange],
+  );
 
   const hoveredId = useCityStore((s) => s.hoveredDeveloperId);
   const selectedId = useCityStore((s) => s.selectedDeveloperId);

@@ -6,7 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "node node_modules/typescript/bin/tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test automation-tests/index.ts",
+    "test:e2e:headed": "playwright test automation-tests/index.ts --headed",
+    "test:e2e:ui": "playwright test automation-tests/index.ts --ui",
+    "test:e2e:debug": "playwright test automation-tests/index.ts --debug",
+    "test:e2e:chromium": "playwright test automation-tests/index.ts --project=chromium",
+    "test:e2e:report": "playwright show-report",
+    "playwright:install": "playwright install chromium"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.6",
@@ -37,6 +44,7 @@
     "postcss": "^8.5.2",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
-    "vite": "^6.1.0"
+    "vite": "^6.1.0",
+    "@playwright/test": "^1.51.0"
   }
 }

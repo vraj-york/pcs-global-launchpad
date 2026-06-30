@@ -1,11 +1,12 @@
 import { Badge } from '@/components/ui/badge';
-import { CITY_DEV_COUNT } from '@/data/mockDevelopers';
+import { useDevelopersContext } from '@/context/DevelopersContext';
 import { formatNumber } from '@/lib/utils';
 
 export function LiveCounterBadge() {
+  const { cityDevCount } = useDevelopersContext();
   return (
     <Badge variant="neon" className="hidden tabular-nums sm:inline-flex">
-      {formatNumber(CITY_DEV_COUNT)} devs in the city
+      {formatNumber(cityDevCount)} devs in the city
     </Badge>
   );
 }
