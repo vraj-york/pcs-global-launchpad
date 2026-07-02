@@ -1,0 +1,202 @@
+{
+	"font definitions": {
+		"font-family-sans": {
+			"value": "Inter",
+			"type": "text"
+		},
+		"font-family-serif": {
+			"value": "Inter",
+			"type": "text"
+		},
+		"font-family-monospace": {
+			"value": "Inter",
+			"type": "text"
+		},
+		"font-family-headings": {
+			"value": "{font definitions.font-family-sans}",
+			"type": "text"
+		},
+		"font-family-body": {
+			"value": "{font definitions.font-family-sans}",
+			"type": "text"
+		}
+	},
+	"heading 1": {
+		"weight": {
+			"value": "Semibold",
+			"type": "text"
+		},
+		"font-size": {
+			"value": 48,
+			"type": "number"
+		},
+		"line-height": {
+			"value": 48,
+			"type": "number"
+		},
+		"spacing": {
+			"value": 48,
+			"type": "number"
+		},
+		"letter-spacing": {
+			"value": -1.5,
+			"type": "number"
+		}
+	},
+	"heading 2": {
+		"weight": {
+			"value": "Semibold",
+			"type": "text"
+		},
+		"font-size": {
+			"value": 30,
+			"type": "number"
+		},
+		"line-height": {
+			"value": 30,
+			"type": "number"
+		},
+		"spacing": {
+			"value": 30,
+			"type": "number"
+		},
+		"letter-spacing": {
+			"value": -1,
+			"type": "number"
+		}
+	},
+	"heading 3": {
+		"weight": {
+			"value": "Semibold",
+			"type": "text"
+		},
+		"font-size": {
+			"value": 24,
+			"type": "number"
+		},
+		"line-height": {
+			"value": 28,
+			"type": "number"
+		},
+		"spacing": {
+			"value": 20,
+			"type": "number"
+		},
+		"letter-spacing": {
+			"value": -1,
+			"type": "number"
+		}
+	},
+	"heading 4": {
+		"weight": {
+			"value": "Semibold",
+			"type": "text"
+		},
+		"font-size": {
+			"value": 20,
+			"type": "number"
+		},
+		"line-height": {
+			"value": 24,
+			"type": "number"
+		},
+		"spacing": {
+			"value": 20,
+			"type": "number"
+		},
+		"letter-spacing": {
+			"value": 0,
+			"type": "number"
+		}
+	},
+	"paragraph": {
+		"paragraph-weight": {
+			"value": "Regular",
+			"type": "text"
+		},
+		"paragraph-bold-weight": {
+			"value": "Semibold",
+			"type": "text"
+		},
+		"paragraph-medium-weight": {
+			"value": "Medium",
+			"type": "text"
+		},
+		"regular": {
+			"font-size": {
+				"value": 16,
+				"type": "number"
+			},
+			"line-height": {
+				"value": 24,
+				"type": "number"
+			},
+			"spacing": {
+				"value": 16,
+				"type": "number"
+			},
+			"letter-spacing": {
+				"value": 0,
+				"type": "number"
+			}
+		},
+		"small": {
+			"font size": {
+				"value": 14,
+				"type": "number"
+			},
+			"line height": {
+				"value": 21,
+				"type": "number"
+			},
+			"spacing": {
+				"value": 14,
+				"type": "number"
+			},
+			"letter-spacing": {
+				"value": 0,
+				"type": "number"
+			}
+		},
+		"mini": {
+			"font size": {
+				"value": 12,
+				"type": "number"
+			},
+			"line height": {
+				"value": 16,
+				"type": "number"
+			},
+			"spacing": {
+				"value": 12,
+				"type": "number"
+			},
+			"letter-spacing": {
+				"value": 0,
+				"type": "number"
+			}
+		}
+	},
+	"monospaced": {
+		"font-weight": {
+			"value": "Regular",
+			"type": "text"
+		},
+		"font-size": {
+			"value": 16,
+			"type": "number"
+		},
+		"line-height": {
+			"value": 24,
+			"type": "number"
+		},
+		"letter-spacing": {
+			"value": 0,
+			"type": "number"
+		},
+		"spacing": {
+			"value": 16,
+			"type": "number"
+		}
+	}
+}

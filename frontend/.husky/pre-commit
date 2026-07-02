@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+echo "🔍 Running pre-commit checks..."
+
+# Change to frontend directory for lint-staged
+cd "$(dirname -- "$(dirname -- "$0")")" || exit
+
+echo "🔍 Formatting and linting..."
+npx lint-staged
+echo "✔ Formatting and linting completed successfully!"
+
+echo "🧪 Running unit tests..."
+pnpm run test:unit
+echo "✔ Unit tests passed!"
+
+# Check for major dependency upgrades
+. ".husky/_/package-checker-node"

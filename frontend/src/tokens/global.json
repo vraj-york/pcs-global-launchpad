@@ -1,0 +1,21 @@
+{
+	"spacing": {
+		"xs": { "value": "4px", "type": "spacing" },
+		"sm": { "value": "8px", "type": "spacing" },
+		"md": { "value": "12px", "type": "spacing" },
+		"lg": { "value": "16px", "type": "spacing" },
+		"xl": { "value": "20px", "type": "spacing" },
+		"2xl": { "value": "24px", "type": "spacing" },
+		"3xl": { "value": "28px", "type": "spacing" },
+		"4xl": { "value": "32px", "type": "spacing" },
+		"5xl": { "value": "36px", "type": "spacing" },
+		"6xl": { "value": "40px", "type": "spacing" },
+		"7xl": { "value": "44px", "type": "spacing" },
+		"8xl": { "value": "48px", "type": "spacing" }
+	},
+
+	"radius": {
+		"sm": { "value": "4px", "type": "borderRadius" },
+		"md": { "value": "8px", "type": "borderRadius" }
+	}
+}

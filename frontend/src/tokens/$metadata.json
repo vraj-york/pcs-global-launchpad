@@ -1,0 +1,14 @@
+{
+	"tokenSetOrder": [
+		"shadows/bsp",
+		"bsp color modes/bsp-light",
+		"bsp color modes/bsp-dark",
+		"border radius/bsp",
+		"spacing/bsp",
+		"bsp brand colors/Mode 1",
+		"brand colors/brand colors",
+		"theme/light",
+		"theme/dark",
+		"typography/bsp"
+	]
+}

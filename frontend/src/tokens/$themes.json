@@ -1,0 +1,30 @@
+{
+	"themes": [
+		{
+			"id": "bsp-light",
+			"name": "bsp-light",
+			"selectedTokenSets": {
+				"global": "enabled",
+				"bsp brand colors/Mode 1": "source",
+				"shadows/bsp": "enabled",
+				"typography/bsp": "enabled",
+				"border radius/bsp": "enabled",
+				"spacing/bsp": "enabled",
+				"bsp color modes/bsp-light": "enabled"
+			}
+		},
+		{
+			"id": "bsp-dark",
+			"name": "bsp-dark",
+			"selectedTokenSets": {
+				"global": "enabled",
+				"bsp brand colors/Mode 1": "source",
+				"shadows/bsp": "enabled",
+				"typography/bsp": "enabled",
+				"border radius/bsp": "enabled",
+				"spacing/bsp": "enabled",
+				"bsp color modes/bsp-dark": "enabled"
+			}
+		}
+	]
+}

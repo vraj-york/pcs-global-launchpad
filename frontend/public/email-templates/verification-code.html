@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--
+  BSP Blueprint — Verification Code email template
+  Figma: https://www.figma.com/design/PS90cVnLY2qWdwRhTtWQAl/Untitled?node-id=2733-85844
+  Transactional email (SES). Table + inline styles for email-client compatibility.
+  Colors mirror frontend/src/tokens/tokens.css (bsp-light) as literal hex — email
+  clients do not support CSS variables. Placeholders: {{code}}, {{supportUrl}}.
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>Verification Code</title>
+    <!--[if mso]>
+      <style type="text/css">
+        body, table, td { font-family: Arial, Helvetica, sans-serif !important; }
+      </style>
+    <![endif]-->
+    <style type="text/css">
+      body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+      table { border-collapse: collapse; }
+      img { border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; display: block; }
+      a { text-decoration: none; }
+      /* --bspGunmetalGray900 heading / --bspGunmetalGray700 body / --bspBlueBase link */
+    </style>
+  </head>
+  <!-- Page background: --bspGray50 #f8f7fb -->
+  <body style="margin:0; padding:0; background-color:#f8f7fb; font-family:'Inter', Arial, Helvetica, sans-serif;">
+    <!-- Preheader (hidden preview text) -->
+    <div style="display:none; font-size:1px; color:#f8f7fb; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">
+      Your BSP Blueprint verification code. This code is valid for the next 10 minutes.
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f8f7fb;">
+      <tr>
+        <td align="center" style="padding:24px 16px;">
+          <!-- Card: max-width 600, white, radius 24 (--bspAbsoluteRadius24), soft shadow -->
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background-color:#ffffff; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+            <!-- Header banner (gradient + BSP Blueprint logo) — reuses existing asset -->
+            <tr>
+              <td style="padding:0; line-height:0; font-size:0;">
+                <img src="{{assetBaseUrl}}/EmailHeader.png" alt="BSP Blueprint" width="600" style="display:block; width:100%; max-width:600px; height:auto; border-top-left-radius:24px; border-top-right-radius:24px;" />
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding:40px 40px 32px 40px;" align="center">
+                <!-- Title: Verification Code — --bspGunmetalGray900 #2f414a, 24px semibold -->
+                <p style="margin:0; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:24px; line-height:28px; font-weight:600; letter-spacing:-1px; color:#2f414a;">
+                  Verification Code
+                </p>
+                <!-- Subtitle: --bspGunmetalGray700 #385966, 16px regular -->
+                <p style="margin:12px 0 0 0; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:16px; line-height:24px; font-weight:400; color:#385966;">
+                  This code is valid for the next 10 minutes.
+                </p>
+
+                <!-- Code: large, --bspGunmetalGray900 #2f414a -->
+                <p style="margin:40px 0 0 0; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:64px; line-height:64px; font-weight:700; letter-spacing:2px; color:#2f414a;">
+                  {{code}}
+                </p>
+              </td>
+            </tr>
+
+            <!-- Divider: --bspGray100 #f1f0f7 -->
+            <tr>
+              <td style="padding:0 40px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="border-top:1px solid #f1f0f7; font-size:0; line-height:0;">&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="padding:32px 40px 40px 40px;" align="center">
+                <p style="margin:0; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:16px; line-height:24px; font-weight:400; color:#385966;">
+                  In case you didn&rsquo;t triggered this, please connect our
+                  <!-- Link: --bspBlueBase #3a6fd8 -->
+                  <a href="{{supportUrl}}" style="color:#3a6fd8; font-weight:400; text-decoration:none;">Support&nbsp;Team</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
