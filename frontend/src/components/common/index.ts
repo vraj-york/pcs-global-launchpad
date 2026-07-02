@@ -25,6 +25,7 @@ export * from "./PostHogAnalytics";
 export * from "./ProtectedRoute";
 export * from "./PublicRoute";
 export * from "./RoleGuardRoute";
+export * from "./SessionActionsMenu";
 export * from "./Stepper";
 export * from "./SubmoduleGuardRoute";
 export * from "./SubscriptionGuardRoute";
