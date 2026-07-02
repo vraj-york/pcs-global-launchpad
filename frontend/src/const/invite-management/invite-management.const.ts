@@ -1,0 +1,38 @@
+export const INVITE_MANAGEMENT_INVITE_TYPE = {
+	fullAccountUser: "User (Creates Full Account)",
+} as const;
+
+export const INVITE_MANAGEMENT_PAGE_CONTENT = {
+	breadcrumbsTitle: "Invite Management",
+	sendInviteBreadcrumb: "Send Invite",
+	managementTitle: "Invite Management",
+	managementSubtitle:
+		"Send, manage, and monitor assessment invites and their status.",
+	sendInviteButton: "Send Invite",
+	sendInviteTitle: "Send Invite",
+	sendInviteSubtitle: "Invite an user with required details.",
+	cardBasicInfo: "Basic Info.",
+	cardAssessmentInfo: "Assessment Info.",
+	fieldFirstName: "First Name",
+	fieldLastName: "Last Name",
+	fieldNickname: "Nickname",
+	fieldEmail: "Email",
+	fieldWorkPhone: "Work Phone No.",
+	fieldCellPhone: "Cell Phone No.",
+	fieldTimezone: "Time Zone (Personal)",
+	fieldInviteeType: "Invitee Type",
+	fieldAssessmentType: "Assessment Type",
+	fieldInvoiceAmount: "Invoice Amount",
+	hasPromoCodeLabel: "Has Promo Code?",
+	hasPromoCodeDescription: "Enable only if a promotional code is valid.",
+	fieldPromoCode: "Promo Code",
+	cancelButton: "Cancel",
+	sendInvitationButton: "Send Invitation",
+	optionsLoadError: "Could not load assessment invite options.",
+	promoCodesLoadError: "Could not load promo codes.",
+	promoCodeComboboxNoMatches: "No matching promo codes.",
+	errInviteeTypeRequired: "Invitee type is required.",
+	errPromoCodeRequired: "Promo code",
+	errPromoCodeInvalid: "Promo code is invalid or expired.",
+	inviteSuccess: "Invitation sent successfully.",
+} as const;

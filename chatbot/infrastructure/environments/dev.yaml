@@ -1,0 +1,91 @@
+env:
+  name: dev
+
+network:
+  vpc_name: bsp-blueprint-dev-vpc
+  vpc_id: vpc-00c173268c2519e93
+  private_app_subnet_ids:
+    - subnet-08cdb5b86e610aa8c
+    - subnet-0bc3371ecfa279e9f
+
+lambda:
+  chat:
+    memory: 2048
+    timeout: 29 # API Gateway has 29-second max timeout
+    stream_provisioned_concurrency: 0
+    runtime_provisioned_concurrency: 0
+  ingestion:
+    memory: 3008 # Higher memory for embedding generation
+    timeout: 900 # 15 minutes for processing large documents
+    chunk_size: 2000 # Characters per chunk (increased from 800 for better context)
+    chunk_overlap: 200 # Overlap between chunks (increased from 100)
+    min_chunk_chars: 50 # Minimum characters per chunk
+    max_retries: 3 # Retry attempts for Bedrock API calls
+    supported_extensions: [".pdf", ".docx", ".txt", ".md"] # Supported file types
+    reserved_concurrent_executions: null # limit concurrent executions
+
+bedrock_chat_model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+bedrock_embedding_model: amazon.titan-embed-text-v1
+bedrock_summary_model: us.anthropic.claude-haiku-4-5-20251001-v1:0
+
+bedrock_prompt_id: "58222GC8XN"
+bedrock_prompt_version: "1"
+bedrock_coach_prompt_id: "2XJKUULR0N" # Set after uploading coach persona to Bedrock Prompt Management
+bedrock_coach_prompt_version: "1"
+
+optimization:
+  warm_context_http_timeout: 3
+  enable_bedrock_prompt_caching: true
+  use_coach_persona_shell: true
+  enable_speculative_warm_prefetch: false
+  enable_memory_retrieval: true
+  enable_memory_extraction: true
+  memory_retrieve_timeout_ms: 2000
+  memory_default_status: confirmed
+  memory_consent_default_granted: true
+  memory_importance_min: 0.3
+  use_mock_client_snapshot: true
+
+observability:
+  ttft_alarm_ms: 3000
+  # alarm_email: "your-team@example.com"  # Uncomment to receive SNS alarm emails
+
+# Optional Bedrock Guardrails (leave blank to skip)
+# bedrock_guardrail_id: ""
+# bedrock_guardrail_version: DRAFT
+
+# Backend API Configuration (for tool calling)
+backend_api_url: "https://dev-api.bspblueprint.com" # Must match frontend VITE_API_BASE_URL host
+backend_api_key: "" # Optional fallback API key - if empty, uses access token from user's Authorization header
+
+# Cognito JWT verification
+# verify signature/issuer/expiry against the Cognito JWKS.
+# user_pool_id is the same pool the frontend uses (VITE_AWS_USER_POOL_ID)
+cognito:
+  verify_jwt: true
+  user_pool_id: "us-east-1_7f5VTvhjJ" # dev pool (shared with assessment + frontend)
+  # region: us-east-1
+  # issuer: ""    # optional - derived from region + user_pool_id when blank
+  # jwks_url: ""  # optional - derived from issuer when blank
+
+log_level: INFO
+
+# RAG Configuration
+rag_min_similarity: 0.25 # Lowered to catch definition chunks with less descriptive text
+rag_top_k: 10 # Increased to ensure all related chunks are retrieved
+
+# Shared RDS instance (owned by backend team).
+rds:
+  host: "bsp-blueprint-dev-rds.c458yciowiwq.us-east-1.rds.amazonaws.com"
+  port: 5432
+  db_name: "bispybot"
+  secret_arn: "arn:aws:secretsmanager:us-east-1:585890465993:secret:bsp-blueprint/dev/db-credentials/bot-TQMuhh"
+  security_group_id: "sg-05dec187d4dbd34c7"
+
+redis:
+  node_type: cache.t3.micro
+
+s3:
+  removal_policy: destroy
+  # bucket_name: ""
+  versioned: false # Enable versioning for document tracking

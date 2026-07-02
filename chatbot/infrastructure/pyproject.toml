@@ -1,0 +1,14 @@
+[project]
+name = "infrastructure"
+version = "0.1.0"
+description = "infrastructure"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aws-cdk-lib>=2.232.2,<3.0.0",
+    "boto3==1.34.34",
+    "constructs>=10.0.0,<11.0.0",
+    "psycopg2-binary>=2.9.9",
+    "pytest==8.4.2",
+    "pyyaml>=6.0.1",
+]

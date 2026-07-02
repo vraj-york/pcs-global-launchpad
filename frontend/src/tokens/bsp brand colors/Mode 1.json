@@ -1,0 +1,591 @@
+{
+	"gray": {
+		"50": {
+			"value": "#f8f7fb",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"100": {
+			"value": "#f1f0f7",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"300": {
+			"value": "#d3cde5",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"400": {
+			"value": "#bcb0d5",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"500": {
+			"value": "#a190c2",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"600": {
+			"value": "#8f76b1",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"700": {
+			"value": "#7d649d",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"800": {
+			"value": "#685384",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"900": {
+			"value": "#57456d",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"950": {
+			"value": "#372d48",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"Base": {
+			"value": "#ddd9eb",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	},
+	"alpha": {
+		"dark": {
+			"50": {
+				"value": "#1a1a1a0f",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"100": {
+				"value": "#1a1a1a17",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"200": {
+				"value": "#1a1a1a33",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"300": {
+				"value": "#1a1a1a47",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"400": {
+				"value": "#1a1a1a5c",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"500": {
+				"value": "#1a1a1a7a",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"600": {
+				"value": "#1a1a1a99",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"700": {
+				"value": "#1a1a1ab3",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"800": {
+				"value": "#1a1a1abf",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"900": {
+				"value": "#1a1a1acc",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"1000": {
+				"value": "#1a1a1a",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			}
+		},
+		"light": {
+			"50": {
+				"value": "#ffffff0f",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"100": {
+				"value": "#ffffff17",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"200": {
+				"value": "#ffffff33",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"300": {
+				"value": "#ffffff47",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"400": {
+				"value": "#ffffff5c",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"500": {
+				"value": "#ffffff7a",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"600": {
+				"value": "#ffffff99",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"700": {
+				"value": "#ffffffb3",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"800": {
+				"value": "#ffffffbf",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"900": {
+				"value": "#ffffffcc",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			},
+			"1000": {
+				"value": "#ffffff",
+				"type": "color",
+				"description": "Generated from Tailwind Color System"
+			}
+		}
+	},
+	"yellow": {
+		"50": {
+			"value": "#fbf8eb",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"100": {
+			"value": "#f6edcb",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"200": {
+			"value": "#eedb9a",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"400": {
+			"value": "#daa735",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"500": {
+			"value": "#cb9127",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"600": {
+			"value": "#af711f",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"700": {
+			"value": "#8c521c",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"800": {
+			"value": "#75431e",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"900": {
+			"value": "#64391f",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"950": {
+			"value": "#3a1c0e",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"Base": {
+			"value": "#e0b84a",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	},
+	"primary": {
+		"50": {
+			"value": "#f3f6fc",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"100": {
+			"value": "#e7edf7",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"200": {
+			"value": "#c9d8ee",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"300": {
+			"value": "#99b8e0",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"400": {
+			"value": "#6392cd",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"500": {
+			"value": "#3f74b8",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"700": {
+			"value": "#264a7e",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"800": {
+			"value": "#233f69",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"900": {
+			"value": "#223758",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"950": {
+			"value": "#17233a",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"Base": {
+			"value": "#305fa1",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	},
+	"blue": {
+		"50": {
+			"value": "#f1f6fd",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"100": {
+			"value": "#deebfb",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"200": {
+			"value": "#c5ddf8",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"300": {
+			"value": "#9dc8f3",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"400": {
+			"value": "#6faaeb",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"500": {
+			"value": "#4d89e4",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"700": {
+			"value": "#2f5ac6",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"800": {
+			"value": "#2c4ba1",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"900": {
+			"value": "#29417f",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"950": {
+			"value": "#1d294e",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"Base": {
+			"value": "#3a6fd8",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	},
+	"red": {
+		"50": {
+			"value": "#fdf3f3",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"100": {
+			"value": "#faeae9",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"200": {
+			"value": "#f6d5d5",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"300": {
+			"value": "#eeb3b4",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"400": {
+			"value": "#e4888b",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"500": {
+			"value": "#d65d65",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"700": {
+			"value": "#a12f3f",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"800": {
+			"value": "#872a3a",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"900": {
+			"value": "#742737",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"950": {
+			"value": "#401119",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"Base": {
+			"value": "#c44755",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	},
+	"b&w": {
+		"black": {
+			"value": "#000000",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"transparent": {
+			"value": "#00000000",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"white": {
+			"value": "#ffffff",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	},
+	"secondary": {
+		"50": {
+			"value": "#f2f8f9",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"100": {
+			"value": "#deecef",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"200": {
+			"value": "#c0d9e1",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"300": {
+			"value": "#94bdcc",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"500": {
+			"value": "#467e94",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"600": {
+			"value": "#3d687d",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"700": {
+			"value": "#365668",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"800": {
+			"value": "#334957",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"900": {
+			"value": "#2e3f4b",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"950": {
+			"value": "#1b2831",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"Base": {
+			"value": "#7aa9bb",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	},
+	"green": {
+		"50": {
+			"value": "#effaf5",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"100": {
+			"value": "#d9f2e4",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"200": {
+			"value": "#b6e4cd",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"300": {
+			"value": "#86cfaf",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"400": {
+			"value": "#54b38c",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"600": {
+			"value": "#22795a",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"700": {
+			"value": "#1b614a",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"800": {
+			"value": "#184d3c",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"900": {
+			"value": "#144032",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"950": {
+			"value": "#0a241d",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"Base": {
+			"value": "#2f8f6b",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	},
+	"gunmetal gray": {
+		"50": {
+			"value": "#f2f8f9",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"100": {
+			"value": "#deecef",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"200": {
+			"value": "#c1dbe0",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"300": {
+			"value": "#96c1ca",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"400": {
+			"value": "#649dac",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"500": {
+			"value": "#498291",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"600": {
+			"value": "#3f6b7b",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"700": {
+			"value": "#385966",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"800": {
+			"value": "#344c56",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"900": {
+			"value": "#2f414a",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		},
+		"Base": {
+			"value": "#1a272e",
+			"type": "color",
+			"description": "Generated from Tailwind Color System"
+		}
+	}
+}

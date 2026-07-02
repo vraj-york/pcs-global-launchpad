@@ -1,0 +1,84 @@
+env:
+  name: prod
+
+network:
+  vpc_name: backend-vpc-prod
+  # TODO: Update these with your production VPC details
+  vpc_id: vpc-XXXXXXXXXXXXXXXXX # Replace with your prod VPC ID
+  private_app_subnet_ids:
+    - subnet-XXXXXXXXXXXXXXXXX # Replace with your prod subnet IDs
+    - subnet-XXXXXXXXXXXXXXXXX
+
+lambda:
+  chat:
+    memory: 4096
+    timeout: 29 # API Gateway timeout is 29 seconds, so Lambda should be <= 29
+    stream_provisioned_concurrency: 2
+    runtime_provisioned_concurrency: 1
+  ingestion:
+    memory: 3008 # Higher memory for embedding generation
+    timeout: 900 # 15 minutes for processing large documents
+    chunk_size: 800 # Tokens per chunk
+    chunk_overlap: 100 # Overlap between chunks
+    min_chunk_chars: 50 # Minimum characters per chunk
+    max_retries: 3 # Retry attempts for Bedrock API calls
+    supported_extensions: [".pdf", ".docx", ".txt", ".md"] # Supported file types
+    reserved_concurrent_executions: 10 # Limit concurrent executions in production
+
+bedrock_chat_model: anthropic.claude-sonnet-4-5-20250929-v1:0
+bedrock_embedding_model: amazon.titan-embed-text-v1 # Amazon Titan embedding model
+bedrock_summary_model: us.anthropic.claude-haiku-4-5-20251001-v1:0
+
+bedrock_prompt_id: "58222GC8XN" # Update with prod foundation prompt ID if different
+bedrock_prompt_version: "1"
+bedrock_coach_prompt_id: ""
+bedrock_coach_prompt_version: "1"
+
+optimization:
+  warm_context_http_timeout: 3
+  enable_bedrock_prompt_caching: true
+  use_coach_persona_shell: true
+  enable_speculative_warm_prefetch: false
+  enable_memory_retrieval: true
+  enable_memory_extraction: true
+  memory_retrieve_timeout_ms: 2000
+  memory_default_status: candidate
+  memory_importance_min: 0.3
+
+observability:
+  ttft_alarm_ms: 3000
+  # alarm_email: "your-team@example.com"
+
+# Backend API Configuration (for tool calling)
+backend_api_url: "" # TODO: Set your production backend API URL
+backend_api_key: "" # Optional fallback API key - if empty, uses access token from user's Authorization header
+
+# Cognito JWT verification
+# verify signature/issuer/expiry against the Cognito JWKS.
+# user_pool_id is the same pool the frontend uses (VITE_AWS_USER_POOL_ID)
+cognito:
+  verify_jwt: true
+  user_pool_id: "" # TODO: set the prod Cognito user pool id (us-east-1_XXXXXXXXX)
+  # region: us-east-1
+  # issuer: ""    # optional - derived from region + user_pool_id when blank
+  # jwks_url: ""  # optional - derived from issuer when blank
+
+log_level: INFO
+
+# Shared RDS instance (owned by backend team).
+# Fill in the values the backend team provides for each environment.
+# Credentials must be stored in Secrets Manager - never hard-code passwords here.
+rds:
+  host: "" # e.g. bsp-backend-prod.cluster-xxxx.us-east-1.rds.amazonaws.com
+  port: 5432
+  db_name: "bispybot" # Database name created for the chatbot inside the shared instance
+  secret_arn: "" # ARN of the Secrets Manager secret that holds chatbot DB credentials
+  security_group_id: "" # Backend team's RDS security group ID (so we can add an inbound rule)
+
+redis:
+  node_type: cache.r6g.large
+
+s3:
+  removal_policy: retain
+  # bucket_name: ""  # Optional: specify bucket name, otherwise auto-generated
+  versioned: true # Enable versioning for document tracking in production

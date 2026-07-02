@@ -1,0 +1,672 @@
+[
+  {
+    "style_number": 12,
+    "title": "Authoritarian",
+    "description": "Red “State of Mind” is assertive, confident, driven, results-oriented, and strategic. Authoritarians are characterized by emergent leadership, fast-thinking, multi-tasking, problem-solving, and are self-starters. Authoritarians want to be in control, often seeking power, at times impatient, perfectionistic, and agitated. In distress, Authoritarians display anger, perhaps pointing a finger or clenching a fist, raising their voice, pushing deadlines and finding fault in self or others.",
+    "environmental_preferences": ["Assert and seeks control"],
+    "interaction_preferences": ["Shifts between working alone and with others"],
+    "character_strengths": [
+      "Assertive",
+      "Authoritative",
+      "Confident",
+      "Driven",
+      "Organized",
+      "Punctual",
+      "Results-oriented"
+    ],
+    "psychological_needs": [
+      "Recognition for Work",
+      "Time Structure",
+      "Clearly Defined Goals",
+      "Power",
+      "Sense of Purpose"
+    ],
+    "likes": ["Leadership", "Project Completion", "Achievement", "Closure", "Results"],
+    "dislikes": [
+      "Surprises",
+      "Excuses",
+      "Inaction",
+      "Insubordination",
+      "Missing deadlines",
+      "Losing control"
+    ],
+    "work_preferences": [
+      "Leadership roles",
+      "Driven to transfer thoughts into actions",
+      "Organizational structure"
+    ],
+    "warning_signs": [
+      "Perfectionism",
+      "Critical",
+      "Controlling",
+      "Impatient",
+      "Frustrated"
+    ],
+    "when_feeling_stressed": "RELINQUISH the need to do everything yourself. Allow others to help. Work to be FLEXIBLE with time frames and commitments. Schedule yourself a well-needed break to RELAX. Even if it is just for 30 minutes. Be WILLING to answer questions without fault-finding or blame. Work to ACCEPT responsibility for your actions an decisions. APOLOGIZE for any accusations already said.",
+    "display_order": 12
+  },
+  {
+    "style_number": 1,
+    "title": "Pioneer",
+    "description": "RED/Green “State of Mind” is ambitious, responsible, passionate, persistent, and powerful. A Pioneer's passion for organizing movements and motivating others to their cause is obvious: if you share it, you’re part of the “club.” If not, you may be overlooked or even judged. In distress, the Pioneer defends their passion, often with verve, furrowed eyebrows, piercing looks and intense oration or lecturing.",
+    "environmental_preferences": [
+      "Seeks control and to shift the status quo to the way the world is"
+    ],
+    "interaction_preferences": [
+      "Shifts from working alone in preparation to leading the team or group for the â€œcause"
+    ],
+    "character_strengths": [
+      "Responsible",
+      "Persistent",
+      "Powerful",
+      "Ambitious",
+      "Passionate"
+    ],
+    "psychological_needs": [
+      "Movement recognition",
+      "Respect",
+      "Devoted followers",
+      "Purpose",
+      "Power"
+    ],
+    "likes": [
+      "Admiration",
+      "Pursuit of ideals or beliefs",
+      "Being influential",
+      "Sharing opinions",
+      "Teaching/Preaching",
+      "Strategy"
+    ],
+    "dislikes": [
+      "Criticism",
+      "Detractors to the cause",
+      "Disloyalty",
+      "Being told no",
+      "Being ignored",
+      "Being overlooked"
+    ],
+    "work_preferences": [
+      "Pursues leadership roles and driven to transfer ideals into actions",
+      "Democratic process"
+    ],
+    "warning_signs": [
+      "Opinionated",
+      "Stubborn",
+      "Egotistical",
+      "Driving",
+      "Forcing ideas"
+    ],
+    "when_feeling_stressed": "RELINQUISH the need to do everything yourself. Allow others to help. Work to be FLEXIBLE with time frames and commitments. Schedule yourself a well-needed break to RELAX. Even if it is just for 30 minutes. Be WILLING to answer questions without fault-finding or blame. Work to ACCEPT responsibility for your actions an decisions. Ask QUESTIONS to gain information.",
+    "display_order": 1
+  },
+  {
+    "style_number": 2,
+    "title": "Enthusiatic",
+    "description": "The split Green/Red “State of Mind” is charismatic, inspirational, personable, persuasive, and visionary. Enthusitarians share both the passion of the Red and the compassion of the Green Behavioral Styles, driven to teach others for success. Enthusitarians tend to embrace movements or trends that have social implications they perceive as good for others, and are capable of motivating others when they are convicted. In distress, Enthusitarians experience frustration with others not “on board” and may “preach” to get alignment.",
+    "environmental_preferences": ["Influences the environment for the good of others"],
+    "interaction_preferences": [
+      "Affiliate with others to get things done they believe in, often through delegation and teaching"
+    ],
+    "character_strengths": [
+      "Charismatic",
+      "Inspirational",
+      "Visionary",
+      "Energetic",
+      "Personable",
+      "Persuasive"
+    ],
+    "psychological_needs": ["Admiration", "Significance", "Leadership", "Influence"],
+    "likes": [
+      "Respect",
+      "Esteem",
+      "Politics",
+      "Engaging with questions",
+      "Visionary & strategic planning",
+      "Presenting & teaching",
+      "Coaching"
+    ],
+    "dislikes": [
+      "To be publicly wrong",
+      "Insulted",
+      "Not being heard",
+      "Disrespected",
+      "Not being trusted"
+    ],
+    "work_preferences": [
+      "Prestige",
+      "Influence",
+      "Well appointed space",
+      "Leading a team to make a difference"
+    ],
+    "warning_signs": [
+      "Impatient",
+      "Forceful",
+      "Restless",
+      "Frustrated",
+      "Impulsive",
+      "Defensive",
+      "Scattered"
+    ],
+    "when_feeling_stressed": "RELINQUISH the need to do everything yourself. Allow others to help. Work to be FLEXIBLE with time frames and commitments. Schedule yourself a well-needed break to RELAX. Even if it is just for 30 minutes. Allow yourself to MAKE DECISIONS. Work to ACCEPT responsibility for your actions an decisions. Ask QUESTIONS to gain information.",
+    "display_order": 2
+  },
+  {
+    "style_number": 3,
+    "title": "Gregarian",
+    "description": "Those with a GREEN/Red “State of Mind” are empathic, loyal, outgoing, spontaneous, and have a good sense of humor. Gregarians are people oriented with an agenda, adept at knowing what to say, with a knack for comforting and/or influencing others with their conversational skills. Gregarians are team players, often seen as the \"best friend\", willing to accomplish goals for the common good. In distress, Gregarians become fidgety and often react, speak their mind and let others know where they’re coming from, may retort, pout or even rebel, but make amends and return to socializing.",
+    "environmental_preferences": [
+      "Vacillates between controlling their environment and adapting to it"
+    ],
+    "interaction_preferences": ["Affiliate and team-up with others"],
+    "character_strengths": [
+      "Outgoing",
+      "Spontaneous",
+      "Empathic",
+      "Loyal",
+      "Mix well with others",
+      "Sense of Humor"
+    ],
+    "psychological_needs": [
+      "Humor",
+      "Deep Friendships",
+      "Guidance",
+      "Influence on outcomes",
+      "Shared goals"
+    ],
+    "likes": [
+      "Friends with influence",
+      "Group gatherings",
+      "Humor",
+      "Advising those in charge",
+      "Teaming to achieve mutual goals",
+      "Making new friends"
+    ],
+    "dislikes": [
+      "Rules without reasons",
+      "Directives",
+      "Not being allowed",
+      "Being alone",
+      "Rigidity"
+    ],
+    "work_preferences": [
+      "Interaction with others",
+      "Balance of change and stability",
+      "Freedom to be creative",
+      "Influence on project direction",
+      "Being part of a team"
+    ],
+    "warning_signs": [
+      "Self-Conscious",
+      "Fidgety",
+      "Tense",
+      "Seductive",
+      "Apprehensive",
+      "Withholding"
+    ],
+    "when_feeling_stressed": "Allow yourself to MAKE DECISIONS. Appear CONFIDENT with your body language and voice tone. RELINQUISH the need to do everything yourself. Allow others to help. Schedule yourself a well-needed break to RELAX. Even if it is just for 30 minutes. LET-GO of feeling like things are your fault. Remember that there are always multiple sides to any situation. Ask QUESTIONS to gain information.",
+    "display_order": 3
+  },
+  {
+    "style_number": 4,
+    "title": "Nurturarian",
+    "description": "The green “State of Mind” is friendly, harmonizing, nurturing, people-oriented, and sensitive. Nurturitarians are trusting, helpful, pleasing with an internal drive for affiliation and building relationships especially family, friends and teammates. They are concerned about the feelings of others, showing genuine compassion and empathy, while providing a good “listening ear\" and \"knows no stranger\". In distress, Nurturitarians feel uncomfortable, withdrawing, showing a lack of clarity, becoming submissive, passive aggressive or making mistakes.",
+    "environmental_preferences": ["Adapt to the environment yet able to offer feedback"],
+    "interaction_preferences": ["Affiliate naturally with individuals and groups"],
+    "character_strengths": [
+      "Compassionate",
+      "Supportive",
+      "Friendly",
+      "Nurturing",
+      "Warm",
+      "Caring",
+      "People-oriented",
+      "Harmonizer",
+      "Sensitive"
+    ],
+    "psychological_needs": [
+      "Harmony",
+      "Person recognition",
+      "Affiliation",
+      "Sensory needs",
+      "Creature comforts"
+    ],
+    "likes": [
+      "Getting along",
+      "Family",
+      "Friends",
+      "Teamwork",
+      "Talking",
+      "Helping Others",
+      "Support",
+      "Compassion",
+      "Touch",
+      "Pets"
+    ],
+    "dislikes": [
+      "Rejection",
+      "Conflict",
+      "Pressure",
+      "Arguments",
+      "Appearing disheveled"
+    ],
+    "work_preferences": [
+      "People interactions",
+      "Supportive approach",
+      "Comforting space",
+      "Earth tones",
+      "Inviting",
+      "Warm",
+      "Soft furniture"
+    ],
+    "warning_signs": [
+      "Apologetic",
+      "Droops",
+      "Nervous",
+      "Acquiescent",
+      "Gullible",
+      "Passive-Aggressive",
+      "Makes mistakes"
+    ],
+    "when_feeling_stressed": "Allow yourself to MAKE DECISIONS. Appear CONFIDENT with your body language and voice tone. GIVE your opinions about the situation. Schedule yourself a well-needed break to RELAX. Even if it is just for 30 minutes. LET-GO of feeling like things are your fault. Remember that there are always multiple sides to any situation. Ask QUESTIONS to gain information.",
+    "display_order": 4
+  },
+  {
+    "style_number": 5,
+    "title": "Advocate",
+    "description": "The Green/Gray “State of Mind” is benevolent, gentle, cooperative, pleasant, and reliable. While Advocates are concerned about the feelings of others, they follow the law, rules or playbooks, compelled to keep commitments, adhere to standards, and tend to be careful and dutiful. Advocates always keep their “behind the scenes” commitments, doing so without need for stage recognition, and will maintain long-term relationships above all else. In distress, they tend to withdraw, show apprehension, be apologetic and require caring re-direction.",
+    "environmental_preferences": ["Adapt within existing structure"],
+    "interaction_preferences": ["Affiliation with smaller groups and long-term connections"],
+    "character_strengths": [
+      "Reliable",
+      "Benevolent",
+      "Cooperative",
+      "Pleasant",
+      "Gentle",
+      "Accessible",
+      "Stabilizer"
+    ],
+    "psychological_needs": [
+      "Helping others with visible benefit",
+      "Predictable interactions with others",
+      "Task orientation for others' needs",
+      "Structure set by others"
+    ],
+    "likes": [
+      "Non-threatening communication",
+      "Smooth operations",
+      "Reliability",
+      "Predictability",
+      "Consistency",
+      "Long-term relationships"
+    ],
+    "dislikes": [
+      "Conflict",
+      "Haphazardness",
+      "Unrealistic expectations",
+      "Autocratic mandates",
+      "Loud spaces"
+    ],
+    "work_preferences": [
+      "Conservative climate",
+      "Gentle team affiliation",
+      "Soft music",
+      "Comfortable",
+      "Fixed income",
+      "Consistency"
+    ],
+    "warning_signs": [
+      "Uncomfortable",
+      "Apologetic",
+      "Apprehensive",
+      "Self-effacing",
+      "Withdrawing",
+      "Scattered"
+    ],
+    "when_feeling_stressed": "Allow yourself to MAKE DECISIONS. Appear CONFIDENT with your body language and voice tone. GIVE your opinions about the situation. Schedule yourself a well-needed break to RELAX. Even if it is just for 30 minutes. LET-GO of feeling like things are your fault. Remember that there are always multiple sides to any situation. Get ORGANIZED. Create a to-do list.",
+    "display_order": 5
+  },
+  {
+    "style_number": 6,
+    "title": "Humanitarian",
+    "description": "The split Gray/Green “State of Mind” is dutiful, idealistic, reserved, selfless, and supportive. Humanitarians shares both the compassion for people yet the respect for privacy, with deep concern for their fellow kind through established rules and perceived injustices. Their self-effacing ways support social causes with a gentle yet conscious-grabbing effect, displaying acts of selfless conviction, speaking up for the underdog, whatever the cost. In distress, Humanitarians become cynical, more self-contained, resentful, trampled-on, self-flagellating, and rigid.",
+    "environmental_preferences": ["Adapt"],
+    "interaction_preferences": [
+      "Vacillates between interacting with people (one-on-one or small group) and needing alone time to recharge"
+    ],
+    "character_strengths": [
+      "Dutiful",
+      "Idealistic",
+      "Reserved",
+      "Selfless",
+      "Supportive",
+      "Cooperative",
+      "Convicted"
+    ],
+    "psychological_needs": [
+      "Consistency that benefits others",
+      "Alone time in a comforting space",
+      "Peaceful reflection",
+      "Devoted relationships",
+      "Collective unity"
+    ],
+    "likes": [
+      "Serene spaces",
+      "Predictable routine",
+      "Consistent relationships",
+      "Time to relax",
+      "Clear duty"
+    ],
+    "dislikes": [
+      "Dictatorial messaging",
+      "Argumentative responses",
+      "Injustice (others being hurt)",
+      "Unpredictability",
+      "Over-stimulation"
+    ],
+    "work_preferences": ["Work with supporters", "Engagement for a cause", "A meeting place", "Safe harbor"],
+    "warning_signs": [
+      "Subservience",
+      "Conservative",
+      "Cynical",
+      "Careful",
+      "Meek",
+      "Self-effacing",
+      "Withdrawing",
+      "Isolating"
+    ],
+    "when_feeling_stressed": "Take a few deep breaths, allowing yourself to get RELAXED. Work to get CONNECTED with others, ask for help or participate in an activity. GIVE your opinions about the situation Get ORGANIZED. Create a to-do list. LET-GO of feeling like things are your fault. Remember that there are always multiple sides to any situation. Allow yourself to MAKE DECISIONS.",
+    "display_order": 6
+  },
+  {
+    "style_number": 7,
+    "title": "Geek",
+    "description": "The Gray/Green “State of Mind” is even-tempered, imaginative, modest, patient, and steady. Geeks don't mind be referred to that way (they are brianiacs and deep thinkers), as they are steady, assignment oriented, and deal well with tedious details. They prefer to communicate with others through an efficient, removed, and safe medium, including electronic, video games, art, or board games. Sometimes seen as eccentric, they are non-demonstrative with their emotions, conflict-avoidant and dislike groups. When in distress, often due to their inability to think long term, they make minimal eye contact, few facial expressions, and are inclined to withdraw, become pessimistic, inflexible and tend to give up.",
+    "environmental_preferences": ["Adapt"],
+    "interaction_preferences": [
+      "Ordinarily detach, only will connect through efficient and safe medium"
+    ],
+    "character_strengths": [
+      "Patient",
+      "Steady",
+      "Modest",
+      "Even-tempered",
+      "Imaginative",
+      "Unassuming"
+    ],
+    "psychological_needs": [
+      "Tranquility",
+      "Clear direction",
+      "Self-paced exploration",
+      "Contemplation"
+    ],
+    "likes": ["Solitary hobbies", "Creativity", "Technology", "Art", "Music"],
+    "dislikes": [
+      "Required involvement",
+      "Face–to-face communication",
+      "Shifting gears quickly",
+      "Spontaneity",
+      "Commitment without predetermined end"
+    ],
+    "work_preferences": [
+      "Tucked away",
+      "Consistent space",
+      "Quiet",
+      "Alone",
+      "Less looks - more function"
+    ],
+    "warning_signs": ["Self-conscious", "Withdrawal", "Timid", "Shy", "Complacent", "Inactive"],
+    "when_feeling_stressed": "Take a few deep breaths, allowing yourself to get RELAXED. Make EYE CONTACT. Appear CONFIDENT with your body language and voice tone. Get ORGANIZED. Create a to-do list. Work to get CONNECTED with others, ask for help or participate in an activity. Share your CREATIVE ideas.",
+    "display_order": 7
+  },
+  {
+    "style_number": 8,
+    "title": "Solitarian",
+    "description": "Gray “State of Mind” is introspective, introverted, methodical, routine-oriented, and self-contained. Solitarians tend to be inner-directed, thorough, monotonic, and interested in details, often creative, while having less concern about people issues or bottom line results. Focus will be on structure and sequence of how things work as well as on consistency, accuracy and stability – being able to work alone, especially having been given direction. In distress, Solitarians tends to plod along, make minimal eye contact or facial expressions, and are inclined to withdraw, avoid, become pessimistic, inflexible, and lose interest in project completion.",
+    "environmental_preferences": ["Adapts for functionality"],
+    "interaction_preferences": ["Withdraws and detaches"],
+    "character_strengths": [
+      "Introspective",
+      "Introverted",
+      "Routine-oriented",
+      "Methodical",
+      "Self-contained",
+      "Directable"
+    ],
+    "psychological_needs": ["Solitude", "Routines", "Safety", "Peace"],
+    "likes": [
+      "Tasks",
+      "Minute details",
+      "Isolation",
+      "Technical",
+      "Creativity",
+      "Inactivity",
+      "Reflection"
+    ],
+    "dislikes": [
+      "Involvement",
+      "Interaction",
+      "Commotion",
+      "Loud",
+      "Small talk",
+      "Emotionality",
+      "Large muscle movement",
+      "Touch"
+    ],
+    "work_preferences": ["Alone", "Unobtrusive", "Inflexible", "Predictable"],
+    "warning_signs": [
+      "Plodding",
+      "Reserved",
+      "Apathetic",
+      "Indifferent",
+      "Disorganized",
+      "Avoidance",
+      "Pessimistic"
+    ],
+    "when_feeling_stressed": "Take a few deep breaths, allowing yourself to get RELAXED. Make EYE CONTACT. Get ORGANIZED. Create a to-do list. Work to get CONNECTED with others, ask for help or participate in an activity. Show INTEREST in anotherâ€™s point of view. Share your CREATIVE ideas.",
+    "display_order": 8
+  },
+  {
+    "style_number": 9,
+    "title": "Philosopher",
+    "description": "The Gray/Red “State of Mind” is avant-garde, deliberate, ingenious, inventive, and unconventional. Philosophers tend to be introspective and think critically about the pros and cons of issues as they are research driven, and prefer present facts over preserving people's feelings. Philosophers use their imagination to expand precise knowledge before offering opinions, and are usually soloists. Under distress, Philosophers tend to become socially uncomfortable, withdraw, feel cynical, show inflexibility, cite doctrine and criticize.",
+    "environmental_preferences": [
+      "Will adapt until they can control through predictable methods with highly assured results"
+    ],
+    "interaction_preferences": ["Detach"],
+    "character_strengths": [
+      "Ingenious",
+      "Avant-garde",
+      "Deliberate",
+      "Unconventional",
+      "Inventive",
+      "Scientific",
+      "Unorthodox"
+    ],
+    "psychological_needs": [
+      "Introspection",
+      "Verification",
+      "Freedom of thought",
+      "Creative freedom"
+    ],
+    "likes": [
+      "Methods",
+      "Clarity",
+      "Behind scenes support",
+      "Research",
+      "Policies to protect",
+      "Focus on key details",
+      "Intellectualization"
+    ],
+    "dislikes": [
+      "Spontaneity",
+      "Social interaction",
+      "Demanding pace",
+      "Regular teamwork",
+      "Banal chatter",
+      "Unsupported opinions"
+    ],
+    "work_preferences": [
+      "Focused projects",
+      "Quiet",
+      "Unassuming",
+      "Isolated",
+      "Stable technology",
+      "Freedom to self-organize"
+    ],
+    "warning_signs": [
+      "Hesitation",
+      "Overwhelmed",
+      "Hyper-vigilant",
+      "Selfish",
+      "Apathetic",
+      "Indifferent"
+    ],
+    "when_feeling_stressed": "Take a few deep breaths, allowing yourself to get RELAXED. Make EYE CONTACT. Get ORGANIZED. Create a to-do list. RELINQUISH the need to do everything yourself. Allow others to help. Show INTEREST in anotherâ€™s point of view. Share your CREATIVE ideas.",
+    "display_order": 9
+  },
+  {
+    "style_number": 10,
+    "title": "Innovitarian",
+    "description": "The split Red/Gray “State of Mind” is accurate, analytic, consistent, rule-bound, and systematic. While Innovitarians tend to detach from others as a general rule, they will invest energy in communications for explaining situations and results. They are facts and details oriented, relying on antiquated systems that worked for them in the past to ensure security, seeking accuracy and autonomy. Motivation is available if the task is defined, mapped out, and practical. In distress, they can become skeptical, rigid, downcast, suspicious and unapproachable.",
+    "environmental_preferences": ["Control using time-tested, proven methods"],
+    "interaction_preferences": ["Detach from others, connect through procedure"],
+    "character_strengths": [
+      "Consistent",
+      "Systematic",
+      "Organized",
+      "Critical Thinking",
+      "Accuracy",
+      "Attention to detail",
+      "Analytic",
+      "Adheres to standards"
+    ],
+    "psychological_needs": [
+      "Freedom to iterate",
+      "Predictability",
+      "Passive acceptance",
+      "Worth from past success"
+    ],
+    "likes": [
+      "Concrete results",
+      "Clearly defined performance expectations",
+      "Adequate time to deliberate for methods and accuracy",
+      "Quality control"
+    ],
+    "dislikes": [
+      "Abstracts",
+      "Spontaneous directional changes",
+      "Time-frame deviations",
+      "New untested methods",
+      "Lack of planning",
+      "Arbitrary oversight",
+      "Micromanagement"
+    ],
+    "work_preferences": [
+      "Reserved business-like atmosphere",
+      "Alone space for thinking and working",
+      "Access to select individual(s) or small groups as projects require"
+    ],
+    "warning_signs": [
+      "Restrained",
+      "Skeptical",
+      "Rigid",
+      "Self-effacing",
+      "Downcast",
+      "Social awkwardness"
+    ],
+    "when_feeling_stressed": "Take a few deep breaths, allowing yourself to get RELAXED. Work to be FLEXIBLE with time frames and commitments. Get ORGANIZED. Create a to-do list. RELINQUISH the need to do everything yourself. Allow others to help. Show INTEREST in anotherâ€™s point of view. Share your CREATIVE ideas.",
+    "display_order": 10
+  },
+  {
+    "style_number": 11,
+    "title": "Competitor",
+    "description": "The Red/Gray “State of Mind” is competitive, logical, ordered, rigid, and tenacious. Competitors are intent on winning, void of concern or compassion for others, taking to their goals like a dog on a bone. They are typically well disciplined, strong, and are characterized by confidence, determination and past successes. Competitors pride themselves on personal power, accomplishments and accolades. As they experience distress, they often show impatience and agitation over flaws, interruptions and ignorance, displaying aggression, finding fault and appear self-righteous.",
+    "environmental_preferences": ["Control without regard"],
+    "interaction_preferences": [
+      "Detach or small circle of tactical acquaintances to reach personal objectives"
+    ],
+    "character_strengths": [
+      "Competitive",
+      "Logical",
+      "Tenacious",
+      "Powerful",
+      "Self-reliant",
+      "Unyielding"
+    ],
+    "psychological_needs": [
+      "Unchecked power",
+      "Unquestioned loyalty",
+      "Personal accomplishments",
+      "Dogmatic belief systems"
+    ],
+    "likes": ["Winning", "Followers", "Competing", "Achieving", "Respect", "Admirers", "Boast-worthy results"],
+    "dislikes": [
+      "Being challenged",
+      "Softness",
+      "Undisciplined",
+      "Whining",
+      "Losers",
+      "Surprises",
+      "Sloppiness"
+    ],
+    "work_preferences": [
+      "Organized",
+      "Contemporary",
+      "Ostentatious",
+      "Pristine",
+      "Well-appointed"
+    ],
+    "warning_signs": [
+      "Fault-finding",
+      "Self-righteous",
+      "Stubborn",
+      "Opinionated",
+      "Egotistical",
+      "Combative"
+    ],
+    "when_feeling_stressed": "RELINQUISH the need to do everything yourself. Allow others to help. Work to be FLEXIBLE with time frames and commitments. Schedule yourself a well-needed break to RELAX. Even if it is just for 30 minutes. Show INTEREST in another’s point of view. Work to ACCEPT responsibility for your actions an decisions. APOLOGIZE for any accusations already said.",
+    "display_order": 11
+  },
+  {
+    "style_number": 13,
+    "title": "Adaptarian",
+    "description": "The Red/Green/Gray “State of Mind” is adaptable, cautious, fluid, minimalistic, and straightforward. Adaptarians are a near equal blend of all three states of mind, having a more fluid identity that allows them to navigate often-changing conditions or complicated situations with minimal consequences (not necessarily success). This style is often occupied by those in transition or those having led unpredictable lives. While this has advantages for moving between the three “States of Mind”, this does not allow for depth in positively utilizing the Behavioral Style traits. Instead, under distress, Adaptarians experience greater vulnerability to the distress factors of each state of mind style.",
+    "environmental_preferences": [
+      "Vacillates between controlling and adapting situationally"
+    ],
+    "interaction_preferences": [
+      "Vacillates between gaining energy from people and needing alone time to recharge"
+    ],
+    "character_strengths": [
+      "Flexible",
+      "Adaptable",
+      "Fluid",
+      "Straightforward",
+      "Reliable",
+      "Resourceful",
+      "Capable"
+    ],
+    "psychological_needs": ["Control", "Connection", "Safety"],
+    "likes": ["Simplicity", "Clarity", "Reliability", "Contentment"],
+    "dislikes": ["Surprises", "Change", "Complication", "Danger"],
+    "work_preferences": [
+      "Predictable",
+      "Functional",
+      "Clear organizational structure",
+      "Separate"
+    ],
+    "warning_signs": [
+      "Overwhelmed",
+      "Critical",
+      "Hyper-vigilant",
+      "Terse",
+      "Lashing out",
+      "Cluttered",
+      "Disorganized",
+      "Pessimistic"
+    ],
+    "when_feeling_stressed": "RELINQUISH the need to do everything yourself. Allow others to help. Work to be FLEXIBLE with time frames and commitments. Schedule yourself a well-needed break to RELAX. Even if it is just for 30 minutes. Share your CREATIVE ideas. Get ORGANIZED. Create a to-do list. Allow yourself to MAKE DECISIONS.",
+    "display_order": 13
+  }
+]
+

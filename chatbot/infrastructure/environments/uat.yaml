@@ -1,0 +1,88 @@
+# UAT-1 chatbot environment — replicate stage.yaml with UAT platform values.
+# BLOCKER: set rds.secret_arn before cdk deploy (backend team).
+env:
+  name: uat
+
+network:
+  vpc_name: bsp-blueprint-uat-VPCId
+  vpc_id: vpc-0fa5ad6b459c50d12
+  private_app_subnet_ids:
+    - subnet-0c471e6321fe5083b
+    - subnet-0d3cd3da25706f6a6
+
+lambda:
+  chat:
+    memory: 2048
+    timeout: 29
+    stream_provisioned_concurrency: 0
+    runtime_provisioned_concurrency: 0
+  ingestion:
+    memory: 3008
+    timeout: 900
+    chunk_size: 2000
+    chunk_overlap: 200
+    min_chunk_chars: 50
+    max_retries: 3
+    supported_extensions: [".pdf", ".docx", ".txt", ".md"]
+    reserved_concurrent_executions: null
+
+bedrock_chat_model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+bedrock_embedding_model: amazon.titan-embed-text-v1
+bedrock_summary_model: us.anthropic.claude-haiku-4-5-20251001-v1:0
+
+bedrock_prompt_id: "AMRSFME6Z6"
+bedrock_prompt_version: "1"
+bedrock_coach_prompt_id: "ID21X32H7P"
+bedrock_coach_prompt_version: "2"
+
+optimization:
+  warm_context_http_timeout: 3
+  enable_bedrock_prompt_caching: true
+  use_coach_persona_shell: true
+  enable_speculative_warm_prefetch: false
+  enable_memory_retrieval: true
+  enable_memory_extraction: true
+  memory_retrieve_timeout_ms: 2000
+  memory_default_status: confirmed
+  memory_consent_default_granted: true
+  memory_importance_min: 0.3
+  use_mock_client_snapshot: true
+
+observability:
+  ttft_alarm_ms: 3000
+  # alarm_email: "your-team@example.com"
+
+# Confirm with backend before deploy.
+backend_api_url: "https://uat-api.bspblueprint.com"
+backend_api_key: ""
+
+# Cognito JWT verification
+# verify signature/issuer/expiry against the Cognito JWKS.
+# user_pool_id is the same pool the frontend uses (VITE_AWS_USER_POOL_ID)
+cognito:
+  verify_jwt: true
+  user_pool_id: "us-east-1_6K4HB0nZm" # UAT pool (shared with frontend)
+  # region: us-east-1
+  # issuer: ""    # optional - derived from region + user_pool_id when blank
+  # jwks_url: ""  # optional - derived from issuer when blank
+
+log_level: INFO
+
+rag_min_similarity: 0.25
+rag_top_k: 10
+
+# Shared UAT RDS (same instance as Assessment; separate bispybot database).
+rds:
+  host: "bsp-blueprint-uat-rds.c458yciowiwq.us-east-1.rds.amazonaws.com"
+  port: 5432
+  db_name: "bispybot"
+  # REQUIRED — backend team: bsp-blueprint/uat/db-credentials/bispy-bot
+  secret_arn: "arn:aws:secretsmanager:us-east-1:585890465993:secret:bsp-blueprint/uat/db-credentials/bispy-bot-xiPdcu"
+  security_group_id: "sg-042773e3920c38489"
+
+redis:
+  node_type: cache.t3.micro
+
+s3:
+  removal_policy: destroy
+  versioned: false

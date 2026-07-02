@@ -1,0 +1,47 @@
+env:
+  name: stage
+
+cognito:
+  user_pool_id: "us-east-1_TaH4OkyXv"
+
+network:
+  vpc_name: bsp-blueprint-staging-vpc
+  vpc_id: vpc-0340bd87b850e525e
+  private_app_subnet_ids:
+    - subnet-05b3c84c73a943f00
+    - subnet-0c8776ec01ab19be2
+
+lambda:
+  db_seeder:
+    memory: 512
+    timeout: 300
+  api:
+    memory_size: 1024
+    timeout: 60
+  scoring:
+    memory: 1024
+    timeout: 60
+  report:
+    memory: 2048
+    timeout: 300
+
+rds:
+  host: "bsp-blueprint-staging-rds.c458yciowiwq.us-east-1.rds.amazonaws.com"                             # staging RDS endpoint
+  port: 5432
+  db_name: "bspdb"
+  secret_arn: "arn:aws:secretsmanager:us-east-1:585890465993:secret:bsp-blueprint/staging/db-credentials-N0rxgE"                       # staging secret ARN
+  security_group_id: "sg-08cce2c0c398192d8"               # staging RDS SG ID
+
+log_level: INFO
+
+sentry:
+  dsn_parameter_name: "/bsp-blueprint/sentry/assessment-workers-dsn"
+  traces_sample_rate: 0.1
+
+print_base_url: "https://staging.bspblueprint.com"
+print_expected_pages: 20
+
+s3:
+  reports_bucket_name: "bsp-blueprint-staging-frontend"
+  reports_prefix: "assessment_report/"
+  print_html_prefix: "assessment_print_html/"

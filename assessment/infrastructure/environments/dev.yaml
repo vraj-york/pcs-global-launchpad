@@ -1,0 +1,52 @@
+env:
+  name: dev
+
+cognito:
+  user_pool_id: "us-east-1_7f5VTvhjJ"
+
+network:
+  vpc_name: bsp-blueprint-dev-vpc
+  vpc_id: vpc-00c173268c2519e93
+  private_app_subnet_ids:
+    - subnet-08cdb5b86e610aa8c
+    - subnet-0bc3371ecfa279e9f
+
+lambda:
+  db_seeder:
+    memory: 512
+    timeout: 300  # 5 minutes — enough time to seed 60 questions
+  api:
+    memory_size: 1024
+    timeout: 60  # print HTML upload + report enqueue
+  scoring:
+    memory: 1024
+    timeout: 60
+  report:
+    memory: 2048
+    timeout: 300
+
+# Shared RDS instance (owned by backend team).
+# The assessment engine stores its tables in a dedicated database on this instance.
+# Fill in the values the backend team provides.
+# Credentials must live in Secrets Manager — never hard-code passwords here.
+rds:
+  host: "bsp-blueprint-dev-rds.c458yciowiwq.us-east-1.rds.amazonaws.com"
+  port: 5432
+  db_name: "bspdb"           # dedicated DB for assessment — separate from bispybot
+  secret_arn: "arn:aws:secretsmanager:us-east-1:585890465993:secret:bsp-blueprint/dev/db-credentials-uYaqfW"                       # ARN of Secrets Manager secret for assessment DB user
+  security_group_id: "sg-05dec187d4dbd34c7"  # backend RDS SG — we add an inbound rule from our lambda_sg
+
+log_level: INFO
+
+sentry:
+  dsn_parameter_name: "/bsp-blueprint/sentry/assessment-workers-dsn"
+  traces_sample_rate: 0.1
+
+# Report worker: resolve relative asset URLs in uploaded HTML snapshots.
+print_base_url: "https://dev.bspblueprint.com"
+print_expected_pages: 20
+
+s3:
+  reports_bucket_name: "bsp-blueprint-dev-frontend"
+  reports_prefix: "assessment_report/"
+  print_html_prefix: "assessment_print_html/"

@@ -1,0 +1,260 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudWatch Synthetics canary for Section 1.1 — Login flow.
+  Validates auth end-to-end: login form load → credentials → dashboard.
+  Alarms on any failure. Credentials are read from SSM at runtime.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  LoginPageUrl:
+    Type: String
+    Description: Full login page URL (e.g. https://uat.bspblueprint.com/login)
+
+  DashboardPath:
+    Type: String
+    Default: /dashboard
+    Description: Expected post-login pathname for the canary test user (SuperAdmin → /dashboard)
+
+  SsmParameterPrefix:
+    Type: String
+    Description: SSM path prefix for canary credentials (login-email, login-password)
+
+  CanaryArtifactsBucketName:
+    Type: String
+    Description: >
+      S3 bucket for canary artifacts. Import from the health-canary stack output
+      CanaryArtifactsBucketName.
+
+  ScheduleRateMinutes:
+    Type: Number
+    Default: 10
+    AllowedValues: [5, 10, 15]
+    Description: How often the canary runs (client doc recommends every 5–15 minutes)
+
+  SchedulePeriodSeconds:
+    Type: Number
+    Default: 600
+    AllowedValues: [300, 600, 900]
+    Description: CloudWatch alarm period in seconds (must match ScheduleRateMinutes)
+
+  CriticalAlarmTopicArn:
+    Type: String
+    Default: ''
+    Description: >
+      SNS topic ARN for canary failure notifications. Leave empty to import
+      CriticalAlarmTopicArn from the CloudWatch alarms stack.
+
+Conditions:
+  HasCriticalAlarmTopicArn: !Not [!Equals [!Ref CriticalAlarmTopicArn, '']]
+
+Resources:
+  LoginCanaryExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-${Environment}-synthetics-login-canary'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - synthetics.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LoginCanaryExecution
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${CanaryArtifactsBucketName}'
+                  - !Sub 'arn:aws:s3:::${CanaryArtifactsBucketName}/*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/cwsyn-*'
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    cloudwatch:namespace: CloudWatchSynthetics
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${SsmParameterPrefix}/*'
+
+  LoginFlowCanary:
+    Type: AWS::Synthetics::Canary
+    DependsOn: LoginCanaryExecutionRole
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-login-flow'
+      ArtifactS3Location: !Sub 's3://${CanaryArtifactsBucketName}/login-canary'
+      ExecutionRoleArn: !GetAtt LoginCanaryExecutionRole.Arn
+      RuntimeVersion: syn-nodejs-puppeteer-9.1
+      Schedule:
+        Expression: !Sub 'rate(${ScheduleRateMinutes} minutes)'
+      RunConfig:
+        TimeoutInSeconds: 180
+        MemoryInMB: 1024
+      FailureRetentionPeriod: 31
+      SuccessRetentionPeriod: 7
+      StartCanaryAfterCreation: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-login-flow'
+        - Key: Environment
+          Value: !Ref Environment
+      Code:
+        Handler: loginFlow.handler
+        Script: !Sub |
+          const synthetics = require('Synthetics');
+          const log = require('SyntheticsLogger');
+          const { SSMClient, GetParametersCommand } = require('@aws-sdk/client-ssm');
+
+          async function getCanaryCredentials(ssmPrefix) {
+            const client = new SSMClient({});
+            const result = await client.send(new GetParametersCommand({
+              Names: [
+                ssmPrefix + '/login-email',
+                ssmPrefix + '/login-password',
+              ],
+              WithDecryption: true,
+            }));
+
+            const values = {};
+            for (const param of result.Parameters || []) {
+              const suffix = param.Name.split('/').pop();
+              values[suffix] = param.Value;
+            }
+
+            if (!values['login-email'] || !values['login-password']) {
+              throw new Error('Missing canary login credentials in SSM under ' + ssmPrefix);
+            }
+
+            return {
+              email: values['login-email'],
+              password: values['login-password'],
+            };
+          }
+
+          const loginFlow = async function () {
+            const loginPageUrl = '${LoginPageUrl}';
+            const dashboardPath = '${DashboardPath}';
+            const ssmPrefix = '${SsmParameterPrefix}';
+
+            const { email, password } = await getCanaryCredentials(ssmPrefix);
+            const page = await synthetics.getPage();
+            await page.setUserAgent('BSP-CloudWatchSynthetics-LoginFlow/1.0');
+
+            await synthetics.executeStep('loadLoginForm', async () => {
+              log.info('Loading login page: ' + loginPageUrl);
+              const response = await page.goto(loginPageUrl, {
+                waitUntil: 'domcontentloaded',
+                timeout: 30000,
+              });
+              if (!response || response.status() >= 400) {
+                throw new Error('Login page load failed with status ' + (response ? response.status() : 'no response'));
+              }
+              await page.waitForSelector('#email', { visible: true, timeout: 20000 });
+              await page.waitForSelector('#password', { visible: true, timeout: 10000 });
+              await synthetics.takeScreenshot('login-form-loaded', 'loaded');
+            });
+
+            await synthetics.executeStep('submitCredentials', async () => {
+              await page.click('#email', { clickCount: 3 });
+              await page.type('#email', email, { delay: 25 });
+              await page.type('#password', password, { delay: 25 });
+
+              await page.waitForFunction(() => {
+                const button = document.querySelector('#login-form button[type="submit"]');
+                return button && !button.disabled;
+              }, { timeout: 15000 });
+
+              await Promise.all([
+                page.waitForFunction(
+                  (expectedPath) => window.location.pathname.startsWith(expectedPath),
+                  { timeout: 90000 },
+                  dashboardPath,
+                ),
+                page.click('#login-form button[type="submit"]'),
+              ]);
+
+              await synthetics.takeScreenshot('after-login', 'loaded');
+            });
+
+            await synthetics.executeStep('verifyDashboard', async () => {
+              const currentPath = await page.evaluate(() => window.location.pathname);
+              log.info('Current path after login: ' + currentPath);
+              if (!currentPath.startsWith(dashboardPath)) {
+                throw new Error('Expected dashboard at ' + dashboardPath + ', got ' + currentPath);
+              }
+            });
+          };
+
+          exports.handler = async () => {
+            return await loginFlow();
+          };
+
+  LoginFlowCanaryFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-login-canary-failed'
+      AlarmDescription: >
+        Section 1.1 Login flow canary — auth end-to-end must succeed; alarm when success rate drops below 100%.
+      Namespace: CloudWatchSynthetics
+      MetricName: SuccessPercent
+      Dimensions:
+        - Name: CanaryName
+          Value: !Ref LoginFlowCanary
+      Statistic: Average
+      Period: !Ref SchedulePeriodSeconds
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      Threshold: 100
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !If
+          - HasCriticalAlarmTopicArn
+          - !Ref CriticalAlarmTopicArn
+          - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-CriticalAlarmTopicArn'
+      OKActions:
+        - !If
+          - HasCriticalAlarmTopicArn
+          - !Ref CriticalAlarmTopicArn
+          - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-CriticalAlarmTopicArn'
+
+Outputs:
+  LoginFlowCanaryName:
+    Description: CloudWatch Synthetics login flow canary name
+    Value: !Ref LoginFlowCanary
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-LoginFlowCanaryName'
+
+  LoginFlowCanaryFailureAlarmName:
+    Description: CloudWatch alarm name for login canary failures
+    Value: !Ref LoginFlowCanaryFailureAlarm
+
+  CanaryLoginSsmParameterPrefix:
+    Description: SSM parameter prefix for canary login credentials
+    Value: !Ref SsmParameterPrefix

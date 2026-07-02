@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudWatch log-based metric filter and alarm for Section 1.2 — Failed login spike.
+  Counts auth rejection log lines from the ECS API log group; alarms when > 10 in 5 minutes.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  AuthFailureThreshold:
+    Type: Number
+    Default: 10
+    Description: Alarm when auth failure count exceeds this value in one evaluation period
+
+  AuthFailurePeriodSeconds:
+    Type: Number
+    Default: 300
+    AllowedValues: [60, 300, 900]
+    Description: CloudWatch alarm period in seconds (default 5 minutes)
+
+  CriticalAlarmTopicArn:
+    Type: String
+    Default: ''
+    Description: >
+      SNS topic ARN for auth-failure spike notifications. Leave empty to import
+      CriticalAlarmTopicArn from the CloudWatch alarms stack (12-cloudwatch-alarms.yaml).
+
+Conditions:
+  HasCriticalAlarmTopicArn: !Not [!Equals [!Ref CriticalAlarmTopicArn, '']]
+
+Resources:
+  AuthFailureMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterName: !Sub '${ProjectName}-${Environment}-auth-failures'
+      LogGroupName: !Sub '/ecs/${ProjectName}-${Environment}'
+      # Matches CognitoAuthGuard rejection logs (see backend/src/auth/auth.constants.ts).
+      FilterPattern: '? "Token verification failed" ? "Auth rejected" ? "Error loading app user for auth gate"'
+      MetricTransformations:
+        - MetricName: AuthFailureCount
+          MetricNamespace: !Sub '${ProjectName}/${Environment}'
+          MetricValue: '1'
+          DefaultValue: 0
+
+  FailedLoginSpikeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: AuthFailureMetricFilter
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-failed-login-spike'
+      AlarmDescription: >
+        Section 1.2 Failed login spike — > 10 auth failures in 5 min.
+        Catches outages and credential/config issues.
+      Namespace: !Sub '${ProjectName}/${Environment}'
+      MetricName: AuthFailureCount
+      Statistic: Sum
+      Period: !Ref AuthFailurePeriodSeconds
+      EvaluationPeriods: 1
+      Threshold: !Ref AuthFailureThreshold
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !If
+          - HasCriticalAlarmTopicArn
+          - !Ref CriticalAlarmTopicArn
+          - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-CriticalAlarmTopicArn'
+      OKActions:
+        - !If
+          - HasCriticalAlarmTopicArn
+          - !Ref CriticalAlarmTopicArn
+          - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-CriticalAlarmTopicArn'
+
+Outputs:
+  AuthFailureMetricFilterName:
+    Description: CloudWatch Logs metric filter for API auth failures
+    Value: !Ref AuthFailureMetricFilter
+
+  FailedLoginSpikeAlarmName:
+    Description: CloudWatch alarm name for failed login spike (> 10 auth failures in 5 min)
+    Value: !Ref FailedLoginSpikeAlarm

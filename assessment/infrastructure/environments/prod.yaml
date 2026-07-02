@@ -1,0 +1,36 @@
+env:
+  name: prod
+
+network:
+  vpc_name: backend-vpc-prod
+  vpc_id: vpc-XXXXXXXXXXXXXXXXX        # TODO: replace with prod VPC ID
+  private_app_subnet_ids:
+    - subnet-XXXXXXXXXXXXXXXXX          # TODO: replace with prod subnet IDs
+    - subnet-XXXXXXXXXXXXXXXXX
+
+lambda:
+  db_seeder:
+    memory: 512
+    timeout: 300
+  api:
+    memory_size: 2048
+    timeout: 30
+  scoring:
+    memory: 1024
+    timeout: 60
+  report:
+    memory: 4096
+    timeout: 300
+
+rds:
+  host: ""                             # prod RDS endpoint
+  port: 5432
+  db_name: "bsp_assessment"
+  secret_arn: ""                       # prod secret ARN
+  security_group_id: ""               # prod RDS SG ID
+
+log_level: WARNING
+
+s3:
+  reports_bucket_name: "bsp-blueprint-dev-frontend"
+  reports_prefix: "assessment_report/"

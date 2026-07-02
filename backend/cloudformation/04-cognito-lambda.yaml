@@ -1,0 +1,169 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Lambda function for Cognito Custom Email Sender (sends branded HTML emails for MFA)'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  UserPoolId:
+    Type: String
+    Description: Cognito User Pool ID to attach this Lambda to
+
+  SenderEmail:
+    Type: String
+    Default: notifications@bspblueprint.com
+    Description: Verified SES email address for sending emails
+
+  LogoUrl:
+    Type: String
+    Default: ''
+    Description: Public URL to logo image (hosted on CloudFront/CDN). Do not use base64; email clients block it.
+
+Resources:
+  # IAM Role for Lambda (created first to avoid circular dependency)
+  CustomEmailSenderRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-${Environment}-custom-email-sender-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SESPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                  - ses:SendRawEmail
+                Resource: '*'
+
+  # KMS Key for Cognito to encrypt codes
+  CognitoEmailKmsKey:
+    Type: AWS::KMS::Key
+    DependsOn: CustomEmailSenderRole
+    Properties:
+      Description: !Sub 'KMS key for Cognito Custom Email Sender - ${ProjectName}-${Environment}'
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowRootFullAccess
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Sid: AllowCognitoToEncrypt
+            Effect: Allow
+            Principal:
+              Service: cognito-idp.amazonaws.com
+            Action:
+              - kms:Encrypt
+              - kms:GenerateDataKey*
+            Resource: '*'
+            Condition:
+              StringEquals:
+                'aws:SourceAccount': !Ref AWS::AccountId
+          - Sid: AllowLambdaToDecrypt
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:role/${ProjectName}-${Environment}-custom-email-sender-role'
+            Action:
+              - kms:Decrypt
+            Resource: '*'
+
+  CognitoEmailKmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub 'alias/${ProjectName}-${Environment}-cognito-email'
+      TargetKeyId: !Ref CognitoEmailKmsKey
+
+  # Additional KMS policy for Lambda role
+  CustomEmailSenderKmsPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub '${ProjectName}-${Environment}-kms-decrypt-policy'
+      Roles:
+        - !Ref CustomEmailSenderRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource: !GetAtt CognitoEmailKmsKey.Arn
+
+  # Lambda Function - code is deployed separately
+  CustomEmailSenderLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CustomEmailSenderKmsPolicy
+    Properties:
+      FunctionName: !Sub '${ProjectName}-${Environment}-custom-email-sender'
+      Description: 'Sends branded HTML emails for Cognito MFA and verification'
+      Runtime: nodejs22.x
+      Handler: index.handler
+      Role: !GetAtt CustomEmailSenderRole.Arn
+      Timeout: 30
+      MemorySize: 256
+      Environment:
+        Variables:
+          SES_SENDER_EMAIL: !Ref SenderEmail
+          KMS_KEY_ARN: !GetAtt CognitoEmailKmsKey.Arn
+          LOGO_URL: !Ref LogoUrl
+      # Placeholder code - actual code deployed by deploy script
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+            console.log('Placeholder - run deploy script to update Lambda code');
+            return event;
+          };
+
+  # Permission for Cognito to invoke Lambda
+  CognitoLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref CustomEmailSenderLambda
+      Action: lambda:InvokeFunction
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !Sub 'arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolId}'
+
+  # CloudWatch Log Group
+  CustomEmailSenderLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${ProjectName}-${Environment}-custom-email-sender'
+      RetentionInDays: 14
+
+Outputs:
+  LambdaFunctionArn:
+    Description: ARN of the Custom Email Sender Lambda
+    Value: !GetAtt CustomEmailSenderLambda.Arn
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CustomEmailSenderLambdaArn'
+
+  LambdaFunctionName:
+    Description: Name of the Custom Email Sender Lambda
+    Value: !Ref CustomEmailSenderLambda
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CustomEmailSenderLambdaName'
+
+  KmsKeyArn:
+    Description: ARN of the KMS key for Cognito email encryption
+    Value: !GetAtt CognitoEmailKmsKey.Arn
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CognitoEmailKmsKeyArn'

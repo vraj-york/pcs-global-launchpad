@@ -1,0 +1,222 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudWatch Synthetics canary for Section 1.1 — Health check.
+  Validates that GET /health returns HTTP 200. Alarms on any failure.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  HealthCheckUrl:
+    Type: String
+    Description: >
+      Full URL to the health endpoint (e.g. https://api.example.com/health).
+      Deploy scripts typically build this from the ALB DNS name.
+
+  ScheduleRateMinutes:
+    Type: Number
+    Default: 10
+    AllowedValues: [5, 10, 15]
+    Description: How often the canary runs (client doc recommends every 5–15 minutes)
+
+  SchedulePeriodSeconds:
+    Type: Number
+    Default: 600
+    AllowedValues: [300, 600, 900]
+    Description: CloudWatch alarm period in seconds (must match ScheduleRateMinutes)
+
+  CriticalAlarmTopicArn:
+    Type: String
+    Default: ''
+    Description: >
+      SNS topic ARN for canary failure notifications. Leave empty to import
+      CriticalAlarmTopicArn from the CloudWatch alarms stack (12-cloudwatch-alarms.yaml).
+
+Conditions:
+  HasCriticalAlarmTopicArn: !Not [!Equals [!Ref CriticalAlarmTopicArn, '']]
+
+Resources:
+  CanaryArtifactsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub '${ProjectName}-${Environment}-synthetics-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireCanaryArtifacts
+            Status: Enabled
+            ExpirationInDays: 30
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-synthetics-artifacts'
+        - Key: Environment
+          Value: !Ref Environment
+
+  CanaryExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-${Environment}-synthetics-canary'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - synthetics.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CanaryExecution
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !GetAtt CanaryArtifactsBucket.Arn
+                  - !Sub '${CanaryArtifactsBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/cwsyn-*'
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    cloudwatch:namespace: CloudWatchSynthetics
+
+  HealthCheckCanary:
+    Type: AWS::Synthetics::Canary
+    DependsOn: CanaryExecutionRole
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-health-check'
+      ArtifactS3Location: !Sub 's3://${CanaryArtifactsBucket}/canary'
+      ExecutionRoleArn: !GetAtt CanaryExecutionRole.Arn
+      RuntimeVersion: syn-nodejs-puppeteer-9.1
+      Schedule:
+        Expression: !Sub 'rate(${ScheduleRateMinutes} minutes)'
+      RunConfig:
+        TimeoutInSeconds: 60
+        MemoryInMB: 960
+      FailureRetentionPeriod: 31
+      SuccessRetentionPeriod: 7
+      StartCanaryAfterCreation: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-health-check'
+        - Key: Environment
+          Value: !Ref Environment
+      Code:
+        Handler: healthCheck.handler
+        Script: !Sub |
+          const synthetics = require('Synthetics');
+          const log = require('SyntheticsLogger');
+
+          const healthCheck = async function () {
+            const healthCheckUrl = '${HealthCheckUrl}';
+            const parsedUrl = new URL(healthCheckUrl);
+            const port = parsedUrl.port
+              ? parseInt(parsedUrl.port, 10)
+              : (parsedUrl.protocol === 'https:' ? 443 : 80);
+
+            const requestOptions = {
+              hostname: parsedUrl.hostname,
+              method: 'GET',
+              path: parsedUrl.pathname + parsedUrl.search,
+              port: port,
+              protocol: parsedUrl.protocol,
+              headers: {
+                'User-Agent': 'BSP-CloudWatchSynthetics-HealthCheck/1.0',
+                Accept: 'application/json',
+              },
+            };
+
+            log.info('Checking health endpoint: ' + healthCheckUrl);
+
+            await synthetics.executeHttpStep('healthCheck', requestOptions, async (res) => {
+              if (res.statusCode !== 200) {
+                throw new Error('Health check failed with status ' + res.statusCode);
+              }
+            });
+          };
+
+          exports.handler = async () => {
+            return await healthCheck();
+          };
+
+  HealthCheckCanaryFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-health-canary-failed'
+      AlarmDescription: >
+        Section 1.1 Health check canary — GET /health must return 200; alarm on any failure.
+      Namespace: CloudWatchSynthetics
+      MetricName: Failed
+      Dimensions:
+        - Name: CanaryName
+          Value: !Ref HealthCheckCanary
+      Statistic: Sum
+      Period: !Ref SchedulePeriodSeconds
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !If
+          - HasCriticalAlarmTopicArn
+          - !Ref CriticalAlarmTopicArn
+          - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-CriticalAlarmTopicArn'
+      OKActions:
+        - !If
+          - HasCriticalAlarmTopicArn
+          - !Ref CriticalAlarmTopicArn
+          - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-CriticalAlarmTopicArn'
+
+Outputs:
+  HealthCheckCanaryName:
+    Description: CloudWatch Synthetics canary name
+    Value: !Ref HealthCheckCanary
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-HealthCheckCanaryName'
+
+  HealthCheckCanaryFailureAlarmName:
+    Description: CloudWatch alarm name for health canary failures
+    Value: !Ref HealthCheckCanaryFailureAlarm
+
+  CanaryArtifactsBucketName:
+    Description: S3 bucket storing canary run artifacts
+    Value: !Ref CanaryArtifactsBucket
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CanaryArtifactsBucketName'
+
+  CanaryExecutionRoleArn:
+    Description: IAM role ARN used by Synthetics canaries in this environment
+    Value: !GetAtt CanaryExecutionRole.Arn
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CanaryExecutionRoleArn'

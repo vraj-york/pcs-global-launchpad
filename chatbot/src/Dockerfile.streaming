@@ -1,0 +1,59 @@
+# Streaming Lambda — AWS Lambda Web Adapter + FastAPI + uvicorn
+#
+# WHY this Dockerfile exists:
+#   Python Lambda managed runtimes do not support native response streaming.
+#   The correct approach for Python Lambda streaming is the AWS Lambda Web
+#   Adapter (LWA), an official AWS extension written in Rust that enables
+#   any HTTP web framework to stream responses through Lambda Function URLs.
+#
+# How LWA streaming works:
+#   1. LWA binary lives in /opt/extensions/ — Lambda auto-runs it as an extension
+#   2. LWA polls uvicorn on $PORT until it signals readiness (HTTP 200)
+#   3. On each Lambda invocation, LWA forwards the request to uvicorn as HTTP
+#   4. uvicorn → FastAPI handles the /chat-stream route, returning StreamingResponse
+#   5. LWA captures uvicorn's chunked response and POSTs it to Lambda's Runtime API
+#      with Lambda-Runtime-Function-Response-Mode: streaming and Transfer-Encoding: chunked
+#   6. Lambda delivers chunks progressively to the browser via Function URL
+#
+# ENTRYPOINT [] overrides the Python Lambda base image default (awslambdaric
+# bootstrap). LWA takes over the Lambda runtime; CMD simply starts uvicorn.
+#
+# CORS: FastAPI's CORSMiddleware in app/main.py handles all CORS.
+#       Do NOT configure CORS on the Lambda Function URL — that would produce
+#       duplicate Access-Control-Allow-Origin headers.
+
+FROM public.ecr.aws/lambda/python:3.11
+
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+# Install Python dependencies (same requirements as the runtime Lambda)
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application source
+COPY . .
+
+#  Lambda Web Adapter 
+# Copies the LWA binary into the extensions directory.
+# Lambda automatically starts every executable in /opt/extensions/ as a
+# Lambda Extension before invoking the function handler.
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.4 \
+     /lambda-adapter \
+     /opt/extensions/lambda-adapter
+
+# Port uvicorn listens on — LWA forwards requests here
+ENV PORT=8000
+
+# Must match the InvokeMode configured on the Lambda Function URL (RESPONSE_STREAM).
+# Without this, LWA defaults to buffered mode and streaming is silently disabled.
+ENV AWS_LWA_INVOKE_MODE=response_stream
+
+# LWA polls this port every 10ms waiting for uvicorn to be ready.
+ENV AWS_LWA_READINESS_CHECK_PORT=8000
+
+#  Entry point 
+# ENTRYPOINT [] clears the Lambda base image's default entrypoint
+# (which would start python -m awslambdaric — we don't want that here).
+# LWA handles the Lambda runtime; CMD starts uvicorn as the HTTP server.
+ENTRYPOINT []
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

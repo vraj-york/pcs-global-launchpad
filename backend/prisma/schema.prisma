@@ -1,0 +1,835 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TwoFactorAuth {
+  ON
+  OFF
+}
+
+model Corporation {
+  id                          String                       @id @default(uuid())
+  corporationCode             Int                          @map("corporation_code")
+  legalName                   String                       @unique @map("legal_name") @db.VarChar(255)
+  dbaName                     String?                      @map("DBA_name") @db.VarChar(255)
+  website                     String?                      @db.VarChar(255)
+  dataResidencyRegion         String                       @map("data_residency_region") @db.VarChar(255)
+  ownershipType               String                       @map("ownership_type") @db.VarChar(255)
+  industry                    String                       @db.VarChar(255)
+  phoneNo                     String                       @map("phone_no") @db.VarChar(255)
+  brandLogo                   String?                      @map("brand_logo") @db.VarChar(255)
+  status                      String                       @db.VarChar(255)
+  mode                        String                       @db.VarChar(255)
+  suspendCloseReason          String?                      @map("suspend_close_reason") @db.VarChar(255)
+  suspendCloseAdditionalNotes String?                      @map("suspend_close_additional_notes") @db.VarChar(255)
+  suspendedClosedOn           DateTime?                    @map("suspended_closed_on")
+  submittedSteps              Int                          @default(1) @map("submitted_steps")
+  passwordPolicy              String?                      @map("password_policy") @db.VarChar(255)
+  MFA                         TwoFactorAuth                @default(OFF) @map("MFA")
+  sessionTimeout              Int                          @default(0) @map("session_timeout")
+  createdAt                   DateTime                     @default(now()) @map("created_at")
+  updatedAt                   DateTime                     @updatedAt @map("updated_at")
+  address                     CorporationAddress?
+  companies                   CorporationCompany[]
+  appKeyContacts              AppKeyContact[]
+  appUsers                    AppUser[]
+  promoCodes                  PromoCode[]
+
+  @@unique([corporationCode])
+  @@index([status])
+  @@index([status, createdAt])
+  @@map("corporations")
+}
+
+model CorporationAddress {
+  id            String      @id @default(uuid())
+  corporationId String      @unique @map("corporation_id")
+  addressLine   String      @map("address_line") @db.VarChar(255)
+  state         String      @db.VarChar(255)
+  city          String      @db.VarChar(255)
+  country       String      @db.VarChar(255)
+  zip           String      @db.VarChar(255)
+  timezone      String      @db.VarChar(255)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  corporation   Corporation @relation(fields: [corporationId], references: [id], onDelete: Cascade)
+
+  @@map("corporation_addresses")
+}
+
+model CorporationCompany {
+  id                       String                @id @default(uuid())
+  corporationId            String                @map("corporation_id")
+  companyCode              Int                   @unique @default(autoincrement()) @map("company_code")
+  legalName                String                @map("legal_name") @db.VarChar(255)
+  dbaName                  String?               @map("dba_name") @db.VarChar(255)
+  website                  String?               @db.VarChar(255)
+  companyType              String                @map("company_type") @db.VarChar(255)
+  officeType               String                @map("office_type") @db.VarChar(255)
+  industry                 String                @db.VarChar(255)
+  primaryLanguage          String?               @map("primary_language") @db.VarChar(255)
+  phoneNo                  String?               @map("phone_no") @db.VarChar(255)
+  sameAsCorpAdmin          Boolean               @default(false) @map("same_as_corp_admin")
+  planId                   String?               @map("plan_id")
+  stripeCustomerId         String?               @unique @map("stripe_customer_id") @db.VarChar(255)
+  stripeSubscriptionId     String?               @unique @map("stripe_subscription_id") @db.VarChar(255)
+  subscriptionStatus       String?               @map("subscription_status") @db.VarChar(50)
+  implementationFeeChargedAt DateTime?           @map("implementation_fee_charged_at")
+  /// Purchased one-time assessment credits (set after successful `one_time` checkout).
+  assessmentQuantity       Int?                  @map("assessment_quantity")
+  /// Last Stripe Checkout session id (company-admin one_time checkout idempotency).
+  lastCheckoutSessionId    String?               @map("last_checkout_session_id") @db.VarChar(255)
+  securityPosture          String                @map("security_posture") @db.VarChar(255)
+  submittedSteps           Int                   @default(1) @map("submitted_steps")
+  status                   String                @db.VarChar(255)
+  suspendReason            String?               @map("suspend_reason") @db.VarChar(255)
+  suspendAdditionalNotes   String?               @map("suspend_additional_notes") @db.VarChar(255)
+  suspendedClosedOn        DateTime?             @map("suspended_closed_on")
+  addressLine              String                @map("address_line") @db.VarChar(255)
+  state                    String                @db.VarChar(255)
+  city                     String                @db.VarChar(255)
+  country                  String                @db.VarChar(255)
+  zip                      String                @db.VarChar(255)
+  brandLogo                String?               @map("brand_logo") @db.VarChar(255)
+  createdAt                DateTime              @default(now()) @map("created_at")
+  updatedAt                DateTime              @updatedAt @map("updated_at")
+  deletedAt                DateTime?             @map("deleted_at")
+  companyAdminInviteSentAt DateTime?             @map("company_admin_invite_sent_at")
+  corporation              Corporation           @relation(fields: [corporationId], references: [id], onDelete: Cascade)
+  plan                     PricingPlan?          @relation(fields: [planId], references: [id])
+  appKeyContacts           AppKeyContact[]
+  userCompanyAccesses      UserCompanyAccess[]
+  planSeat                 CompanyPlanSeat?
+  configuration            CompanyConfiguration?
+  promoCodes               PromoCode[]
+  billingSubscriptionActions BillingSubscriptionAction[]
+
+  @@map("corporation_companies")
+}
+
+/// Audit trail for Super Admin billing actions (cancel, reinstate, plan upgrade).
+model BillingSubscriptionAction {
+  id                    String             @id @default(uuid())
+  companyId             String             @map("company_id")
+  action                String             @db.VarChar(20)
+  reason                String?            @db.VarChar(255)
+  additionalNotes       String?            @map("additional_notes") @db.VarChar(1000)
+  actorKind             String             @map("actor_kind") @db.VarChar(30)
+  actorCognitoSub       String             @map("actor_cognito_sub") @db.VarChar(255)
+  actorName             String             @map("actor_name") @db.VarChar(255)
+  actorRole             String             @map("actor_role") @db.VarChar(255)
+  planLabel             String?            @map("plan_label") @db.VarChar(255)
+  planTypeId            String?            @map("plan_type_id") @db.VarChar(30)
+  amountCents           Int?               @map("amount_cents")
+  currency              String?            @db.VarChar(10)
+  previousPricingPlanId String?            @map("previous_pricing_plan_id")
+  newPricingPlanId      String?            @map("new_pricing_plan_id")
+  previousPlanLevel     String?            @map("previous_plan_level") @db.VarChar(255)
+  newPlanLevel          String?            @map("new_plan_level") @db.VarChar(255)
+  adjustmentAmountCents Int?               @map("adjustment_amount_cents")
+  createdAt             DateTime           @default(now()) @map("created_at")
+  company               CorporationCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, createdAt])
+  @@map("billing_subscription_actions")
+}
+
+model CompanyPlanSeat {
+  id                   String             @id @default(uuid())
+  companyId            String             @unique @map("company_id")
+  zeroTrial            Boolean            @default(true) @map("zero_trial")
+  trialLengthDuration  Int                @default(14) @map("trial_length_duration")
+  trialLengthType      String             @default("days") @map("trial_length_type") @db.VarChar(50)
+  trialStartDate       DateTime?          @map("trial_start_date") @db.Date
+  trialEndDate         DateTime?          @map("trial_end_date") @db.Date
+  planPrice            Decimal            @map("plan_price") @db.Decimal(10, 2)
+  discount             Decimal            @default(0) @map("discount") @db.Decimal(10, 2)
+  invoiceAmount        Decimal            @map("invoice_amount") @db.Decimal(10, 2)
+  billingCurrency      String             @default("USD ($)") @map("billing_currency") @db.VarChar(50)
+  autoConvertTrial     Boolean            @default(true) @map("auto_convert_trial")
+  /// Customer-facing promo code chosen at company setup; applied at Company Admin checkout when valid.
+  checkoutPromoCode   String?            @map("checkout_promo_code") @db.VarChar(50)
+  /// Optional training selector captured in plan setup (off / 1_day / 2_days). At checkout we send
+  /// a single Stripe per-day Price (`STRIPE_ONSITE_TRAINING_PRICE_ID`) with quantity 1 (`1_day`)
+  /// or 2 (`2_days`). Amounts come from Stripe and are not stored on this row.
+  onsiteTrainingOption String            @default("off") @map("onsite_training_option") @db.VarChar(20)
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+  company             CorporationCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("company_plan_seats")
+}
+
+// At most one configuration row per company (company_id is unique).
+model CompanyConfiguration {
+  id              String             @id @default(uuid())
+  companyId       String             @unique @map("company_id")
+  authMethod      String             @default("Email & Password") @map("auth_method") @db.VarChar(255)
+  passwordPolicy  String             @default("Standard (8+ Characters & Mixed case)") @map("password_policy") @db.VarChar(255)
+  mfa             String             @default("Required") @map("MFA") @db.VarChar(255)
+  sessionTimeout  String             @default("60 min") @map("session_timeout") @db.VarChar(255)
+  securityPosture String             @default("Standard") @map("security_posture") @db.VarChar(255)
+  primaryLanguage String             @default("English (US)") @map("primary_language") @db.VarChar(255)
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+  company         CorporationCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("company_configuration")
+}
+
+model PlanType {
+  id           String        @id @db.VarChar(20)
+  name         String        @db.VarChar(100)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  pricingPlans PricingPlan[]
+  promoCodes   PromoCode[]
+
+  @@map("plan_types")
+}
+
+model PricingPlan {
+  id                   String               @id @default(uuid())
+  planTypeId           String               @map("plan_type_id") @db.VarChar(20)
+  customerType         String               @map("customer_type") @db.VarChar(20)
+  employeeRangeMin     Int?                 @map("employee_range_min")
+  employeeRangeMax     Int?                 @map("employee_range_max")
+  price                Decimal              @db.Decimal(10, 2)
+  stripePriceId        String?              @map("stripe_price_id") @db.VarChar(255)
+  isCustomPricing      Boolean              @default(false) @map("is_custom_pricing")
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+  planType             PlanType             @relation(fields: [planTypeId], references: [id])
+  corporationCompanies CorporationCompany[]
+  appUsers             AppUser[]
+
+  @@index([planTypeId, customerType, employeeRangeMin, employeeRangeMax])
+  @@index([stripePriceId])
+  @@map("pricing_plans")
+}
+
+enum PromoDiscountType {
+  percent
+  fixed_amount
+}
+
+enum PromoDuration {
+  once
+  forever
+}
+
+/// Super Admin–managed promo codes synced to Stripe (coupon + promotion code).
+model PromoCode {
+  id                    String              @id @default(uuid())
+  code                  String              @unique @db.VarChar(64)
+  description           String?             @db.Text
+  planTypeId            String              @map("plan_type_id") @db.VarChar(20)
+  planType              PlanType            @relation(fields: [planTypeId], references: [id])
+  discountType          PromoDiscountType   @map("discount_type")
+  /// 0.01–100 when discountType is percent
+  percentOff            Decimal?            @map("percent_off") @db.Decimal(7, 4)
+  /// Smallest currency unit when discountType is fixed_amount (e.g. cents)
+  amountOffMinor        Int?                @map("amount_off_minor")
+  currency              String?             @db.VarChar(3)
+  duration              PromoDuration
+  expiresAt             DateTime?           @map("expires_at")
+  maxRedemptions        Int?                @map("max_redemptions")
+  limitToAssignment     Boolean             @default(false) @map("limit_to_assignment")
+  corporationId         String?             @map("corporation_id")
+  companyId             String?             @map("company_id")
+  corporation           Corporation?        @relation(fields: [corporationId], references: [id], onDelete: SetNull)
+  company               CorporationCompany? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  stripeCouponId        String              @map("stripe_coupon_id") @db.VarChar(255)
+  stripePromotionCodeId String              @map("stripe_promotion_code_id") @db.VarChar(255)
+  /// Mirrors Stripe promotion `active` for filtering/sorting; synced on list and PATCH.
+  stripePromotionActive Boolean           @default(true) @map("stripe_promotion_active")
+  /// Last seen Stripe `times_redeemed`; synced on list for ordering.
+  timesRedeemedSnapshot Int                @default(0) @map("times_redeemed_snapshot")
+  deletedAt             DateTime?           @map("deleted_at")
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+  appUsers              AppUser[]
+
+  @@index([planTypeId])
+  @@index([corporationId])
+  @@index([companyId])
+  @@index([deletedAt])
+  @@index([stripePromotionActive])
+  @@map("promo_codes")
+}
+
+// Password reset tokens (custom flow for email MFA users)
+model PasswordResetToken {
+  token     String   @id @db.VarChar(10)
+  email     String   @db.VarChar(255)
+  expiresAt Int      @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("password_reset_tokens")
+}
+
+/// OTP tokens for authenticated security actions (e.g. enabling email MFA from Settings).
+model SecurityOtpToken {
+  token      String   @id @db.VarChar(10)
+  cognitoSub String   @map("cognito_sub") @db.VarChar(128)
+  email      String   @db.VarChar(255)
+  purpose    String   @db.VarChar(32)
+  expiresAt  Int      @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([cognitoSub, purpose])
+  @@index([email])
+  @@map("security_otp_tokens")
+}
+
+/// User-initiated data export (Privacy & Data → Download My Data).
+model DataExportRequest {
+  id            String                   @id @default(uuid())
+  cognitoSub    String                   @map("cognito_sub") @db.VarChar(128)
+  email         String                   @db.VarChar(255)
+  status        String                   @db.VarChar(32)
+  s3Key         String?                  @map("s3_key") @db.VarChar(512)
+  errorMessage  String?                  @map("error_message") @db.Text
+  createdAt     DateTime                 @default(now()) @map("created_at")
+  updatedAt     DateTime                 @updatedAt @map("updated_at")
+  completedAt   DateTime?                @map("completed_at")
+  downloadToken DataExportDownloadToken?
+
+  @@index([cognitoSub, createdAt])
+  @@index([status])
+  @@map("data_export_requests")
+}
+
+/// Single-use, time-limited download link emailed after export completes.
+model DataExportDownloadToken {
+  token        String            @id @db.VarChar(64)
+  requestId    String            @unique @map("request_id")
+  expiresAt    Int               @map("expires_at")
+  downloadedAt DateTime?         @map("downloaded_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  request      DataExportRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@map("data_export_download_tokens")
+}
+
+// Centralized audit log for all domains (password_reset, corporation, company, etc.)
+// Append-only: no update/delete APIs; records are immutable for compliance.
+model AuditLog {
+  id        String   @id @default(uuid())
+  domain    String   @db.VarChar(100) // e.g., 'corporation', 'company', 'role', 'permission'
+  eventType String   @map("event_type") @db.VarChar(100) // e.g., 'VIEW', 'ADD', 'EDIT', 'REMOVE'
+  entityId  String?  @map("entity_id") @db.VarChar(255) // ID of the entity being acted upon
+  userId    String?  @map("user_id") @db.VarChar(255) // Actor (Super Admin user ID)
+  ipAddress String?  @map("ip_address") @db.VarChar(45) // IPv4 or IPv6
+  metadata  Json? // Optional: { target, before, after } for role/permission audit trail
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([domain])
+  @@index([eventType])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([domain, createdAt])
+  @@index([entityId])
+  @@map("audit_logs")
+}
+
+// --- App users & Cognito pool groups (mirror Cognito for FKs, reporting, and company-scoped auth) ---
+// JWT `sub` is the primary link to Cognito. Group names must match Cognito User Pool group names exactly.
+
+model CognitoUserGroup {
+  id             String        @id @default(uuid())
+  name           String        @unique @db.VarChar(64)
+  description    String?       @db.VarChar(500)
+  roleCategoryId String?       @map("role_category_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  memberships    AppUserGroupMembership[]
+  roleCategory   RoleCategory? @relation(fields: [roleCategoryId], references: [id], onDelete: SetNull)
+
+  @@index([roleCategoryId])
+  @@map("cognito_user_groups")
+}
+
+/// One row per Cognito user (keyed by access/id token `sub`).
+model AppUser {
+  cognitoSub         String              @id @map("cognito_sub") @db.VarChar(128)
+  corporationId      String?             @map("corporation_id")
+  userCode           Int                 @unique @default(autoincrement()) @map("user_code")
+  roleId             String?             @map("role_id")
+  nickname           String?             @db.VarChar(255)
+  /// Uniqueness among non-deleted rows is enforced in DB by partial index `app_users_email_active_unique` (see migration).
+  email              String?             @db.VarChar(255)
+  inviteType         String?             @map("invite_type") @db.VarChar(255)
+  jobRole            String?             @map("job_role") @db.VarChar(255)
+  avatar             String?             @db.VarChar(255)
+  status             String              @default("Pending") @db.VarChar(255)
+  completedOnboardingSteps Int           @default(0) @map("completed_onboarding_steps")
+  workPhone          String?             @map("work_phone") @db.VarChar(255)
+  cellPhone          String?             @map("cell_phone") @db.VarChar(255)
+  timezone           String?             @db.VarChar(255)
+  invitationSentAt   DateTime?           @map("invitation_sent_at")
+  firstName          String?             @map("first_name") @db.VarChar(255)
+  lastName           String?             @map("last_name") @db.VarChar(255)
+  userType           String?             @map("user_type") @db.VarChar(255)
+  stripeCustomerId   String?             @unique @map("stripe_customer_id") @db.VarChar(255)
+  paymentStatus      String?             @map("payment_status") @db.VarChar(50)
+  pricingPlanId      String?             @map("pricing_plan_id")
+  promoCodeId        String?             @map("promo_code_id")
+  paidAt             DateTime?           @map("paid_at")
+  lastCheckoutSessionId String?          @map("last_checkout_session_id") @db.VarChar(255)
+  blockedCancelledOn DateTime?           @map("blocked_cancelled_on")
+  lastSeenAt         DateTime?           @map("last_seen_at")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  deletedAt          DateTime?           @map("deleted_at")
+  corporation        Corporation?        @relation(fields: [corporationId], references: [id], onDelete: SetNull)
+  role               Role?               @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  pricingPlan        PricingPlan?        @relation(fields: [pricingPlanId], references: [id], onDelete: SetNull)
+  promoCode          PromoCode?          @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
+  groupMemberships   AppUserGroupMembership[]
+  companyAccess      UserCompanyAccess[]
+  appKeyContact      AppKeyContact?
+  assessments        Assessment[]
+  growthSparkIntros  UserGrowthSparkIntro[]
+
+  @@index([email])
+  @@index([corporationId])
+  @@index([roleId])
+  @@index([deletedAt])
+  @@map("app_users")
+}
+
+/// Membership in a Cognito User Pool group (mirrors Cognito; use JWT groups for request auth, DB for joins and audits).
+model AppUserGroupMembership {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id") @db.VarChar(128)
+  groupId    String   @map("group_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  user  AppUser          @relation(fields: [userId], references: [cognitoSub], onDelete: Cascade)
+  group CognitoUserGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@index([groupId])
+  @@map("app_user_group_memberships")
+}
+
+/// Background bulk user invite from CSV (`POST /users/invite/bulk`); processed asynchronously in-app.
+model AppUserBulkInviteJob {
+  id                    String    @id @default(uuid())
+  status                String    @db.VarChar(32)
+  csvBody               String    @map("csv_body") @db.Text
+  originalFileName      String?   @map("original_file_name") @db.VarChar(512)
+  requestedByCognitoSub String    @map("requested_by_cognito_sub") @db.VarChar(128)
+  requestedByEmail      String?   @map("requested_by_email") @db.VarChar(255)
+  resultJson            Json?     @map("result_json")
+  errorMessage          String?   @map("error_message") @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  startedAt             DateTime? @map("started_at")
+  completedAt           DateTime? @map("completed_at")
+
+  @@index([requestedByCognitoSub, createdAt])
+  @@map("app_user_bulk_invite_jobs")
+}
+
+/// Company-level access for users (e.g. which companies a Company Admin may manage).
+model UserCompanyAccess {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id") @db.VarChar(128)
+  companyId String   @map("company_id")
+  isAdmin   Boolean  @default(false) @map("is_admin")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    AppUser            @relation(fields: [userId], references: [cognitoSub], onDelete: Cascade)
+  company CorporationCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+  @@index([companyId])
+  @@map("user_company_access")
+}
+
+// --- Roles & Permissions (submodule-based RBAC) ---
+// Only users in the SuperAdmin user group may create new roles (enforce in API).
+
+model RoleCategory {
+  id                     String                  @id @default(uuid())
+  name                   String                  @unique @db.VarChar(100) // e.g. "Super Admin", "Corporation Admin"
+  description            String?                 @db.VarChar(500)
+  createdAt              DateTime                @default(now()) @map("created_at")
+  updatedAt              DateTime                @updatedAt @map("updated_at")
+  roles                  Role[]
+  cognitoUserGroups      CognitoUserGroup[]
+  roleCategorySubmodules RoleCategorySubmodule[]
+
+  @@map("role_categories")
+}
+
+model Role {
+  id             String          @id @default(uuid())
+  name           String          @db.VarChar(255)
+  description    String?         @db.VarChar(1000)
+  categoryId     String          @map("category_id")
+  isPrivate      Boolean         @default(false) @map("is_private") // false = Public, true = Private
+  isExternal     Boolean         @default(false) @map("is_external") // false = Internal, true = External
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  category       RoleCategory    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  appUsers       AppUser[]
+
+  @@unique([name, categoryId])
+  @@index([categoryId])
+  @@index([isPrivate, isExternal])
+  @@map("roles")
+}
+
+/// Application modules (top-level areas in the role permissions grid).
+model Module {
+  id          String      @id @default(uuid())
+  name        String      @unique @db.VarChar(100)
+  description String?     @db.VarChar(500)
+  sortOrder   Int         @default(0) @map("sort_order")
+  /// When true, module is omitted from role-category permission grids except Super Admin.
+  hidden      Boolean     @default(false)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  submodules  Submodule[]
+
+  @@map("modules")
+}
+
+/// Fine-grained permission unit within a module.
+model Submodule {
+  id                     String                  @id @default(uuid())
+  code                   String                  @unique @db.VarChar(20) // e.g. "SM-001"
+  key                    String                  @unique @db.VarChar(120) // stable slug for API guards
+  name                   String                  @db.VarChar(200) // display label from Figma
+  description            String?                 @db.VarChar(500)
+  moduleId               String                  @map("module_id")
+  sortOrder              Int                     @default(0) @map("sort_order")
+  createdAt              DateTime                @default(now()) @map("created_at")
+  updatedAt              DateTime                @updatedAt @map("updated_at")
+  module                 Module                  @relation(fields: [moduleId], references: [id], onDelete: Restrict)
+  roleCategorySubmodules RoleCategorySubmodule[]
+
+  @@unique([moduleId, key])
+  @@index([moduleId])
+  @@map("submodules")
+}
+
+/// Enabled/disabled submodules per role category (source of truth for RBAC).
+model RoleCategorySubmodule {
+  id             String       @id @default(uuid())
+  roleCategoryId String       @map("role_category_id")
+  submoduleId    String       @map("submodule_id")
+  enabled        Boolean      @default(false)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  roleCategory   RoleCategory @relation(fields: [roleCategoryId], references: [id], onDelete: Cascade)
+  submodule      Submodule    @relation(fields: [submoduleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleCategoryId, submoduleId])
+  @@index([roleCategoryId])
+  @@index([submoduleId])
+  @@map("role_category_submodules")
+}
+
+// --- Assessment Engine ---
+// Schema owned by Prisma. Data seeded by assessment Lambda.
+// Used for personality assessment scoring, BSP style APIs, etc.
+
+enum QuestionType {
+  environmental_preferences
+  interaction_preferences
+  character_strengths_distressors
+}
+
+enum SituationType {
+  typical
+  stressful
+}
+
+enum LifeContextType {
+  professional
+  personal
+}
+
+enum OptionColor {
+  red
+  green
+  blue
+  grey
+}
+
+enum AssessmentStatus {
+  in_progress
+  completed
+  scored
+  report_generated
+}
+
+enum AssessmentScoreStyleContext {
+  professional_typical
+  professional_stressful
+  personal_typical
+  personal_stressful
+  overall
+}
+
+enum AssessmentScoreStyleType {
+  basic
+  plural
+  split
+}
+
+// 60 predefined assessment questions, seeded by the assessment Lambda.
+model Question {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  questionOrder Int             @unique @map("question_order") @db.SmallInt
+  questionText  String          @map("question_text")
+  type          QuestionType
+  situation     SituationType
+  lifeContext   LifeContextType @map("life_context")
+  version       Int             @default(1) @db.SmallInt
+  isActive      Boolean         @default(true) @map("is_active")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  options       Option[]
+
+  @@index([type])
+  @@index([situation])
+  @@index([lifeContext])
+  @@index([version])
+  @@index([isActive])
+  @@map("questions")
+}
+
+// 4 color-coded options per question (red / green / blue / grey).
+// optionKey is an auto-generated slug: e.g. typ_pro-1-red, str_per-12-blue
+model Option {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  questionId        String             @map("question_id") @db.Uuid
+  optionKey         String             @unique @map("option_key")
+  color             OptionColor
+  optionText        String             @map("option_text")
+  displayOrder      Int                @map("display_order") @db.SmallInt
+  createdAt         DateTime           @default(now()) @map("created_at")
+  question          Question           @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionResponses QuestionResponse[]
+
+  @@unique([questionId, color])
+  @@unique([questionId, displayOrder])
+  @@index([questionId])
+  @@index([optionKey])
+  @@index([color])
+  @@map("options")
+}
+
+// BSP (Behavioral Style Profile) personality styles.
+// Defines the 4 core styles (red/green/blue/grey) with their characteristics.
+// Enforce style_number > 0 and display_order > 0 with CHECK in SQL migration (not expressible in PSL).
+model BspStyle {
+  id                       String                 @id @default(uuid())
+  styleNumber              Int                    @unique @map("style_number")
+  title                    String                 @unique @db.VarChar(100)
+  hasVideo                 Boolean                @default(false) @map("has_video")
+  youtubeVideoId           String?                @map("youtube_video_id") @db.VarChar(20)
+  description              String                 @db.Text
+  displayOrder             Int                    @unique @map("display_order")
+  environmentalPreferences String[]               @map("environmental_preferences")
+  interactionPreferences   String[]               @map("interaction_preferences")
+  characterStrengths       String[]               @map("character_strengths")
+  psychologicalNeeds       String[]               @map("psychological_needs")
+  likes                    String[]
+  dislikes                 String[]
+  workPreferences          String[]               @map("work_preferences")
+  warningSigns             String[]               @map("warning_signs")
+  whenFeelingStressed      String                 @map("when_feeling_stressed") @db.Text
+  createdAt                DateTime               @default(now()) @map("created_at")
+  updatedAt                DateTime               @updatedAt @map("updated_at")
+  assessmentScoreStyles    AssessmentScoreStyle[]
+  growthSparkTemplate      GrowthSparkTemplate?
+
+  @@map("bsp_styles")
+}
+
+// User assessment attempt; FK to app_users.cognito_sub. At most one in_progress row per user (partial unique).
+model Assessment {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String             @map("user_id") @db.VarChar(128)
+  status            AssessmentStatus   @default(in_progress)
+  startedAt         DateTime           @default(now()) @map("started_at")
+  completedAt       DateTime?          @map("completed_at")
+  user              AppUser            @relation(fields: [userId], references: [cognitoSub], onDelete: Cascade)
+  questionResponses QuestionResponse[]
+  assessmentScore   AssessmentScore?
+  assessmentReport  AssessmentReport?
+  growthSparkIntros UserGrowthSparkIntro[]
+
+  // At most one in_progress row per user: enforce in app/transaction, or add a partial unique index in SQL
+  // (Prisma 7.4+ supports @@unique([userId], where: { status: in_progress }) with partialIndexes).
+  @@index([userId])
+  @@index([userId, status])
+  @@map("assessments")
+}
+
+// Enforce value BETWEEN 1 AND 10 with CHECK in SQL migration (not expressible in PSL).
+model QuestionResponse {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assessmentId String     @map("assessment_id") @db.Uuid
+  optionId     String     @map("option_id") @db.Uuid
+  value        Int        @db.SmallInt
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  option       Option     @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  @@unique([assessmentId, optionId])
+  @@index([assessmentId])
+  @@index([optionId])
+  @@map("question_responses")
+}
+
+model AssessmentScore {
+  id               String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assessmentId     String                 @unique @map("assessment_id") @db.Uuid
+  scoreBreakdown   Json                   @map("score_breakdown")
+  createdAt        DateTime               @default(now()) @map("created_at")
+  updatedAt        DateTime               @updatedAt @map("updated_at")
+  assessment       Assessment             @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  styles           AssessmentScoreStyle[]
+  assessmentReport AssessmentReport?
+
+  @@map("assessment_scores")
+}
+
+model AssessmentScoreStyle {
+  id                String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assessmentScoreId String                      @map("assessment_score_id") @db.Uuid
+  bspStyleId        String                      @map("bsp_style_id")
+  context           AssessmentScoreStyleContext
+  type              AssessmentScoreStyleType
+  assessmentScore   AssessmentScore             @relation(fields: [assessmentScoreId], references: [id], onDelete: Cascade)
+  bspStyle          BspStyle                    @relation(fields: [bspStyleId], references: [id], onDelete: Restrict)
+
+  @@unique([assessmentScoreId, context])
+  @@index([assessmentScoreId])
+  @@index([bspStyleId])
+  @@map("assessment_score_styles")
+}
+
+model AssessmentReport {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assessmentId      String          @unique @map("assessment_id") @db.Uuid
+  assessmentScoreId String          @unique @map("assessment_score_id") @db.Uuid
+  report            String          @map("report") @db.Text
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  assessment        Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  assessmentScore   AssessmentScore @relation(fields: [assessmentScoreId], references: [id], onDelete: Cascade)
+
+  @@map("assessment_reports")
+}
+
+// Shared report template sections (static copy keyed by section).
+model ReportContent {
+  id         String   @id @default(uuid())
+  sectionKey String   @unique @map("section_key") @db.VarChar(255)
+  content    Json
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("report_content")
+}
+
+// Day-one Growth Spark copy keyed by overall BSP style (style_number 1–13).
+model GrowthSparkTemplate {
+  id          String   @id @default(uuid())
+  styleNumber Int      @unique @map("style_number")
+  title       String   @default("Daily Growth Spark") @db.VarChar(120)
+  body        String   @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  bspStyle    BspStyle @relation(fields: [styleNumber], references: [styleNumber], onDelete: Restrict)
+
+  @@map("growth_spark_templates")
+}
+
+// Tracks whether the style-based intro template was shown for an assessment cycle.
+model UserGrowthSparkIntro {
+  id           String     @id @default(uuid())
+  userId       String     @map("user_id") @db.VarChar(128)
+  assessmentId String     @map("assessment_id") @db.Uuid
+  shownAt      DateTime   @default(now()) @map("shown_at")
+  user         AppUser    @relation(fields: [userId], references: [cognitoSub], onDelete: Cascade)
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, assessmentId])
+  @@index([userId])
+  @@map("user_growth_spark_intro")
+}
+
+model AppKeyContact {
+  id                String              @id @default(uuid())
+  contactCode       Int                 @unique @default(autoincrement()) @map("contact_code")
+  corporationId     String?             @map("corporation_id")
+  companyId         String?             @map("company_id")
+  firstName         String?             @map("first_name") @db.VarChar(255)
+  lastName          String?             @map("last_name") @db.VarChar(255)
+  nickname          String?             @db.VarChar(255)
+  email             String?             @db.VarChar(255)
+  contactType       String?             @map("contact_type") @db.VarChar(255)
+  status            String              @default("Not Invited") @db.VarChar(255)
+  jobRole           String?             @map("job_role") @db.VarChar(255)
+  workPhone         String?             @map("work_phone") @db.VarChar(255)
+  cellPhone         String?             @map("cell_phone") @db.VarChar(255)
+  timezone          String?             @db.VarChar(255)
+  sameAsCorpAdmin   Boolean             @default(false) @map("same_as_corp_admin")
+  appUserId         String?             @unique @map("app_user_id") @db.VarChar(128)
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  deletedAt         DateTime?           @map("deleted_at")
+  corporation       Corporation?        @relation(fields: [corporationId], references: [id], onDelete: SetNull)
+  company           CorporationCompany? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  appUser           AppUser?            @relation(fields: [appUserId], references: [cognitoSub], onDelete: SetNull)
+
+  @@index([corporationId])
+  @@index([companyId])
+  @@map("app_key_contacts")
+}
+
+model SupportRequest {
+  id          String                     @id @default(uuid())
+  email       String                     @db.VarChar(255)
+  subject     String                     @db.VarChar(500)
+  message     String?                    @db.Text
+  createdAt   DateTime                   @default(now()) @map("created_at")
+  attachments SupportRequestAttachment[]
+
+  @@index([email])
+  @@index([createdAt])
+  @@map("support_requests")
+}
+
+model SupportRequestAttachment {
+  id               String         @id @default(uuid())
+  supportRequestId String         @map("support_request_id")
+  fileName         String         @map("file_name") @db.VarChar(512)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  supportRequest   SupportRequest @relation(fields: [supportRequestId], references: [id], onDelete: Cascade)
+
+  @@index([supportRequestId])
+  @@map("support_request_attachments")
+}

@@ -1,0 +1,163 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Application Load Balancer (ALB) with HTTPS listener'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  CertificateArn:
+    Type: String
+    Default: ''
+    Description: ACM Certificate ARN for HTTPS (optional, leave empty for HTTP only)
+
+  ContainerPort:
+    Type: Number
+    Default: 3000
+    Description: Container port number
+
+Conditions:
+  HasCertificate: !Not [!Equals [!Ref CertificateArn, '']]
+  NoCertificate: !Equals [!Ref CertificateArn, '']
+
+Resources:
+  # Application Load Balancer
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-alb'
+      Type: application
+      Scheme: internet-facing
+      IpAddressType: ipv4
+      Subnets:
+        - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-PublicSubnet1Id'
+        - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-PublicSubnet2Id'
+      SecurityGroups:
+        - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ALBSecurityGroupId'
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-alb'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Target Group for ECS
+  ECSTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-tg'
+      Port: !Ref ContainerPort
+      Protocol: HTTP
+      VpcId:
+        Fn::ImportValue: !Sub '${ProjectName}-${Environment}-VPCId'
+      TargetType: ip
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: /health
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      Matcher:
+        HttpCode: '200'
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-tg'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # HTTP Listener (redirects to HTTPS if certificate provided)
+  HTTPListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Condition: HasCertificate
+    Properties:
+      DefaultActions:
+        - Type: redirect
+          RedirectConfig:
+            Protocol: HTTPS
+            Port: 443
+            StatusCode: HTTP_301
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  # HTTP Listener (direct to target group if no certificate)
+  HTTPListenerDirect:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Condition: NoCertificate
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ECSTargetGroup
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  # HTTPS Listener
+  HTTPSListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Condition: HasCertificate
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ECSTargetGroup
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn: !Ref CertificateArn
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
+
+Outputs:
+  ALBDNSName:
+    Description: Application Load Balancer DNS Name
+    Value: !GetAtt ApplicationLoadBalancer.DNSName
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ALBDNSName'
+
+  ALBArn:
+    Description: Application Load Balancer ARN
+    Value: !GetAtt ApplicationLoadBalancer.LoadBalancerArn
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ALBArn'
+
+  ALBListenerArn:
+    Description: ALB Listener ARN
+    Value: !If
+      - HasCertificate
+      - !Ref HTTPSListener
+      - !Ref HTTPListenerDirect
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ALBListenerArn'
+
+  HTTPListenerArn:
+    Description: HTTP Listener ARN
+    Value: !If
+      - HasCertificate
+      - !Ref HTTPListener
+      - !Ref HTTPListenerDirect
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-HTTPListenerArn'
+
+  ECSTargetGroupArn:
+    Description: ECS Target Group ARN
+    Value: !Ref ECSTargetGroup
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ECSTargetGroupArn'
+
+  ALBFullName:
+    Description: ALB resource name for CloudWatch dimensions (app/name/id)
+    Value: !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ALBFullName'
+
+  ECSTargetGroupFullName:
+    Description: Target group resource name for CloudWatch dimensions (targetgroup/name/id)
+    Value: !GetAtt ECSTargetGroup.TargetGroupFullName
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ECSTargetGroupFullName'

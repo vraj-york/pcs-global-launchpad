@@ -1,0 +1,248 @@
+{
+	"text": {
+		"text-error": {
+			"value": "{red.Base}",
+			"type": "color"
+		},
+		"text-link-hover": {
+			"value": "{blue.700}",
+			"type": "color"
+		},
+		"text-link": {
+			"value": "{blue.Base}",
+			"type": "color"
+		},
+		"text-disabled": {
+			"value": "{gray.400}",
+			"type": "color"
+		},
+		"text-warning": {
+			"value": "{yellow.700}",
+			"type": "color"
+		},
+		"text-success": {
+			"value": "{green.600}",
+			"type": "color"
+		},
+		"text-tertiary": {
+			"value": "{secondary.500}",
+			"type": "color"
+		},
+		"text-placeholder": {
+			"value": "{gray.400}",
+			"type": "color"
+		},
+		"text-secondary": {
+			"value": "{gunmetal gray.600}",
+			"type": "color"
+		},
+		"text-primary": {
+			"value": "{gunmetal gray.900}",
+			"type": "color"
+		},
+		"text-white": {
+			"value": "{b&w.white}",
+			"type": "color"
+		}
+	},
+	"border": {
+		"border-success": {
+			"value": "{green.Base}",
+			"type": "color"
+		},
+		"border-error": {
+			"value": "{red.Base}",
+			"type": "color"
+		},
+		"border-focus": {
+			"value": "{primary.Base}",
+			"type": "color"
+		},
+		"border-disabled": {
+			"value": "{gray.Base}",
+			"type": "color"
+		},
+		"border-warning": {
+			"value": "{yellow.500}",
+			"type": "color"
+		},
+		"border-active": {
+			"value": "{primary.Base}",
+			"type": "color"
+		},
+		"border-hover": {
+			"value": "{primary.200}",
+			"type": "color"
+		},
+		"border-secondary": {
+			"value": "{gray.300}",
+			"type": "color"
+		},
+		"border-primary": {
+			"value": "{gray.Base}",
+			"type": "color"
+		}
+	},
+	"icon": {
+		"icon-info": {
+			"value": "{blue.Base}",
+			"type": "color"
+		},
+		"icon-warning": {
+			"value": "{yellow.500}",
+			"type": "color"
+		},
+		"icon-brand": {
+			"value": "{primary.Base}",
+			"type": "color"
+		},
+		"icon-on-accent": {
+			"value": "{b&w.white}",
+			"type": "color"
+		},
+		"icon-tertiary": {
+			"value": "{secondary.500}",
+			"type": "color"
+		},
+		"icon-success": {
+			"value": "{green.Base}",
+			"type": "color"
+		},
+		"icon-secondary": {
+			"value": "{gunmetal gray.600}",
+			"type": "color"
+		},
+		"icon-disabled": {
+			"value": "{gray.400}",
+			"type": "color"
+		},
+		"icon-error": {
+			"value": "{red.Base}",
+			"type": "color"
+		},
+		"icon-primary": {
+			"value": "{gunmetal gray.900}",
+			"type": "color"
+		}
+	},
+	"feedback": {
+		"info": {
+			"value": "{blue.Base}",
+			"type": "color"
+		},
+		"warning-bg": {
+			"value": "{yellow.50}",
+			"type": "color"
+		},
+		"warning": {
+			"value": "{yellow.700}",
+			"type": "color"
+		},
+		"success": {
+			"value": "{green.Base}",
+			"type": "color"
+		},
+		"error": {
+			"value": "{red.Base}",
+			"type": "color"
+		},
+		"info-bg": {
+			"value": "{blue.50}",
+			"type": "color"
+		},
+		"success-bg": {
+			"value": "{green.50}",
+			"type": "color"
+		},
+		"error-bg": {
+			"value": "{red.50}",
+			"type": "color"
+		}
+	},
+	"bg": {
+		"bg-table-header": {
+			"value": "{gray.50}",
+			"type": "color"
+		},
+		"bg-popover": {
+			"value": "{b&w.white}",
+			"type": "color"
+		},
+		"bg-card-active": {
+			"value": "{gray.100}",
+			"type": "color"
+		},
+		"bg-sidebar": {
+			"value": "{gray.50}",
+			"type": "color"
+		},
+		"bg-card-hover": {
+			"value": "{gray.50}",
+			"type": "color"
+		},
+		"bg-inverse": {
+			"value": "{gunmetal gray.900}",
+			"type": "color"
+		},
+		"bg-tertiary": {
+			"value": "{gray.50}",
+			"type": "color"
+		},
+		"bg-card": {
+			"value": "{b&w.white}",
+			"type": "color"
+		},
+		"bg-header": {
+			"value": "{b&w.white}",
+			"type": "color"
+		},
+		"bg-table-row-hover": {
+			"value": "{gray.100}",
+			"type": "color"
+		},
+		"bg-primary": {
+			"value": "{b&w.white}",
+			"type": "color"
+		},
+		"bg-secondary": {
+			"value": "{gray.100}",
+			"type": "color"
+		},
+		"bg-modal": {
+			"value": "{b&w.white}",
+			"type": "color"
+		},
+		"bg-brand-azureblue": {
+			"value": "{primary.Base}",
+			"type": "color"
+		},
+		"bg-brand-nordicsea": {
+			"value": "{secondary.Base}",
+			"type": "color"
+		},
+		"bg-brand-green": {
+			"value": "{green.Base}",
+			"type": "color"
+		},
+		"bg-brand-yellow": {
+			"value": "{yellow.Base}",
+			"type": "color"
+		},
+		"bg-brand-red": {
+			"value": "{red.Base}",
+			"type": "color"
+		},
+		"bg-brand-blue": {
+			"value": "{blue.Base}",
+			"type": "color"
+		},
+		"bg-brand-mistygray": {
+			"value": "{gray.Base}",
+			"type": "color"
+		},
+		"bg-brand-gunmetalgray": {
+			"value": "{gunmetal gray.Base}",
+			"type": "color"
+		}
+	}
+}

@@ -1,0 +1,49 @@
+env:
+  name: uat
+
+cognito:
+  user_pool_id: "us-east-1_6K4HB0nZm"
+
+network:
+  vpc_name: bsp-blueprint-uat-VPCId
+  vpc_id: vpc-0fa5ad6b459c50d12
+  private_app_subnet_ids:
+    - subnet-0c471e6321fe5083b
+    - subnet-0d3cd3da25706f6a6
+
+lambda:
+  db_seeder:
+    memory: 512
+    timeout: 300
+  api:
+    memory_size: 1024
+    timeout: 60
+  scoring:
+    memory: 1024
+    timeout: 60
+  report:
+    memory: 2048
+    timeout: 300
+
+rds:
+  host: "bsp-blueprint-uat-rds.c458yciowiwq.us-east-1.rds.amazonaws.com"
+  port: 5432
+  db_name: "bspdb"
+  secret_arn: "arn:aws:secretsmanager:us-east-1:585890465993:secret:bsp-blueprint/uat/db-credentials-zsXeEL"
+  security_group_id: "sg-042773e3920c38489"
+
+log_level: INFO
+
+sentry:
+  dsn_parameter_name: "/bsp-blueprint/sentry/assessment-workers-dsn"
+  traces_sample_rate: 0.1
+
+# Temporary UAT CloudFront — update frontend_origin and print_base_url when the domain changes.
+frontend_origin: "http://dys61e771yqju.cloudfront.net"
+print_base_url: "http://dys61e771yqju.cloudfront.net"
+print_expected_pages: 20
+
+s3:
+  reports_bucket_name: "bsp-blueprint-uat-frontend"
+  reports_prefix: "assessment_report/"
+  print_html_prefix: "assessment_print_html/"

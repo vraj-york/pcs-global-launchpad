@@ -1,0 +1,17 @@
+firstName,lastName,email,workPhone,contactType,nickname,timezone,cellPhone,jobRole,corporationName,companyName
+Zyro,Quen,zyro.quen.001@example.com,+1-XXX-XXX-XXXX,exec_sponsor,ZQ,EST (Eastern Time),+1-XXX-XXX-XXXX,Executive Alignment Lead,Zinkora Labs,Fablegrid One
+Vexa,Trin,vexa.trin.002@example.com,+1-XXX-XXX-XXXX,budget_owner,VT,CST (Central Time),+1-XXX-XXX-XXXX,Budget Control Partner,Zinkora Labs,Fablegrid Two
+Nori,Pelm,nori.pelm.003@example.com,+1-XXX-XXX-XXXX,primary_contact,NP,MST (Mountain Time),+1-XXX-XXX-XXXX,Primary Program Liaison,Zinkora Labs,Fablegrid Three
+Kivo,Ralz,kivo.ralz.004@example.com,+1-XXX-XXX-XXXX,implementation_lead,KR,PST (Pacific Time),+1-XXX-XXX-XXXX,Implementation Stream Lead,Zinkora Labs,Fablegrid Four
+Tari,Mexx,tari.mexx.005@example.com,+1-XXX-XXX-XXXX,project_manager,TM,AKST (Alaska Time),+1-XXX-XXX-XXXX,Delivery Project Manager,Zinkora Labs,Fablegrid Five
+Luma,Fenn,luma.fenn.006@example.com,+1-XXX-XXX-XXXX,technical_it_lead,LF,HST (Hawaii Time),+1-XXX-XXX-XXXX,Technical Systems Lead,Zinkora Labs,Fablegrid Six
+Riko,Thav,riko.thav.007@example.com,+1-XXX-XXX-XXXX,platform_administrator,RT,EST (Eastern Time),+1-XXX-XXX-XXXX,Platform Operations Admin,Zinkora Labs,Fablegrid Seven
+Sena,Brix,sena.brix.008@example.com,+1-XXX-XXX-XXXX,hr_program_owner,SB,CST (Central Time),+1-XXX-XXX-XXXX,HR Program Owner,Zinkora Labs,Fablegrid Eight
+Pavo,Lern,pavo.lern.009@example.com,+1-XXX-XXX-XXXX,training_coordinator,PL,MST (Mountain Time),+1-XXX-XXX-XXXX,Learning Coordinator,Zinkora Labs,Fablegrid Nine
+Jexa,Morn,jexa.morn.010@example.com,+1-XXX-XXX-XXXX,finance_billing_contact,JM,PST (Pacific Time),+1-XXX-XXX-XXXX,Billing Operations Contact,Zinkora Labs,Fablegrid Ten
+Wino,Krast,wino.krast.011@example.com,+1-XXX-XXX-XXXX,legal_compliance_contact,WK,AKST (Alaska Time),+1-XXX-XXX-XXXX,Compliance Advisory Contact,Zinkora Labs,Fablegrid Eleven
+Olli,Vern,olli.vern.012@example.com,+1-XXX-XXX-XXXX,power_user_champion,OV,HST (Hawaii Time),+1-XXX-XXX-XXXX,Adoption Champion,Zinkora Labs,Fablegrid Twelve
+Mexo,Plin,mexo.plin.013@example.com,+1-XXX-XXX-XXXX,behavioural_assessment_administrator,MP,EST (Eastern Time),+1-XXX-XXX-XXXX,Assessment Administrator,Zinkora Labs,Fablegrid Thirteen
+Gira,Stenn,gira.stenn.014@example.com,+1-XXX-XXX-XXXX,team_leader_manager,GS,CST (Central Time),+1-XXX-XXX-XXXX,Team Leader Manager,Zinkora Labs,Fablegrid Fourteen
+Daro,Vint,daro.vint.015@example.com,+1-XXX-XXX-XXXX,culture_leadership_program_owner,DV,MST (Mountain Time),+1-XXX-XXX-XXXX,Culture Leadership Owner,Zinkora Labs,Fablegrid Fifteen
+Yuna,Pral,yuna.pral.016@example.com,+1-XXX-XXX-XXXX,hr_talent_development_owner,YP,PST (Pacific Time),+1-XXX-XXX-XXXX,Talent Development Owner,Zinkora Labs,Fablegrid Sixteen

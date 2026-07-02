@@ -1,0 +1,141 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: S3 Buckets for application storage and logs
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - staging
+      - uat
+      - prod
+    Default: dev
+
+Resources:
+  ApplicationBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersions
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 30
+          - Id: MoveToStandardIA
+            Status: Enabled
+            Transitions:
+              # Move to Standard-IA after 30 days for cost optimization
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+
+  LogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: LogsLifecycle
+            Status: Enabled
+            Transitions:
+              # Move to Standard-IA after 30 days (logs accessed infrequently)
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+              # Move to Glacier Flexible Retrieval after 60 days (archival)
+              - StorageClass: GLACIER
+                TransitionInDays: 60
+            ExpirationInDays: 90
+
+  CloudFrontLogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: CloudFrontLogsLifecycle
+            Status: Enabled
+            Transitions:
+              # Move to Standard-IA after 30 days (AWS minimum requirement for STANDARD_IA)
+              # CloudFront logs are rarely accessed, so moving to cheaper storage class
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-cloudfront-logs'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Bucket Policy for CloudFront Logs - allows CloudFront to write logs
+  # Note: This policy is required for CloudFront to deliver logs to S3
+  CloudFrontLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: CloudFrontLogsBucket
+    Properties:
+      Bucket: !Ref CloudFrontLogsBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontLogDelivery
+            Effect: Allow
+            Principal:
+              Service: delivery.logs.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub '${CloudFrontLogsBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                's3:x-amz-acl': bucket-owner-full-control
+          - Sid: AllowCloudFrontLogDeliveryAcl
+            Effect: Allow
+            Principal:
+              Service: delivery.logs.amazonaws.com
+            Action: s3:GetBucketAcl
+            Resource: !GetAtt CloudFrontLogsBucket.Arn
+
+Outputs:
+  ApplicationBucketName:
+    Value: !Ref ApplicationBucket
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-S3-AppBucket-Name'
+
+  LogsBucketName:
+    Value: !Ref LogsBucket
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-S3-LogsBucket-Name'
+
+  CloudFrontLogsBucketName:
+    Value: !Ref CloudFrontLogsBucket
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-S3-CFLogsBucket-Name'

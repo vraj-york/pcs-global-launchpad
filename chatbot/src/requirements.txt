@@ -1,0 +1,42 @@
+# FastAPI for building the API
+fastapi==0.109.0
+
+# Mangum adapter for AWS Lambda + ASGI (FastAPI)
+mangum==0.17.0
+
+# Pydantic for data validation (FastAPI dependency)
+pydantic==2.5.3
+
+# AWS SDK (Bedrock, Secrets Manager, SSM, etc.)
+# boto3>=1.42.38 required for bedrock-agent get_prompt (Prompt Management)
+# Runtime Lambda uses sync embeddings only, no aioboto3 needed
+boto3>=1.42.38
+botocore>=1.42.38
+
+# PostgreSQL driver (RAG database, app/infrastructure/database.py, app/domain/rag.py)
+psycopg2-binary==2.9.9
+
+# HTTP client for backend API calls (app/infrastructure/backend_client.py)
+httpx==0.27.0
+
+# JWT token decoding for role extraction
+PyJWT==2.8.0
+
+python-dotenv==1.2.1
+aws-lambda-powertools>=2.30.0
+
+# ASGI server — used by the streaming Lambda (Dockerfile.streaming) which starts
+# uvicorn directly via CMD. The standard extras add uvloop + httptools for better
+# async throughput, important for SSE streaming.
+uvicorn[standard]>=0.24.0
+
+# AES-256-GCM envelope encryption (A1 Thread & Trim — message/summary at-rest encryption)
+# Used by app/infrastructure/crypto.py alongside AWS KMS GenerateDataKey.
+cryptography>=42.0.0
+
+# Pure-Python PDF generation — used by the chat export endpoint (/threads/{id}/export).
+# No system dependencies, Lambda/container safe.
+reportlab>=4.2.0
+
+# Optional Redis for Growth Spark daily cache (falls back to in-memory when unset).
+redis>=5.0.0

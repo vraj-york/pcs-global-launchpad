@@ -1,0 +1,6 @@
+#!/bin/sh
+# Run Gerrit's commit-msg hook to generate the Change-Id
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ -f "$REPO_ROOT/.git/hooks/commit-msg" ]; then
+  "$REPO_ROOT/.git/hooks/commit-msg" "$@"
+fi

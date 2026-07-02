@@ -1,0 +1,280 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Single RDS PostgreSQL instance in private subnets. Accessible from ECS tasks and AWS Client VPN clients only (not publicly accessible).'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  DatabaseName:
+    Type: String
+    Default: bspdb
+    Description: Name of the initial database to create
+
+  MasterUsername:
+    Type: String
+    Default: postgres
+    Description: Master username for the database
+    NoEcho: true
+
+  MasterUserPassword:
+    Type: String
+    NoEcho: true
+    Description: Master password for the database (must be at least 8 characters)
+    MinLength: 8
+
+  DBInstanceClass:
+    Type: String
+    Default: db.t4g.medium
+    Description: DB instance class for RDS PostgreSQL
+    AllowedValues:
+      - db.t4g.micro
+      - db.t4g.small
+      - db.t4g.medium
+      - db.t4g.large
+      - db.t4g.xlarge
+      - db.t4g.2xlarge
+      - db.m6g.large
+      - db.m6g.xlarge
+      - db.m6g.2xlarge
+      - db.r6g.large
+      - db.r6g.xlarge
+      - db.r6g.2xlarge
+      - db.r6g.4xlarge
+
+  EngineVersion:
+    Type: String
+    Default: '15.14'
+    Description: PostgreSQL engine version for RDS
+    AllowedValues:
+      - '17.6'
+      - '16.10'
+      - '15.14'
+      - '15.12'
+      - '15.4'
+      - '15.3'
+      - '15.2'
+      - '14.19'
+      - '14.17'
+      - '14.9'
+      - '14.8'
+      - '13.22'
+      - '13.20'
+      - '13.12'
+      - '13.11'
+
+  AllocatedStorage:
+    Type: Number
+    Default: 20
+    Description: Allocated storage in GB (min 20 for gp3)
+    MinValue: 20
+    MaxValue: 65536
+
+  MaxAllocatedStorage:
+    Type: Number
+    Default: 100
+    Description: Upper limit for storage autoscaling (GB). Set to AllocatedStorage to disable.
+    MinValue: 20
+    MaxValue: 65536
+
+  BackupRetentionPeriod:
+    Type: Number
+    Default: 7
+    Description: Number of days to retain automated backups
+    MinValue: 1
+    MaxValue: 35
+
+  PreferredBackupWindow:
+    Type: String
+    Default: '03:00-04:00'
+    Description: Preferred backup window (UTC)
+    AllowedPattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]-([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+
+  PreferredMaintenanceWindow:
+    Type: String
+    Default: 'sun:04:00-sun:05:00'
+    Description: Preferred maintenance window (UTC)
+    AllowedPattern: '^(mon|tue|wed|thu|fri|sat|sun):([0-1]?[0-9]|2[0-3]):[0-5][0-9]-(mon|tue|wed|thu|fri|sat|sun):([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+
+  EnablePerformanceInsights:
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    Description: Enable Performance Insights for monitoring
+
+  PerformanceInsightsRetentionPeriod:
+    Type: Number
+    Default: 7
+    Description: Performance Insights retention period in days
+    AllowedValues: [7, 731]
+    MinValue: 7
+    MaxValue: 731
+
+  EnableDeletionProtection:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Enable deletion protection for the instance
+
+  EnableStorageEncryption:
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    Description: Enable encryption at rest for the database
+
+  MultiAZ:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Enable Multi-AZ for high availability (recommended for prod)
+
+Conditions:
+  IsProduction: !Equals [!Ref Environment, 'prod']
+  EnableDeletionProtectionProd: !And
+    - !Condition IsProduction
+    - !Equals [!Ref EnableDeletionProtection, 'true']
+  IsPerformanceInsightsEnabled: !Equals [!Ref EnablePerformanceInsights, 'true']
+  IsStorageEncryptionEnabled: !Equals [!Ref EnableStorageEncryption, 'true']
+  IsMultiAZ: !Equals [!Ref MultiAZ, 'true']
+
+Resources:
+  # Security Group for RDS
+  RdsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${ProjectName}-${Environment}-rds-sg'
+      GroupDescription: Security group for RDS PostgreSQL instance
+      VpcId:
+        Fn::ImportValue: !Sub '${ProjectName}-${Environment}-VPCId'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ECSSecurityGroupId'
+          Description: Allow PostgreSQL access from ECS tasks
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ClientVpnClientCidrBlock'
+          Description: Allow PostgreSQL access from AWS Client VPN clients
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+          Description: Allow all outbound
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-rds-sg'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # DB Subnet Group (private subnets). Use a distinct name when migrating from
+  # a legacy public subnet group so CloudFormation creates a new group instead
+  # of trying to remove subnets that are still in use by the RDS instance.
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub '${ProjectName}-${Environment}-rds-subnet-group'
+      DBSubnetGroupDescription: !Sub 'Subnet group for RDS PostgreSQL (${Environment})'
+      SubnetIds:
+        - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-PublicSubnet1Id'
+        - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-PublicSubnet2Id'
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-rds-subnet-group'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Single RDS PostgreSQL instance
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: !Sub '${ProjectName}-${Environment}-rds'
+      Engine: postgres
+      EngineVersion: !Ref EngineVersion
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: !Ref AllocatedStorage
+      MaxAllocatedStorage: !Ref MaxAllocatedStorage
+      StorageType: gp3
+      DBName: !Ref DatabaseName
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      Port: 5432
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref RdsSecurityGroup
+      BackupRetentionPeriod: !Ref BackupRetentionPeriod
+      PreferredBackupWindow: !Ref PreferredBackupWindow
+      PreferredMaintenanceWindow: !Ref PreferredMaintenanceWindow
+      StorageEncrypted: !If
+        - IsStorageEncryptionEnabled
+        - true
+        - false
+      DeletionProtection: !If
+        - EnableDeletionProtectionProd
+        - true
+        - false
+      MultiAZ: !If [IsMultiAZ, true, false]
+      PubliclyAccessible: false
+      EnablePerformanceInsights: !If
+        - IsPerformanceInsightsEnabled
+        - true
+        - false
+      PerformanceInsightsRetentionPeriod: !If
+        - IsPerformanceInsightsEnabled
+        - !Ref PerformanceInsightsRetentionPeriod
+        - !Ref 'AWS::NoValue'
+      EnableCloudwatchLogsExports:
+        - postgresql
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-rds'
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  RDSInstanceEndpoint:
+    Description: RDS instance endpoint
+    Value: !GetAtt RDSInstance.Endpoint.Address
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-RDSInstanceEndpoint'
+
+  RDSInstanceReadEndpoint:
+    Description: Same as writer (single instance; no read replica)
+    Value: !GetAtt RDSInstance.Endpoint.Address
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-RDSInstanceReadEndpoint'
+
+  RDSInstancePort:
+    Description: RDS instance port
+    Value: !GetAtt RDSInstance.Endpoint.Port
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-RDSInstancePort'
+
+  RDSInstanceIdentifier:
+    Description: RDS instance identifier
+    Value: !Ref RDSInstance
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-RDSInstanceIdentifier'
+
+  DatabaseName:
+    Description: Database name
+    Value: !Ref DatabaseName
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-RDS-DatabaseName'
+
+  RDSecurityGroupId:
+    Description: RDS security group ID
+    Value: !Ref RdsSecurityGroup
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-RDSecurityGroupId'

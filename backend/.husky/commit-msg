@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+# Run Gerrit's commit-msg hook to generate the Change-Id
+if [ -f ".git/hooks/commit-msg" ]; then
+.git/hooks/commit-msg "$@"
+fi

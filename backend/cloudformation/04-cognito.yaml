@@ -1,0 +1,209 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Amazon Cognito User Pool and User Pool Client'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  DomainPrefix:
+    Type: String
+    Default: bsp-blueprint-dev
+    Description: Domain prefix for Cognito hosted UI (must be globally unique)
+
+Conditions:
+  IsProd: !Equals [!Ref Environment, prod]
+  IsDevOrStaging: !Or
+    - !Equals [!Ref Environment, dev]
+    - !Equals [!Ref Environment, staging]
+
+Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub '${ProjectName}-${Environment}-user-pool'
+      # Disable self-signup - only admins can create users
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: false
+          RequireSymbols: false
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Required: true
+          Mutable: true
+        - Name: name
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+      # Email MFA is enabled (optional)
+      MfaConfiguration: 'OPTIONAL'
+      EnabledMfas:
+        - EMAIL_OTP
+      # Disable self-service password recovery since we use email for MFA
+      # Password resets are handled via custom backend flow using AdminSetUserPassword
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: admin_only
+            Priority: 1
+      # Threat protection (AdvancedSecurityMode) requires the Plus feature plan.
+      UserPoolTier: PLUS
+      UserPoolAddOns:
+        AdvancedSecurityMode: !If
+          - IsDevOrStaging
+          - AUDIT
+          - ENFORCED
+      EmailVerificationMessage: 'Your verification code is {####}'
+      EmailVerificationSubject: 'Your verification code'
+      EmailConfiguration:
+        EmailSendingAccount: DEVELOPER
+        From: 'BSPBlueprint <notifications@bspblueprint.com>'
+        SourceArn: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/bspblueprint.com'
+      # NOTE: The CustomEmailSender Lambda trigger is attached separately by deploy.sh
+      # after the 04-cognito-lambda.yaml stack is deployed. This allows the Lambda
+      # to send branded HTML emails for MFA codes instead of Cognito's plain text.
+      # Deletion protection for production - prevents accidental user pool deletion
+      DeletionProtection: !If
+        - IsProd
+        - ACTIVE
+        - INACTIVE
+      UserPoolTags:
+        Name: !Sub '${ProjectName}-${Environment}-user-pool'
+        Environment: !Ref Environment
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub '${ProjectName}-${Environment}-client'
+      UserPoolId: !Ref CognitoUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+      PreventUserExistenceErrors: ENABLED
+      SupportedIdentityProviders:
+        - COGNITO
+      # Short-lived refresh tokens for non-remember-me (1 day)
+      RefreshTokenValidity: 1
+      TokenValidityUnits:
+        RefreshToken: days
+
+  CognitoUserPoolClientRememberMe:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub '${ProjectName}-${Environment}-client-remember'
+      UserPoolId: !Ref CognitoUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+      PreventUserExistenceErrors: ENABLED
+      SupportedIdentityProviders:
+        - COGNITO
+      # Long-lived refresh tokens for remember-me (30 days)
+      RefreshTokenValidity: 30
+      TokenValidityUnits:
+        RefreshToken: days
+
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Sub '${DomainPrefix}-${AWS::AccountId}'
+      UserPoolId: !Ref CognitoUserPool
+
+  # SuperAdmin Group
+  SuperAdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: SuperAdmin
+      UserPoolId: !Ref CognitoUserPool
+      Description: Super Admin group with full access
+      Precedence: 1
+
+  # Corporation Admin — one per corporation (created when the corporation is onboarded)
+  CorporationAdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: CorporationAdmin
+      UserPoolId: !Ref CognitoUserPool
+      Description: Corporation Administrator
+      Precedence: 5
+
+  # Company Admin — invited company administrators (per company in app; same Cognito user may belong to multiple companies)
+  CompanyAdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: CompanyAdmin
+      UserPoolId: !Ref CognitoUserPool
+      Description: Company Administrator
+      Precedence: 10
+
+  # Standard application user (non-admin)
+  UserGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: User
+      UserPoolId: !Ref CognitoUserPool
+      Description: Standard application user
+      Precedence: 15
+
+Outputs:
+  UserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref CognitoUserPool
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-UserPoolId'
+
+  UserPoolArn:
+    Description: Cognito User Pool ARN
+    Value: !GetAtt CognitoUserPool.Arn
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-UserPoolArn'
+
+  UserPoolClientId:
+    Description: Cognito User Pool Client ID
+    Value: !Ref CognitoUserPoolClient
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-UserPoolClientId'
+
+  UserPoolClientRememberMeId:
+    Description: Cognito User Pool Client ID (remember-me, long refresh)
+    Value: !Ref CognitoUserPoolClientRememberMe
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-UserPoolClientRememberMeId'
+
+  UserPoolDomain:
+    Description: Cognito User Pool Domain
+    Value: !Ref CognitoUserPoolDomain
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-UserPoolDomain'
+
+  CognitoHostedUIURL:
+    Description: Cognito Hosted UI URL
+    Value: !Sub 'https://${CognitoUserPoolDomain}.auth.${AWS::Region}.amazoncognito.com'
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CognitoHostedUIURL'
+
+  SuperAdminGroupName:
+    Description: SuperAdmin Group Name
+    Value: SuperAdmin
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-SuperAdminGroupName'

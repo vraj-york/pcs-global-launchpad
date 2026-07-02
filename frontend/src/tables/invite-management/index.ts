@@ -1,0 +1,1 @@
+export { getInviteManagementColumns } from "./InviteManagementColumn";

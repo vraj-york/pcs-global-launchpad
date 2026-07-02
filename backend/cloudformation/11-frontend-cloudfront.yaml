@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFront Distribution for Frontend (S3)'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+
+  FrontendBucketName:
+    Type: String
+    Description: Name of the S3 bucket (without .s3.amazonaws.com)
+
+  CloudFrontLogsBucket:
+    Type: String
+    Description: Name of the CloudFront logs bucket (without .s3.amazonaws.com)
+
+Resources:
+  FrontendCloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub '${ProjectName}-${Environment} Frontend CloudFront Distribution'
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: true
+        PriceClass: PriceClass_100
+
+        Origins:
+          - Id: S3Origin
+            DomainName: !Sub '${FrontendBucketName}.s3.${AWS::Region}.amazonaws.com'
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: allow-all
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # CachingOptimized
+
+        Logging:
+          Bucket: !Sub '${CloudFrontLogsBucket}.s3.${AWS::Region}.amazonaws.com'
+          Prefix: cloudfront-frontend/
+          IncludeCookies: false
+
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 300
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 300
+
+Outputs:
+  FrontendCloudFrontDistributionId:
+    Description: CloudFront Distribution ID for Frontend
+    Value: !Ref FrontendCloudFrontDistribution
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-FrontendCloudFrontDistributionId'
+
+  FrontendCloudFrontDomainName:
+    Description: CloudFront Distribution Domain Name
+    Value: !GetAtt FrontendCloudFrontDistribution.DomainName
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-FrontendCloudFrontDomainName'
+
+  FrontendCloudFrontURL:
+    Description: Frontend CloudFront URL (HTTP)
+    Value: !Sub 'http://${FrontendCloudFrontDistribution.DomainName}'
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-FrontendCloudFrontURL'
+  
+  FrontendCloudFrontURLHTTPS:
+    Description: Frontend CloudFront URL (HTTPS)
+    Value: !Sub 'https://${FrontendCloudFrontDistribution.DomainName}'
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-FrontendCloudFrontURLHTTPS'

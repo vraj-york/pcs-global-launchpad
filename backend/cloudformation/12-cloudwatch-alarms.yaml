@@ -1,0 +1,297 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudWatch alarms for non-critical infrastructure (Sections 4–5).
+  Maps EC2 compute alarms to ECS Fargate; RDS alarms target the PostgreSQL instance.
+  StatusCheckFailed is mapped to ALB unhealthy targets (routed to Critical).
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  NonCriticalAlarmEmail:
+    Type: String
+    Description: Email address for non-critical alarm notifications (SNS subscription must be confirmed)
+    AllowedPattern: '^[^@]+@[^@]+\.[^@]+$'
+
+  CriticalAlarmEmail:
+    Type: String
+    Default: ''
+    Description: Email for critical alarms (e.g. unhealthy targets). Leave empty to reuse NonCriticalAlarmEmail.
+
+  AllocatedStorageGB:
+    Type: Number
+    Default: 20
+    Description: RDS allocated storage in GB (informational; thresholds are passed in bytes)
+
+  RdsFreeStorageWarningThresholdBytes:
+    Type: Number
+    Default: 3221225480
+    Description: Alarm when free storage falls below this (15% of 20 GB). Adjust if AllocatedStorageGB differs.
+
+  RdsFreeStorageCriticalThresholdBytes:
+    Type: Number
+    Default: 1073741820
+    Description: Critical alarm when free storage falls below this (5% of 20 GB). Adjust if AllocatedStorageGB differs.
+
+  DatabaseConnectionThreshold:
+    Type: Number
+    Default: 68
+    Description: Alarm when connections exceed this count (typically 80% of max_connections)
+
+  ECSDesiredTaskCount:
+    Type: Number
+    Default: 2
+    Description: Expected ECS service desired count (for running-task alarm)
+    MinValue: 1
+
+Conditions:
+  HasCriticalAlarmEmail: !Not [!Equals [!Ref CriticalAlarmEmail, '']]
+  UseDedicatedCriticalEmail: !Condition HasCriticalAlarmEmail
+
+Resources:
+  NonCriticalAlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub '${ProjectName}-${Environment} non-critical alarms'
+      TopicName: !Sub '${ProjectName}-${Environment}-alarms-noncritical'
+
+  CriticalAlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub '${ProjectName}-${Environment} critical alarms'
+      TopicName: !Sub '${ProjectName}-${Environment}-alarms-critical'
+
+  NonCriticalAlarmEmailSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref NonCriticalAlarmTopic
+      Protocol: email
+      Endpoint: !Ref NonCriticalAlarmEmail
+
+  CriticalAlarmEmailSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref CriticalAlarmTopic
+      Protocol: email
+      Endpoint: !If
+        - UseDedicatedCriticalEmail
+        - !Ref CriticalAlarmEmail
+        - !Ref NonCriticalAlarmEmail
+
+  # --- Section 4 (compute): ECS Fargate instead of EC2 ---
+
+  ECSCpuUtilizationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-ecs-cpu-high'
+      AlarmDescription: ECS service CPU > 80% for 5 minutes (Section 4 — non-critical)
+      Namespace: AWS/ECS
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: ClusterName
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ECSClusterName'
+        - Name: ServiceName
+          Value: !Sub '${ProjectName}-${Environment}-service'
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref NonCriticalAlarmTopic
+      OKActions:
+        - !Ref NonCriticalAlarmTopic
+
+  ECSMemoryUtilizationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-ecs-memory-high'
+      AlarmDescription: ECS service memory > 85% (Section 4 — non-critical)
+      Namespace: AWS/ECS
+      MetricName: MemoryUtilization
+      Dimensions:
+        - Name: ClusterName
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ECSClusterName'
+        - Name: ServiceName
+          Value: !Sub '${ProjectName}-${Environment}-service'
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 85
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref NonCriticalAlarmTopic
+      OKActions:
+        - !Ref NonCriticalAlarmTopic
+
+  # StatusCheckFailed equivalent — route to Critical (blocks traffic when tasks are unhealthy)
+  ALBUnhealthyHostAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-alb-unhealthy-hosts'
+      AlarmDescription: >
+        ALB reports unhealthy targets (Section 4 StatusCheckFailed exception — critical).
+      Namespace: AWS/ApplicationELB
+      MetricName: UnHealthyHostCount
+      Dimensions:
+        - Name: LoadBalancer
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ALBFullName'
+        - Name: TargetGroup
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ECSTargetGroupFullName'
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref CriticalAlarmTopic
+      OKActions:
+        - !Ref CriticalAlarmTopic
+
+  # Healthy targets below desired count (e.g. tasks scaled down or not passing health checks).
+  ECSRunningTaskCountAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-ecs-running-tasks-low'
+      AlarmDescription: >
+        ALB healthy targets below desired count (critical). Complements alb-unhealthy-hosts
+        (catches scale-to-zero when UnHealthyHostCount stays 0).
+      Namespace: AWS/ApplicationELB
+      MetricName: HealthyHostCount
+      Dimensions:
+        - Name: LoadBalancer
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ALBFullName'
+        - Name: TargetGroup
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ECSTargetGroupFullName'
+      Statistic: Minimum
+      Period: 60
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 1
+      Threshold: !Ref ECSDesiredTaskCount
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref CriticalAlarmTopic
+      OKActions:
+        - !Ref CriticalAlarmTopic
+
+  # --- Section 5: RDS PostgreSQL ---
+
+  RDSCpuUtilizationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-rds-cpu-high'
+      AlarmDescription: RDS CPU > 80% (Section 5 — non-critical)
+      Namespace: AWS/RDS
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-RDSInstanceIdentifier'
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref NonCriticalAlarmTopic
+      OKActions:
+        - !Ref NonCriticalAlarmTopic
+
+  RDSFreeStorageWarningAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-rds-storage-low-warning'
+      AlarmDescription: RDS free storage < 15% of allocated (Section 5 — non-critical)
+      Namespace: AWS/RDS
+      MetricName: FreeStorageSpace
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-RDSInstanceIdentifier'
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: !Ref RdsFreeStorageWarningThresholdBytes
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref NonCriticalAlarmTopic
+      OKActions:
+        - !Ref NonCriticalAlarmTopic
+
+  RDSFreeStorageCriticalAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-rds-storage-low-critical'
+      AlarmDescription: RDS free storage < 5% of allocated (Section 5 — escalate to critical)
+      Namespace: AWS/RDS
+      MetricName: FreeStorageSpace
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-RDSInstanceIdentifier'
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: !Ref RdsFreeStorageCriticalThresholdBytes
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref CriticalAlarmTopic
+      OKActions:
+        - !Ref CriticalAlarmTopic
+
+  RDSDatabaseConnectionsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${ProjectName}-${Environment}-rds-connections-high'
+      AlarmDescription: RDS connections > 80% of max_connections (Section 5 — non-critical)
+      Namespace: AWS/RDS
+      MetricName: DatabaseConnections
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value:
+            Fn::ImportValue: !Sub '${ProjectName}-${Environment}-RDSInstanceIdentifier'
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: !Ref DatabaseConnectionThreshold
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref NonCriticalAlarmTopic
+      OKActions:
+        - !Ref NonCriticalAlarmTopic
+
+Outputs:
+  NonCriticalAlarmTopicArn:
+    Description: SNS topic ARN for non-critical alarms
+    Value: !Ref NonCriticalAlarmTopic
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-NonCriticalAlarmTopicArn'
+
+  CriticalAlarmTopicArn:
+    Description: SNS topic ARN for critical alarms
+    Value: !Ref CriticalAlarmTopic
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CriticalAlarmTopicArn'

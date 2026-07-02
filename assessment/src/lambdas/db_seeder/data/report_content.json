@@ -1,0 +1,86 @@
+[
+  {
+    "section_key": "welcome_and_overall",
+    "content": {
+      "welcome_intro": "Welcome",
+      "video_thumbnail_image": "https://img.youtube.com/vi/rVrj_fiMVXE/0.jpg",
+      "video_thumbnail_image_local": "static/images/welcome_video_thumbnail_0.jpg",
+      "welcome_copy": "Your customized report contains information pertinent to your specific behavioral style. We have designed this report to give you the information you need to more successfully navigate the world you live in, in a way that is both informative and easy to understand.\n\nEach of us is made up of different behavioral styles, especially when we are confronted with different environments and situations. That is why we have designed this assessment to measure your behavioral patterns for both typical and stressful moments in both your personal and professional life.\n\nWe at PCS believe that the best way to bring about the desired result is to first start with awareness. This report will give you the awareness you need to answer two important questions:\n\n1 “Which of my behaviors do I like and want to strengthen?”\n2 “Which of my behaviors would I like to change?”\n\nWhen you be able to answer these two questions, you will also be able to identify your specific warning signs indicating if you are experiencing prolonged stress. Our goal at PCS-Global is to keep you happier longer, make it easier for you to get out of stress quicker, and to rapidly identify behaviors within yourself and others for optimal performance.\n\nWe sincerely thank you for choosing the Behavioral Styles Profile and know that starting today, your life will never be the same – in a positive way!",
+      "welcome_image": "static/images/welcome-wheel.jpg",
+      "overall_headline": "Overall Type is the sum of four quadrants of behavior:",
+      "overall_image": "static/images/1.png",
+      "overall_copy": "As you know, your behavior can change based on different moments and situations. Therefore, we have added information about your four specific behavioral types below:",
+      "cone_image": "static/images/cone.png"
+    },
+    "is_active": true
+  },
+  {
+    "section_key": "increase_communication",
+    "content": {
+      "icdetails": "Problems and stress occur most often when there is a breakdown in communication. Since you display different behavioral styles for typical moments versus stressful moments, be cautious that you do not expect others to adhere to the same communication needs you do. For example, here are some things to keep in mind:",
+      "icred": "When communicating with RED traits:\n                        Stick to main points - avoid unasked details.\n                Maintain a confident assertive tone.\n               Ask clear, open-ended questions.",
+      "icred_img": "static/images/icred.jpg",
+      "icred_youtube_link": "https://youtu.be/mR6_ZKYmUsY",
+      "icgreen": "When communicating with GREEN traits:\n                        Encourage them to share feelings.\n                        Use a pleasant, upbeat tone.\n                        Reassure them you're here to help.",
+      "icgreen_img": "static/images/icgreen.jpg",
+      "icgreen_youtube_link": "https://youtu.be/Oc2yCVPJgC4",
+      "icgray": "When communicating with GRAY traits:\n                        Give concise, single directives. \n                        Maintaine a steady voice tone.\n                        Allow them time to process your request.",
+      "icgray_img": "static/images/icgrey.jpg",
+      "icgray_youtube_link": "https://youtu.be/eF1XpW9g6BM"
+      
+    },
+    "is_active": true
+  },
+  {
+    "section_key": "decrease_stress",
+    "content": {
+      "ba150": "Congratulations on having a BLUE score above 100 for both your Typical and Stressful moments scores! This means you have good to excellent access to the helpful components of your behavioral style.",
+      "bb150": "It looks like you have a BLUE score of below 150 for both your Typical and Stressful moments scores. We prefer that these scores be above 150 so that you have a much lower chance of experiencing the negative long-term effects of stress. It would be highly beneficial to you to attend one of our upcoming workshops, or schedule a private consultation so that we can help you Grow Your Blue and stay in the positive qualities of your behavioral style longer.",
+      "oa150": "Congratulations on having a BLUE score above 100 for your [Professional/Personal] scores! This means you have good to excellent access to the helpful components of your behavioral style. However, it also looks like you have a BLUE score of below 150 your [Professional/Personal] scores. We prefer that these scores be above 150 so that you have a much lower chance of experiencing the negative long-term effects of stress. It would be highly beneficial to you to attend one of our upcoming workshops, or schedule a private consultation so that we can help you Grow Your Blue and stay in the positive qualities of your behavioral style longer.",
+      "p17812": "Please also be aware that under stress, you shift behavioral style components. This means under stress, you typically withdraw from wanting some interaction with other people and prefer to become highly task or project focused.",
+      "p81217": "Please also be aware that under stress, you shift behavioral style components. This means under stress, you typically withdraw from focusing on tasks and projects, to wanting more interaction with other people.",
+      "sameregion": "Please also be aware that under stress, your behavioral style maintains some consistency. This is helpful as you do not have the added stress of a large shift in behavioral style components."
+    },
+    "is_active": true
+  },
+  {
+    "section_key": "bevspe_information",
+    "content": {
+      "bevspe_tile": "Behavior vs Personality",
+      "bevspe_dsc1": "Focusing on Behaviors shows that change is possible through consistent action. Like creating a new path in a wheat field, it takes repetition, time, and effort to form new patterns. With persistence, we can reshape our ingrained Behaviors and create lasting change. Personality types have been observed and evaluated for over 2,600 years. Most of these observations and classifications fall into 4 basic types: control, adapt, affiliate, and detach. Each basic style interacts with the world differently, albeit in predictable ways. It is thought that our personality type is locked in by the age of five; rarely later than age eight. It's believed that unless we experience a trauma or experience years of therapy, our personality remains the same.",
+      "bevspe_dsc2": "BSP measures your Behavioral tendencies, how you naturally act and respond not your fixed personality. Behaviors can be learned, adapted, and developed. Your personality is the unique blend of nature and nurture that makes you who you are."
+    },
+    "is_active": true
+  },
+  {
+    "section_key": "understanding_information",
+    "content": {
+      "understanding_bsp_logo": "static/images/bsp-logo.png",
+      "understanding_copy": "\n        We now lay the behavioral styles COLORS onto the 4 quadrants. Notice how anyone with primarily RED style will always want to control their environment.\n    ",
+      "understand_copy2": "From the 4 quadrants of environmental preferences, we can refine the amounts of color even further. We have also numbered each of the spokes, just like that of a clock.",
+      "understand_image_left": "static/images/understanding-left.jpg",
+      "understand_image_right": "static/images/understanding-right.jpg",
+      "understand_image_main": "static/images/bsp-styles-defined.jpg"
+    },
+    "is_active": true
+  },
+  {
+    "section_key": "color_info",
+    "content": {
+      "cleftcontent": "\n        <p>Before we talk about which behavioral style type you are, let's first look at the colors that make up the BSP360. The colors will be an important step in understanding your results and communicating most effectively with others.<br><br>Remember, the BSP360 provides us with a new language that will quickly and easily identify human behaviors in ourselves and others. By knowing the differences between the four colors, you can easily identify the best form of communication to use to get your needs met.</p>\n    ",
+      "crightcontent": "\n        <p><b>There are 3 colors that make up a person's overall behavioral type.</b> These are <b><span class=\"wysiwyg-color-red\">RED</span></b>, <b><span class=\"wysiwyg-color-green\">GREEN</span></b>, and <b><span class=\"wysiwyg-color-gray\">GRAY</span></b>. The amount of each color that a person has will vary in different circumstances. That is why we have measured how you are in typical moments and stressful moments, both at work and at home. Your \"Overall\" type will take each of your moments, both stressful and typical both at work and at home, into account.<br><br>The color <b><span class=\"wysiwyg-color-blue\">BLUE</span></b> is a choice. The amount of <b><span class=\"wysiwyg-color-blue\">BLUE</span></b><span class=\"wysiwyg-color-blue\"> </span>you choose to use will determine whether you are in the healthy and happy side of your behavioral color set, or if you are in the negative, more stressed state of your behavioral color set. REMEMBER: You can always CHOOSE to be happy and healthy!</p>\n    "
+    },
+    "is_active": true
+  },
+  {
+    "section_key": "next_steps",
+    "content": {
+      "nsleftcontent": {"title": "Book a Coaching Session", "description": "Work 1:1 with Dr. John Mlinarcik to deepen your self-awareness and create a personalized growth plan.", "link": ""},
+      "nsrightcontent": {"title": "Share Your Report", "description": "Share your behavioral report profile with your manager, coach or team to improve collective understanding.", "link": ""},
+      "nsphone": "734-542-6969",
+      "nsemail": "info@pcs-global.com"
+    },
+    "is_active": true
+  }
+]
+

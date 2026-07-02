@@ -1,0 +1,896 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root,
+:root[data-theme="bsp-light"] {
+	--bspGray50: #f8f7fb; /** Generated from Tailwind Color System */
+	--bspGray100: #f1f0f7; /** Generated from Tailwind Color System */
+	--bspGray300: #d3cde5; /** Generated from Tailwind Color System */
+	--bspGray400: #bcb0d5; /** Generated from Tailwind Color System */
+	--bspGray500: #a190c2; /** Generated from Tailwind Color System */
+	--bspGray600: #8f76b1; /** Generated from Tailwind Color System */
+	--bspGray700: #7d649d; /** Generated from Tailwind Color System */
+	--bspGray800: #685384; /** Generated from Tailwind Color System */
+	--bspGray900: #57456d; /** Generated from Tailwind Color System */
+	--bspGray950: #372d48; /** Generated from Tailwind Color System */
+	--bspGrayBase: #ddd9eb; /** Generated from Tailwind Color System */
+	--bspAlphaDark50: rgba(
+		26,
+		26,
+		26,
+		0.06
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark100: rgba(
+		26,
+		26,
+		26,
+		0.09
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark200: rgba(
+		26,
+		26,
+		26,
+		0.2
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark300: rgba(
+		26,
+		26,
+		26,
+		0.28
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark400: rgba(
+		26,
+		26,
+		26,
+		0.36
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark500: rgba(
+		26,
+		26,
+		26,
+		0.48
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark600: rgba(
+		26,
+		26,
+		26,
+		0.6
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark700: rgba(
+		26,
+		26,
+		26,
+		0.7
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark800: rgba(
+		26,
+		26,
+		26,
+		0.75
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark900: rgba(
+		26,
+		26,
+		26,
+		0.8
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark1000: #1a1a1a; /** Generated from Tailwind Color System */
+	--bspAlphaLight50: rgba(
+		255,
+		255,
+		255,
+		0.06
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight100: rgba(
+		255,
+		255,
+		255,
+		0.09
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight200: rgba(
+		255,
+		255,
+		255,
+		0.2
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight300: rgba(
+		255,
+		255,
+		255,
+		0.28
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight400: rgba(
+		255,
+		255,
+		255,
+		0.36
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight500: rgba(
+		255,
+		255,
+		255,
+		0.48
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight600: rgba(
+		255,
+		255,
+		255,
+		0.6
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight700: rgba(
+		255,
+		255,
+		255,
+		0.7
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight800: rgba(
+		255,
+		255,
+		255,
+		0.75
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight900: rgba(
+		255,
+		255,
+		255,
+		0.8
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight1000: #ffffff; /** Generated from Tailwind Color System */
+	--bspYellow50: #fbf8eb; /** Generated from Tailwind Color System */
+	--bspYellow100: #f6edcb; /** Generated from Tailwind Color System */
+	--bspYellow200: #eedb9a; /** Generated from Tailwind Color System */
+	--bspYellow400: #daa735; /** Generated from Tailwind Color System */
+	--bspYellow500: #cb9127; /** Generated from Tailwind Color System */
+	--bspYellow600: #af711f; /** Generated from Tailwind Color System */
+	--bspYellow700: #8c521c; /** Generated from Tailwind Color System */
+	--bspYellow800: #75431e; /** Generated from Tailwind Color System */
+	--bspYellow900: #64391f; /** Generated from Tailwind Color System */
+	--bspYellow950: #3a1c0e; /** Generated from Tailwind Color System */
+	--bspYellowBase: #e0b84a; /** Generated from Tailwind Color System */
+	--bspPrimary50: #f3f6fc; /** Generated from Tailwind Color System */
+	--bspPrimary100: #e7edf7; /** Generated from Tailwind Color System */
+	--bspPrimary200: #c9d8ee; /** Generated from Tailwind Color System */
+	--bspPrimary300: #99b8e0; /** Generated from Tailwind Color System */
+	--bspPrimary400: #6392cd; /** Generated from Tailwind Color System */
+	--bspPrimary500: #3f74b8; /** Generated from Tailwind Color System */
+	--bspPrimary700: #264a7e; /** Generated from Tailwind Color System */
+	--bspPrimary800: #233f69; /** Generated from Tailwind Color System */
+	--bspPrimary900: #223758; /** Generated from Tailwind Color System */
+	--bspPrimary950: #17233a; /** Generated from Tailwind Color System */
+	--bspPrimaryBase: #305fa1; /** Generated from Tailwind Color System */
+	--bspBlue50: #f1f6fd; /** Generated from Tailwind Color System */
+	--bspBlue100: #deebfb; /** Generated from Tailwind Color System */
+	--bspBlue200: #c5ddf8; /** Generated from Tailwind Color System */
+	--bspBlue300: #9dc8f3; /** Generated from Tailwind Color System */
+	--bspBlue400: #6faaeb; /** Generated from Tailwind Color System */
+	--bspBlue500: #4d89e4; /** Generated from Tailwind Color System */
+	--bspBlue700: #2f5ac6; /** Generated from Tailwind Color System */
+	--bspBlue800: #2c4ba1; /** Generated from Tailwind Color System */
+	--bspBlue900: #29417f; /** Generated from Tailwind Color System */
+	--bspBlue950: #1d294e; /** Generated from Tailwind Color System */
+	--bspBlueBase: #3a6fd8; /** Generated from Tailwind Color System */
+	--bspRed50: #fdf3f3; /** Generated from Tailwind Color System */
+	--bspRed100: #faeae9; /** Generated from Tailwind Color System */
+	--bspRed200: #f6d5d5; /** Generated from Tailwind Color System */
+	--bspRed300: #eeb3b4; /** Generated from Tailwind Color System */
+	--bspRed400: #e4888b; /** Generated from Tailwind Color System */
+	--bspRed500: #d65d65; /** Generated from Tailwind Color System */
+	--bspRed700: #a12f3f; /** Generated from Tailwind Color System */
+	--bspRed800: #872a3a; /** Generated from Tailwind Color System */
+	--bspRed900: #742737; /** Generated from Tailwind Color System */
+	--bspRed950: #401119; /** Generated from Tailwind Color System */
+	--bspRedBase: #c44755; /** Generated from Tailwind Color System */
+	--bspBWBlack: #000000; /** Generated from Tailwind Color System */
+	--bspBWTransparent: rgba(
+		0,
+		0,
+		0,
+		0
+	); /** Generated from Tailwind Color System */
+	--bspBWWhite: #ffffff; /** Generated from Tailwind Color System */
+	--bspSecondary50: #f2f8f9; /** Generated from Tailwind Color System */
+	--bspSecondary100: #deecef; /** Generated from Tailwind Color System */
+	--bspSecondary200: #c0d9e1; /** Generated from Tailwind Color System */
+	--bspSecondary300: #94bdcc; /** Generated from Tailwind Color System */
+	--bspSecondary500: #467e94; /** Generated from Tailwind Color System */
+	--bspSecondary600: #3d687d; /** Generated from Tailwind Color System */
+	--bspSecondary700: #365668; /** Generated from Tailwind Color System */
+	--bspSecondary800: #334957; /** Generated from Tailwind Color System */
+	--bspSecondary900: #2e3f4b; /** Generated from Tailwind Color System */
+	--bspSecondary950: #1b2831; /** Generated from Tailwind Color System */
+	--bspSecondaryBase: #7aa9bb; /** Generated from Tailwind Color System */
+	--bspGreen50: #effaf5; /** Generated from Tailwind Color System */
+	--bspGreen100: #d9f2e4; /** Generated from Tailwind Color System */
+	--bspGreen200: #b6e4cd; /** Generated from Tailwind Color System */
+	--bspGreen300: #86cfaf; /** Generated from Tailwind Color System */
+	--bspGreen400: #54b38c; /** Generated from Tailwind Color System */
+	--bspGreen600: #22795a; /** Generated from Tailwind Color System */
+	--bspGreen700: #1b614a; /** Generated from Tailwind Color System */
+	--bspGreen800: #184d3c; /** Generated from Tailwind Color System */
+	--bspGreen900: #144032; /** Generated from Tailwind Color System */
+	--bspGreen950: #0a241d; /** Generated from Tailwind Color System */
+	--bspGreenBase: #2f8f6b; /** Generated from Tailwind Color System */
+	--bspGunmetalGray50: #f2f8f9; /** Generated from Tailwind Color System */
+	--bspGunmetalGray100: #deecef; /** Generated from Tailwind Color System */
+	--bspGunmetalGray200: #c1dbe0; /** Generated from Tailwind Color System */
+	--bspGunmetalGray300: #96c1ca; /** Generated from Tailwind Color System */
+	--bspGunmetalGray400: #649dac; /** Generated from Tailwind Color System */
+	--bspGunmetalGray500: #498291; /** Generated from Tailwind Color System */
+	--bspGunmetalGray600: #3f6b7b; /** Generated from Tailwind Color System */
+	--bspGunmetalGray700: #385966; /** Generated from Tailwind Color System */
+	--bspGunmetalGray800: #344c56; /** Generated from Tailwind Color System */
+	--bspGunmetalGray900: #2f414a; /** Generated from Tailwind Color System */
+	--bspGunmetalGrayBase: #1a272e; /** Generated from Tailwind Color System */
+	--bsp2xsColor: rgba(0, 0, 0, 0.05);
+	--bsp2xsX: 0;
+	--bsp2xsY: 1;
+	--bsp2xsBlur: 0;
+	--bsp2xsSpread: 0;
+	--bspXsColor: rgba(0, 0, 0, 0.05);
+	--bspXsX: 0;
+	--bspXsY: 1;
+	--bspXsBlur: 2;
+	--bspXsSpread: 0;
+	--bspSmColor: rgba(0, 0, 0, 0.1);
+	--bspSmShadow1X: 0;
+	--bspSmShadow1Y: 1;
+	--bspSmShadow1Blur: 3;
+	--bspSmShadow1Spread: 0;
+	--bspSmShadow2X2: 0;
+	--bspSmShadow2Y: 1;
+	--bspSmShadow2Blur: 2;
+	--bspSmShadow2Spread: -1;
+	--bsp2xlColor: rgba(0, 0, 0, 0.25);
+	--bsp2xlX: 0;
+	--bsp2xlY: 25;
+	--bsp2xlBlur: 50;
+	--bsp2xlSpread: 12;
+	--bspMdColor: rgba(0, 0, 0, 0.1);
+	--bspMdShadow1X: 0;
+	--bspMdShadow1Y: 4;
+	--bspMdShadow1Blur: 6;
+	--bspMdShadow1Spread: -1;
+	--bspMdShadow2X: 0;
+	--bspMdShadow2Y: 2;
+	--bspMdShadow2Spread: -2;
+	--bspMdShadow2Blur: 4;
+	--bspLgColor: rgba(0, 0, 0, 0.1);
+	--bspLgShadow1X: 0;
+	--bspLgShadow1Y: 10;
+	--bspLgShadow1Blur: 15;
+	--bspLgShadow1Spread: -3;
+	--bspLgShadow2X: 0;
+	--bspLgShadow2Y: 4;
+	--bspLgShadow2Spread: 6;
+	--bspLgShadow2Blur: -4;
+	--bspXlColor: rgba(0, 0, 0, 0.1);
+	--bspXlShadow1X: 0;
+	--bspXlShadow1Y: 20;
+	--bspXlShadow1Blur: 25;
+	--bspXlShadow1Spread: -5;
+	--bspXlShadow2X: 0;
+	--bspXlShadow2Y: 8;
+	--bspXlShadow2Spread: 10;
+	--bspXlShadow2Blur: -6;
+	--bspFontDefinitionsFontFamilySans: Inter;
+	--bspFontDefinitionsFontFamilySerif: Inter;
+	--bspFontDefinitionsFontFamilyMonospace: Inter;
+	--bspHeading1Weight: Semibold;
+	--bspHeading1FontSize: 48;
+	--bspHeading1LineHeight: 48;
+	--bspHeading1Spacing: 48;
+	--bspHeading1LetterSpacing: -1.5;
+	--bspHeading2Weight: Semibold;
+	--bspHeading2FontSize: 30;
+	--bspHeading2LineHeight: 30;
+	--bspHeading2Spacing: 30;
+	--bspHeading2LetterSpacing: -1;
+	--bspHeading3Weight: Semibold;
+	--bspHeading3FontSize: 24;
+	--bspHeading3LineHeight: 28;
+	--bspHeading3Spacing: 20;
+	--bspHeading3LetterSpacing: -1;
+	--bspHeading4Weight: Semibold;
+	--bspHeading4FontSize: 20;
+	--bspHeading4LineHeight: 24;
+	--bspHeading4Spacing: 20;
+	--bspHeading4LetterSpacing: 0;
+	--bspParagraphParagraphWeight: Regular;
+	--bspParagraphParagraphBoldWeight: Semibold;
+	--bspParagraphParagraphMediumWeight: Medium;
+	--bspParagraphRegularFontSize: 16;
+	--bspParagraphRegularLineHeight: 24;
+	--bspParagraphRegularSpacing: 16;
+	--bspParagraphRegularLetterSpacing: 0;
+	--bspParagraphSmallFontSize: 14;
+	--bspParagraphSmallLineHeight: 21;
+	--bspParagraphSmallSpacing: 14;
+	--bspParagraphSmallLetterSpacing: 0;
+	--bspParagraphMiniFontSize: 12;
+	--bspParagraphMiniLineHeight: 16;
+	--bspParagraphMiniSpacing: 12;
+	--bspParagraphMiniLetterSpacing: 0;
+	--bspMonospacedFontWeight: Regular;
+	--bspMonospacedFontSize: 16;
+	--bspMonospacedLineHeight: 24;
+	--bspMonospacedLetterSpacing: 0;
+	--bspMonospacedSpacing: 16;
+	--bspAbsolute0: 0;
+	--bspAbsolute1: 4;
+	--bspAbsolute2: 8;
+	--bspAbsolute3: 12;
+	--bspAbsolute4: 16;
+	--bspAbsolute5: 20;
+	--bspAbsolute6: 24;
+	--bspAbsolute7: 28;
+	--bspAbsolute8: 32;
+	--bspAbsolute9: 36;
+	--bspAbsolute10: 40;
+	--bspAbsolute11: 44;
+	--bspAbsolute12: 48;
+	--bspAbsolute14: 56;
+	--bspAbsolute16: 64;
+	--bspAbsolute20: 80;
+	--bspAbsolute24: 96;
+	--bspAbsolute28: 112;
+	--bspAbsolute32: 128;
+	--bspAbsolute36: 144;
+	--bspAbsolute40: 160;
+	--bspAbsolute44: 176;
+	--bspAbsolute48: 192;
+	--bspAbsolute52: 208;
+	--bspAbsolute56: 224;
+	--bspAbsolute60: 240;
+	--bspAbsolute64: 256;
+	--bspAbsolute72: 288;
+	--bspAbsolute80: 320;
+	--bspAbsolute96: 384;
+	--bspAbsoluteRadius8: 8;
+	--bspAbsoluteRadius6: 6;
+	--bspAbsoluteRadius12: 12;
+	--bspAbsoluteRadius4: 4;
+	--bspAbsoluteRadius10: 10;
+	--bspAbsoluteRadiusInfinite: 9999;
+	--bspAbsoluteRadius2: 2;
+	--bspAbsoluteRadius16: 16;
+	--bspAbsoluteRadius24: 24;
+	--bspAbsoluteRadius32: 32;
+	--bspAbsolute15: 6;
+	--bspAbsolute25: 10;
+	--bspAbsolute35: 14;
+	--bspAbsoluteInfinite: 9999;
+	--bspAbsolute05: 2;
+	--bspSemanticRoundedNone: 0;
+	--bspFontDefinitionsFontFamilyHeadings: var(
+		--bspFontDefinitionsFontFamilySans
+	);
+	--bspFontDefinitionsFontFamilyBody: var(--bspFontDefinitionsFontFamilySans);
+	--bspSemanticRoundedXs: var(--bspAbsoluteRadius2);
+	--bspSemanticRoundedLg: var(--bspAbsoluteRadius8);
+	--bspSemanticRoundedXl: var(--bspAbsoluteRadius12);
+	--bspSemanticRoundedMd: var(--bspAbsoluteRadius6);
+	--bspSemanticRoundedSm: var(--bspAbsoluteRadius4);
+	--bspSemanticRoundedFull: var(--bspAbsoluteRadiusInfinite);
+	--bspSemanticRounded2xl: var(--bspAbsoluteRadius16);
+	--bspSemanticRounded3xl: var(--bspAbsoluteRadius24);
+	--bspSemantic3xs: var(--bspAbsolute05);
+	--bspSemantic2xs: var(--bspAbsolute1);
+	--bspSemanticXs: var(--bspAbsolute2);
+	--bspSemanticMd: var(--bspAbsolute4);
+	--bspSemanticLg: var(--bspAbsolute5);
+	--bspSemanticXl: var(--bspAbsolute6);
+	--bspSemantic2xl: var(--bspAbsolute8);
+	--bspSemantic3xl: var(--bspAbsolute10);
+	--bspSemantic4xl: var(--bspAbsolute12);
+	--bspSemantic5xl: var(--bspAbsolute16);
+	--bspTextTextError: var(--bspRedBase);
+	--bspTextTextLinkHover: var(--bspBlue700);
+	--bspTextTextLink: var(--bspBlueBase);
+	--bspTextTextDisabled: var(--bspGray400);
+	--bspTextTextWarning: var(--bspYellow700);
+	--bspTextTextSuccess: var(--bspGreen600);
+	--bspTextTextTertiary: var(--bspSecondary500);
+	--bspTextTextPlaceholder: var(--bspGray400);
+	--bspTextTextSecondary: var(--bspGunmetalGray600);
+	--bspTextTextPrimary: var(--bspGunmetalGray900);
+	--bspTextTextWhite: var(--bspBWWhite);
+	--bspBorderBorderSuccess: var(--bspGreenBase);
+	--bspBorderBorderError: var(--bspRedBase);
+	--bspBorderBorderFocus: var(--bspPrimaryBase);
+	--bspBorderBorderDisabled: var(--bspGrayBase);
+	--bspBorderBorderWarning: var(--bspYellow500);
+	--bspBorderBorderActive: var(--bspPrimaryBase);
+	--bspBorderBorderHover: var(--bspPrimary200);
+	--bspBorderBorderSecondary: var(--bspGray300);
+	--bspBorderBorderPrimary: var(--bspGrayBase);
+	--bspIconIconInfo: var(--bspBlueBase);
+	--bspIconIconWarning: var(--bspYellow500);
+	--bspIconIconBrand: var(--bspPrimaryBase);
+	--bspIconIconOnAccent: var(--bspBWWhite);
+	--bspIconIconTertiary: var(--bspSecondary500);
+	--bspIconIconSuccess: var(--bspGreenBase);
+	--bspIconIconSecondary: var(--bspGunmetalGray600);
+	--bspIconIconDisabled: var(--bspGray400);
+	--bspIconIconError: var(--bspRedBase);
+	--bspIconIconPrimary: var(--bspGunmetalGray900);
+	--bspFeedbackInfo: var(--bspBlueBase);
+	--bspFeedbackWarningBg: var(--bspYellow50);
+	--bspFeedbackWarning: var(--bspYellow700);
+	--bspFeedbackSuccess: var(--bspGreenBase);
+	--bspFeedbackError: var(--bspRedBase);
+	--bspFeedbackInfoBg: var(--bspBlue50);
+	--bspFeedbackSuccessBg: var(--bspGreen50);
+	--bspFeedbackErrorBg: var(--bspRed50);
+	--bspBgBgTableHeader: var(--bspGray50);
+	--bspBgBgPopover: var(--bspBWWhite);
+	--bspBgBgCardActive: var(--bspGray100);
+	--bspBgBgSidebar: var(--bspGray50);
+	--bspBgBgCardHover: var(--bspGray50);
+	--bspBgBgInverse: var(--bspGunmetalGray900);
+	--bspBgBgTertiary: var(--bspGray50);
+	--bspBgBgCard: var(--bspBWWhite);
+	--bspBgBgHeader: var(--bspBWWhite);
+	--bspBgBgTableRowHover: var(--bspGray100);
+	--bspBgBgPrimary: var(--bspBWWhite);
+	--bspBgBgSecondary: var(--bspGray100);
+	--bspBgBgModal: var(--bspBWWhite);
+	--bspBgBgBrandAzureblue: var(--bspPrimaryBase);
+	--bspBgBgBrandNordicsea: var(--bspSecondaryBase);
+	--bspBgBgBrandGreen: var(--bspGreenBase);
+	--bspBgBgBrandYellow: var(--bspYellowBase);
+	--bspBgBgBrandRed: var(--bspRedBase);
+	--bspBgBgBrandBlue: var(--bspBlueBase);
+	--bspBgBgBrandMistygray: var(--bspGrayBase);
+	--bspBgBgBrandGunmetalgray: var(--bspGunmetalGrayBase);
+}
+
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root[data-theme="bsp-dark"] {
+	--bspGray50: #f8f7fb; /** Generated from Tailwind Color System */
+	--bspGray100: #f1f0f7; /** Generated from Tailwind Color System */
+	--bspGray300: #d3cde5; /** Generated from Tailwind Color System */
+	--bspGray400: #bcb0d5; /** Generated from Tailwind Color System */
+	--bspGray500: #a190c2; /** Generated from Tailwind Color System */
+	--bspGray600: #8f76b1; /** Generated from Tailwind Color System */
+	--bspGray700: #7d649d; /** Generated from Tailwind Color System */
+	--bspGray800: #685384; /** Generated from Tailwind Color System */
+	--bspGray900: #57456d; /** Generated from Tailwind Color System */
+	--bspGray950: #372d48; /** Generated from Tailwind Color System */
+	--bspGrayBase: #ddd9eb; /** Generated from Tailwind Color System */
+	--bspAlphaDark50: rgba(
+		26,
+		26,
+		26,
+		0.06
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark100: rgba(
+		26,
+		26,
+		26,
+		0.09
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark200: rgba(
+		26,
+		26,
+		26,
+		0.2
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark300: rgba(
+		26,
+		26,
+		26,
+		0.28
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark400: rgba(
+		26,
+		26,
+		26,
+		0.36
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark500: rgba(
+		26,
+		26,
+		26,
+		0.48
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark600: rgba(
+		26,
+		26,
+		26,
+		0.6
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark700: rgba(
+		26,
+		26,
+		26,
+		0.7
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark800: rgba(
+		26,
+		26,
+		26,
+		0.75
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark900: rgba(
+		26,
+		26,
+		26,
+		0.8
+	); /** Generated from Tailwind Color System */
+	--bspAlphaDark1000: #1a1a1a; /** Generated from Tailwind Color System */
+	--bspAlphaLight50: rgba(
+		255,
+		255,
+		255,
+		0.06
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight100: rgba(
+		255,
+		255,
+		255,
+		0.09
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight200: rgba(
+		255,
+		255,
+		255,
+		0.2
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight300: rgba(
+		255,
+		255,
+		255,
+		0.28
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight400: rgba(
+		255,
+		255,
+		255,
+		0.36
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight500: rgba(
+		255,
+		255,
+		255,
+		0.48
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight600: rgba(
+		255,
+		255,
+		255,
+		0.6
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight700: rgba(
+		255,
+		255,
+		255,
+		0.7
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight800: rgba(
+		255,
+		255,
+		255,
+		0.75
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight900: rgba(
+		255,
+		255,
+		255,
+		0.8
+	); /** Generated from Tailwind Color System */
+	--bspAlphaLight1000: #ffffff; /** Generated from Tailwind Color System */
+	--bspYellow50: #fbf8eb; /** Generated from Tailwind Color System */
+	--bspYellow100: #f6edcb; /** Generated from Tailwind Color System */
+	--bspYellow200: #eedb9a; /** Generated from Tailwind Color System */
+	--bspYellow400: #daa735; /** Generated from Tailwind Color System */
+	--bspYellow500: #cb9127; /** Generated from Tailwind Color System */
+	--bspYellow600: #af711f; /** Generated from Tailwind Color System */
+	--bspYellow700: #8c521c; /** Generated from Tailwind Color System */
+	--bspYellow800: #75431e; /** Generated from Tailwind Color System */
+	--bspYellow900: #64391f; /** Generated from Tailwind Color System */
+	--bspYellow950: #3a1c0e; /** Generated from Tailwind Color System */
+	--bspYellowBase: #e0b84a; /** Generated from Tailwind Color System */
+	--bspPrimary50: #f3f6fc; /** Generated from Tailwind Color System */
+	--bspPrimary100: #e7edf7; /** Generated from Tailwind Color System */
+	--bspPrimary200: #c9d8ee; /** Generated from Tailwind Color System */
+	--bspPrimary300: #99b8e0; /** Generated from Tailwind Color System */
+	--bspPrimary400: #6392cd; /** Generated from Tailwind Color System */
+	--bspPrimary500: #3f74b8; /** Generated from Tailwind Color System */
+	--bspPrimary700: #264a7e; /** Generated from Tailwind Color System */
+	--bspPrimary800: #233f69; /** Generated from Tailwind Color System */
+	--bspPrimary900: #223758; /** Generated from Tailwind Color System */
+	--bspPrimary950: #17233a; /** Generated from Tailwind Color System */
+	--bspPrimaryBase: #305fa1; /** Generated from Tailwind Color System */
+	--bspBlue50: #f1f6fd; /** Generated from Tailwind Color System */
+	--bspBlue100: #deebfb; /** Generated from Tailwind Color System */
+	--bspBlue200: #c5ddf8; /** Generated from Tailwind Color System */
+	--bspBlue300: #9dc8f3; /** Generated from Tailwind Color System */
+	--bspBlue400: #6faaeb; /** Generated from Tailwind Color System */
+	--bspBlue500: #4d89e4; /** Generated from Tailwind Color System */
+	--bspBlue700: #2f5ac6; /** Generated from Tailwind Color System */
+	--bspBlue800: #2c4ba1; /** Generated from Tailwind Color System */
+	--bspBlue900: #29417f; /** Generated from Tailwind Color System */
+	--bspBlue950: #1d294e; /** Generated from Tailwind Color System */
+	--bspBlueBase: #3a6fd8; /** Generated from Tailwind Color System */
+	--bspRed50: #fdf3f3; /** Generated from Tailwind Color System */
+	--bspRed100: #faeae9; /** Generated from Tailwind Color System */
+	--bspRed200: #f6d5d5; /** Generated from Tailwind Color System */
+	--bspRed300: #eeb3b4; /** Generated from Tailwind Color System */
+	--bspRed400: #e4888b; /** Generated from Tailwind Color System */
+	--bspRed500: #d65d65; /** Generated from Tailwind Color System */
+	--bspRed700: #a12f3f; /** Generated from Tailwind Color System */
+	--bspRed800: #872a3a; /** Generated from Tailwind Color System */
+	--bspRed900: #742737; /** Generated from Tailwind Color System */
+	--bspRed950: #401119; /** Generated from Tailwind Color System */
+	--bspRedBase: #c44755; /** Generated from Tailwind Color System */
+	--bspBWBlack: #000000; /** Generated from Tailwind Color System */
+	--bspBWTransparent: rgba(
+		0,
+		0,
+		0,
+		0
+	); /** Generated from Tailwind Color System */
+	--bspBWWhite: #ffffff; /** Generated from Tailwind Color System */
+	--bspSecondary50: #f2f8f9; /** Generated from Tailwind Color System */
+	--bspSecondary100: #deecef; /** Generated from Tailwind Color System */
+	--bspSecondary200: #c0d9e1; /** Generated from Tailwind Color System */
+	--bspSecondary300: #94bdcc; /** Generated from Tailwind Color System */
+	--bspSecondary500: #467e94; /** Generated from Tailwind Color System */
+	--bspSecondary600: #3d687d; /** Generated from Tailwind Color System */
+	--bspSecondary700: #365668; /** Generated from Tailwind Color System */
+	--bspSecondary800: #334957; /** Generated from Tailwind Color System */
+	--bspSecondary900: #2e3f4b; /** Generated from Tailwind Color System */
+	--bspSecondary950: #1b2831; /** Generated from Tailwind Color System */
+	--bspSecondaryBase: #7aa9bb; /** Generated from Tailwind Color System */
+	--bspGreen50: #effaf5; /** Generated from Tailwind Color System */
+	--bspGreen100: #d9f2e4; /** Generated from Tailwind Color System */
+	--bspGreen200: #b6e4cd; /** Generated from Tailwind Color System */
+	--bspGreen300: #86cfaf; /** Generated from Tailwind Color System */
+	--bspGreen400: #54b38c; /** Generated from Tailwind Color System */
+	--bspGreen600: #22795a; /** Generated from Tailwind Color System */
+	--bspGreen700: #1b614a; /** Generated from Tailwind Color System */
+	--bspGreen800: #184d3c; /** Generated from Tailwind Color System */
+	--bspGreen900: #144032; /** Generated from Tailwind Color System */
+	--bspGreen950: #0a241d; /** Generated from Tailwind Color System */
+	--bspGreenBase: #2f8f6b; /** Generated from Tailwind Color System */
+	--bspGunmetalGray50: #f2f8f9; /** Generated from Tailwind Color System */
+	--bspGunmetalGray100: #deecef; /** Generated from Tailwind Color System */
+	--bspGunmetalGray200: #c1dbe0; /** Generated from Tailwind Color System */
+	--bspGunmetalGray300: #96c1ca; /** Generated from Tailwind Color System */
+	--bspGunmetalGray400: #649dac; /** Generated from Tailwind Color System */
+	--bspGunmetalGray500: #498291; /** Generated from Tailwind Color System */
+	--bspGunmetalGray600: #3f6b7b; /** Generated from Tailwind Color System */
+	--bspGunmetalGray700: #385966; /** Generated from Tailwind Color System */
+	--bspGunmetalGray800: #344c56; /** Generated from Tailwind Color System */
+	--bspGunmetalGray900: #2f414a; /** Generated from Tailwind Color System */
+	--bspGunmetalGrayBase: #1a272e; /** Generated from Tailwind Color System */
+	--bsp2xsColor: rgba(0, 0, 0, 0.05);
+	--bsp2xsX: 0;
+	--bsp2xsY: 1;
+	--bsp2xsBlur: 0;
+	--bsp2xsSpread: 0;
+	--bspXsColor: rgba(0, 0, 0, 0.05);
+	--bspXsX: 0;
+	--bspXsY: 1;
+	--bspXsBlur: 2;
+	--bspXsSpread: 0;
+	--bspSmColor: rgba(0, 0, 0, 0.1);
+	--bspSmShadow1X: 0;
+	--bspSmShadow1Y: 1;
+	--bspSmShadow1Blur: 3;
+	--bspSmShadow1Spread: 0;
+	--bspSmShadow2X2: 0;
+	--bspSmShadow2Y: 1;
+	--bspSmShadow2Blur: 2;
+	--bspSmShadow2Spread: -1;
+	--bsp2xlColor: rgba(0, 0, 0, 0.25);
+	--bsp2xlX: 0;
+	--bsp2xlY: 25;
+	--bsp2xlBlur: 50;
+	--bsp2xlSpread: 12;
+	--bspMdColor: rgba(0, 0, 0, 0.1);
+	--bspMdShadow1X: 0;
+	--bspMdShadow1Y: 4;
+	--bspMdShadow1Blur: 6;
+	--bspMdShadow1Spread: -1;
+	--bspMdShadow2X: 0;
+	--bspMdShadow2Y: 2;
+	--bspMdShadow2Spread: -2;
+	--bspMdShadow2Blur: 4;
+	--bspLgColor: rgba(0, 0, 0, 0.1);
+	--bspLgShadow1X: 0;
+	--bspLgShadow1Y: 10;
+	--bspLgShadow1Blur: 15;
+	--bspLgShadow1Spread: -3;
+	--bspLgShadow2X: 0;
+	--bspLgShadow2Y: 4;
+	--bspLgShadow2Spread: 6;
+	--bspLgShadow2Blur: -4;
+	--bspXlColor: rgba(0, 0, 0, 0.1);
+	--bspXlShadow1X: 0;
+	--bspXlShadow1Y: 20;
+	--bspXlShadow1Blur: 25;
+	--bspXlShadow1Spread: -5;
+	--bspXlShadow2X: 0;
+	--bspXlShadow2Y: 8;
+	--bspXlShadow2Spread: 10;
+	--bspXlShadow2Blur: -6;
+	--bspFontDefinitionsFontFamilySans: Inter;
+	--bspFontDefinitionsFontFamilySerif: Inter;
+	--bspFontDefinitionsFontFamilyMonospace: Inter;
+	--bspHeading1Weight: Semibold;
+	--bspHeading1FontSize: 48;
+	--bspHeading1LineHeight: 48;
+	--bspHeading1Spacing: 48;
+	--bspHeading1LetterSpacing: -1.5;
+	--bspHeading2Weight: Semibold;
+	--bspHeading2FontSize: 30;
+	--bspHeading2LineHeight: 30;
+	--bspHeading2Spacing: 30;
+	--bspHeading2LetterSpacing: -1;
+	--bspHeading3Weight: Semibold;
+	--bspHeading3FontSize: 24;
+	--bspHeading3LineHeight: 28;
+	--bspHeading3Spacing: 20;
+	--bspHeading3LetterSpacing: -1;
+	--bspHeading4Weight: Semibold;
+	--bspHeading4FontSize: 20;
+	--bspHeading4LineHeight: 24;
+	--bspHeading4Spacing: 20;
+	--bspHeading4LetterSpacing: 0;
+	--bspParagraphParagraphWeight: Regular;
+	--bspParagraphParagraphBoldWeight: Semibold;
+	--bspParagraphParagraphMediumWeight: Medium;
+	--bspParagraphRegularFontSize: 16;
+	--bspParagraphRegularLineHeight: 24;
+	--bspParagraphRegularSpacing: 16;
+	--bspParagraphRegularLetterSpacing: 0;
+	--bspParagraphSmallFontSize: 14;
+	--bspParagraphSmallLineHeight: 21;
+	--bspParagraphSmallSpacing: 14;
+	--bspParagraphSmallLetterSpacing: 0;
+	--bspParagraphMiniFontSize: 12;
+	--bspParagraphMiniLineHeight: 16;
+	--bspParagraphMiniSpacing: 12;
+	--bspParagraphMiniLetterSpacing: 0;
+	--bspMonospacedFontWeight: Regular;
+	--bspMonospacedFontSize: 16;
+	--bspMonospacedLineHeight: 24;
+	--bspMonospacedLetterSpacing: 0;
+	--bspMonospacedSpacing: 16;
+	--bspAbsolute0: 0;
+	--bspAbsolute1: 4;
+	--bspAbsolute2: 8;
+	--bspAbsolute3: 12;
+	--bspAbsolute4: 16;
+	--bspAbsolute5: 20;
+	--bspAbsolute6: 24;
+	--bspAbsolute7: 28;
+	--bspAbsolute8: 32;
+	--bspAbsolute9: 36;
+	--bspAbsolute10: 40;
+	--bspAbsolute11: 44;
+	--bspAbsolute12: 48;
+	--bspAbsolute14: 56;
+	--bspAbsolute16: 64;
+	--bspAbsolute20: 80;
+	--bspAbsolute24: 96;
+	--bspAbsolute28: 112;
+	--bspAbsolute32: 128;
+	--bspAbsolute36: 144;
+	--bspAbsolute40: 160;
+	--bspAbsolute44: 176;
+	--bspAbsolute48: 192;
+	--bspAbsolute52: 208;
+	--bspAbsolute56: 224;
+	--bspAbsolute60: 240;
+	--bspAbsolute64: 256;
+	--bspAbsolute72: 288;
+	--bspAbsolute80: 320;
+	--bspAbsolute96: 384;
+	--bspAbsoluteRadius8: 8;
+	--bspAbsoluteRadius6: 6;
+	--bspAbsoluteRadius12: 12;
+	--bspAbsoluteRadius4: 4;
+	--bspAbsoluteRadius10: 10;
+	--bspAbsoluteRadiusInfinite: 9999;
+	--bspAbsoluteRadius2: 2;
+	--bspAbsoluteRadius16: 16;
+	--bspAbsoluteRadius24: 24;
+	--bspAbsoluteRadius32: 32;
+	--bspAbsolute15: 6;
+	--bspAbsolute25: 10;
+	--bspAbsolute35: 14;
+	--bspAbsoluteInfinite: 9999;
+	--bspAbsolute05: 2;
+	--bspSemanticRoundedNone: 0;
+	--bspFontDefinitionsFontFamilyHeadings: var(
+		--bspFontDefinitionsFontFamilySans
+	);
+	--bspFontDefinitionsFontFamilyBody: var(--bspFontDefinitionsFontFamilySans);
+	--bspSemanticRoundedXs: var(--bspAbsoluteRadius2);
+	--bspSemanticRoundedLg: var(--bspAbsoluteRadius8);
+	--bspSemanticRoundedXl: var(--bspAbsoluteRadius12);
+	--bspSemanticRoundedMd: var(--bspAbsoluteRadius6);
+	--bspSemanticRoundedSm: var(--bspAbsoluteRadius4);
+	--bspSemanticRoundedFull: var(--bspAbsoluteRadiusInfinite);
+	--bspSemanticRounded2xl: var(--bspAbsoluteRadius16);
+	--bspSemanticRounded3xl: var(--bspAbsoluteRadius24);
+	--bspSemantic3xs: var(--bspAbsolute05);
+	--bspSemantic2xs: var(--bspAbsolute1);
+	--bspSemanticXs: var(--bspAbsolute2);
+	--bspSemanticMd: var(--bspAbsolute4);
+	--bspSemanticLg: var(--bspAbsolute5);
+	--bspSemanticXl: var(--bspAbsolute6);
+	--bspSemantic2xl: var(--bspAbsolute8);
+	--bspSemantic3xl: var(--bspAbsolute10);
+	--bspSemantic4xl: var(--bspAbsolute12);
+	--bspSemantic5xl: var(--bspAbsolute16);
+	--bspTextTextError: var(--bspRed300);
+	--bspTextTextLinkHover: var(--bspBlueBase);
+	--bspTextTextLink: var(--bspBlue500);
+	--bspTextTextDisabled: var(--bspGunmetalGray600);
+	--bspTextTextWarning: var(--bspYellow400);
+	--bspTextTextSuccess: var(--bspGreen300);
+	--bspTextTextTertiary: var(--bspSecondaryBase);
+	--bspTextTextPlaceholder: var(--bspGray500);
+	--bspTextTextSecondary: var(--bspGunmetalGray200);
+	--bspTextTextPrimary: var(--bspBWWhite);
+	--bspTextTextWhite: var(--bspBWWhite);
+	--bspBorderBorderSuccess: var(--bspGreen400);
+	--bspBorderBorderError: var(--bspRed400);
+	--bspBorderBorderFocus: var(--bspPrimary400);
+	--bspBorderBorderDisabled: var(--bspGunmetalGray600);
+	--bspBorderBorderWarning: var(--bspYellowBase);
+	--bspBorderBorderActive: var(--bspPrimary400);
+	--bspBorderBorderHover: var(--bspPrimaryBase);
+	--bspBorderBorderSecondary: var(--bspGunmetalGray700);
+	--bspBorderBorderPrimary: var(--bspGunmetalGray500);
+	--bspIconIconInfo: var(--bspBlue400);
+	--bspIconIconWarning: var(--bspYellow400);
+	--bspIconIconBrand: var(--bspPrimary400);
+	--bspIconIconOnAccent: var(--bspGunmetalGray900);
+	--bspIconIconTertiary: var(--bspSecondaryBase);
+	--bspIconIconSuccess: var(--bspGreen300);
+	--bspIconIconSecondary: var(--bspGunmetalGray200);
+	--bspIconIconDisabled: var(--bspGunmetalGray600);
+	--bspIconIconError: var(--bspRed400);
+	--bspIconIconPrimary: var(--bspGrayBase);
+	--bspFeedbackInfo: var(--bspBlue300);
+	--bspFeedbackWarningBg: var(--bspYellow900);
+	--bspFeedbackWarning: var(--bspYellow400);
+	--bspFeedbackSuccess: var(--bspGreen300);
+	--bspFeedbackError: var(--bspRed300);
+	--bspFeedbackInfoBg: var(--bspBlue800);
+	--bspFeedbackSuccessBg: var(--bspGreen900);
+	--bspFeedbackErrorBg: var(--bspRed900);
+	--bspBgBgTableHeader: var(--bspGunmetalGray800);
+	--bspBgBgPopover: var(--bspGunmetalGray600);
+	--bspBgBgCardActive: var(--bspGunmetalGray600);
+	--bspBgBgSidebar: var(--bspGunmetalGray900);
+	--bspBgBgCardHover: var(--bspGunmetalGray700);
+	--bspBgBgInverse: var(--bspBWWhite);
+	--bspBgBgTertiary: var(--bspGunmetalGray700);
+	--bspBgBgCard: var(--bspGunmetalGray800);
+	--bspBgBgHeader: var(--bspGunmetalGray800);
+	--bspBgBgTableRowHover: var(--bspGunmetalGray500);
+	--bspBgBgPrimary: var(--bspGunmetalGray900);
+	--bspBgBgSecondary: var(--bspGunmetalGray800);
+	--bspBgBgModal: var(--bspGunmetalGray700);
+	--bspBgBgBrandAzureblue: var(--bspPrimary400);
+	--bspBgBgBrandNordicsea: var(--bspSecondary300);
+	--bspBgBgBrandGreen: var(--bspGreen400);
+	--bspBgBgBrandYellow: var(--bspYellow400);
+	--bspBgBgBrandRed: var(--bspRed400);
+	--bspBgBgBrandBlue: var(--bspBlue400);
+	--bspBgBgBrandMistygray: var(--bspGray300);
+	--bspBgBgBrandGunmetalgray: var(--bspGunmetalGray800);
+}

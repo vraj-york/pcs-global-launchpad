@@ -1,0 +1,1802 @@
+[
+  {
+    "question_text": "When working with peers, I typically prefer to:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Build the relationship first"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Take the lead"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Collaborate toward mutual success"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Seek to limit engagements"
+      }
+    ],
+    "question_order": 1
+  },
+  {
+    "question_text": "When meeting with superiors (or other experts), usually I:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Focus on what makes my manager (or leader) happy"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Ask questions for mutual solutions"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Do as I'm instructed to do"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Inform them how it is"
+      }
+    ],
+    "question_order": 2
+  },
+  {
+    "question_text": "At work, when sharing space, I generally:",
+    "type": "environmental_preferences",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Defer to what others prefer"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Improve it to fit my needs"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Balance my desires with the needs of others"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Adjust to it"
+      }
+    ],
+    "question_order": 3
+  },
+  {
+    "question_text": "I get stressed by:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Committing to obligations"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Saying/doing something socially inappropriate"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Encountering unexpected obstacles"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Few things"
+      }
+    ],
+    "question_order": 4
+  },
+  {
+    "question_text": "I want my workspace to be:",
+    "type": "environmental_preferences",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Comfortable"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Designed to meet my needs"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Functional"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Organized yet flexible"
+      }
+    ],
+    "question_order": 5
+  },
+  {
+    "question_text": "When disagreeing with others on something, I generally:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Avoid the distraction"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Attempt to compromise"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Search for ways to work in partnership"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Take on the challenge; endeavor to win"
+      }
+    ],
+    "question_order": 6
+  },
+  {
+    "question_text": "Typically, I prefer my time to be spent:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Being open and authentically connecting with others"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "In private, contemplation"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Convincing others of my point of view"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Doing satisfying pastimes with others"
+      }
+    ],
+    "question_order": 7
+  },
+  {
+    "question_text": "Normally, I prefer others to communicate with me through:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Asking me questions and making requests"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Their own individual style"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "A sensitive, caring approach"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Detailed, sequential directions"
+      }
+    ],
+    "question_order": 8
+  },
+  {
+    "question_text": "I usually respond to the work environment around me by:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Understanding the emotions of myself and others then acting intuitively"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Postponing action through careful reflection"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Planning ahead and choosing my response"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Thinking quickly and taking action"
+      }
+    ],
+    "question_order": 9
+  },
+  {
+    "question_text": "On a typical day, people are likely to notice me by my:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Comfortable, coordinated dress with warm facial expressions"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Professional attire with attentive posture"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Minimalistic dress and reserved body language"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Stylish presentation and open body language"
+      }
+    ],
+    "question_order": 10
+  },
+  {
+    "question_text": "In general, I am most motivated by:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Predictable routines and solitude"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Awareness and growth"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Recognition for accomplishments and getting things done"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Being understood for who I am and connecting with others"
+      }
+    ],
+    "question_order": 11
+  },
+  {
+    "question_text": "When encountering new situations, my natural response is to:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Adapt and move forward"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Make sure others are happy"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Defend my position and come out on top"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Allow the situation to run its course"
+      }
+    ],
+    "question_order": 12
+  },
+  {
+    "question_text": "When working with a new subordinate/associate, I:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Allow them to manage themselves"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Explain the mutual benefit of goals and actions"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Give directions"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Strive to make sure they like me"
+      }
+    ],
+    "question_order": 13
+  },
+  {
+    "question_text": "I am normally drawn to:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Gaining power"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Developing relationships"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Maintaining consistency"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Growing my awareness"
+      }
+    ],
+    "question_order": 14
+  },
+  {
+    "question_text": "When interacting with visitors or guests on a typical day, I usually:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Size them up"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Welcome them, individually"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Let them approach me first"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Get to know them"
+      }
+    ],
+    "question_order": 15
+  },
+  {
+    "question_text": "When I am stressed, I try to avoid:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Interactions with others who may reject me"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Scenarios where I have failed in the past and not yet found solutions"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Situations where my weaknesses are apparent"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Long term commitments"
+      }
+    ],
+    "question_order": 16
+  },
+  {
+    "question_text": "When under stress, I need my work area to be:",
+    "type": "environmental_preferences",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Clear with limited interruptions"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Quiet and isolated"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Supportive and soothing"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Efficient and trouble-free"
+      }
+    ],
+    "question_order": 17
+  },
+  {
+    "question_text": "In a stressful meeting with superiors (or other experts), I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Pay attention; ask questions to reach understanding"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Give in or avoid disagreeing"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Become disinterested; may appear apathetic"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Present my own solution, even if unpopular"
+      }
+    ],
+    "question_order": 18
+  },
+  {
+    "question_text": "When I feel stressed, I respond by:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Accepting the situation and my reactions to it"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Becoming perfectionistic and demanding of others"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Limiting engagement with others and seek solitude"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Distracting myself by doing something enjoyable or venting with others"
+      }
+    ],
+    "question_order": 19
+  },
+  {
+    "question_text": "When communicating with new subordinates/associates while I am stressed, I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Communicate expectations and demand compliance"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Imply my needs and hold-in frustrations"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Lose focus and feel disinterested"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Keep them appraised and count on them to follow through"
+      }
+    ],
+    "question_order": 20
+  },
+  {
+    "question_text": "When stressed while working with others, I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Get out of the way"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Seek comfort"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Solicit feedback"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Take charge"
+      }
+    ],
+    "question_order": 21
+  },
+  {
+    "question_text": "Under stress, I respond to the environment by:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Letting things take their course"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Reacting to my feelings"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Accepting challenges as learning opportunities"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Forcing action as quickly as possible"
+      }
+    ],
+    "question_order": 22
+  },
+  {
+    "question_text": "Under stress, I am most at risk:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "If I am cut off from my support systems"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "When kept from my usual routines"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "If I'm unable to predict the outcome"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Until I'm able to find a solution"
+      }
+    ],
+    "question_order": 23
+  },
+  {
+    "question_text": "When I am stressed, I prefer others to communicate with me by:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Their honest, authentic style"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Asking relevant questions"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Understanding my feelings"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Concise, detailed directions"
+      }
+    ],
+    "question_order": 24
+  },
+  {
+    "question_text": "When I feel threatened, my natural response is to:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Freeze"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Fight"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Flow"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Flee"
+      }
+    ],
+    "question_order": 25
+  },
+  {
+    "question_text": "When stressed and expected to interact with visitors or guests, I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Explain it's an inopportune time and offer to reschedule"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Have difficulty concentrating and break away as soon as possible"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Put on a good face and hide tension"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Tell them I'm busy and hurry them along"
+      }
+    ],
+    "question_order": 26
+  },
+  {
+    "question_text": "When stressed, my body language:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Appears disconnected, minimal eye contact or facial expressions"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Aggressive stance; perhaps point a finger or clench a fist"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Is closed off, sometimes slouching with crossed arms"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Doesn't change much"
+      }
+    ],
+    "question_order": 27
+  },
+  {
+    "question_text": "When relating with peers while stressed, I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Get nervous and vent privately"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Act aloof; seem pessimistic"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Become critical and find fault in others"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Admit to being stressed"
+      }
+    ],
+    "question_order": 28
+  },
+  {
+    "question_text": "When stressed and disagreeing with others on something, I:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Find fault and exploit their weaknesses"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Anticipate failure and cut my losses"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Get flustered and make mistakes where I normally wouldn't"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Attempt to compromise"
+      }
+    ],
+    "question_order": 29
+  },
+  {
+    "question_text": "When stressed, I dislike:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "professional",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Involvement with others"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Things going wrong"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Lacking relevant information"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Being judged by others"
+      }
+    ],
+    "question_order": 30
+  },
+  {
+    "question_text": "I usually prefer friends and family to communicate with me by:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Authentic expression focused upon mutual needs"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Giving me clear and specific directions"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Asking questions and providing feedback"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Recognizing my emotions and responding accordingly"
+      }
+    ],
+    "question_order": 31
+  },
+  {
+    "question_text": "Generally, I prefer my personal time to be spent:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Alone, focused on my interests and hobbies"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Catching up with friends"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Juggling personal projects and strategic connections"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Engaged in activities that promote growth"
+      }
+    ],
+    "question_order": 32
+  },
+  {
+    "question_text": "In my personal life, I sometimes worry about:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Being over-committed"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Not being accepted"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Being unaware"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Not being important"
+      }
+    ],
+    "question_order": 33
+  },
+  {
+    "question_text": "When encountering my personal critics, I generally:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Prepare to challenge and defend"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Engage and consider their intention"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Acknowledge the person to appease them"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Listen and move on"
+      }
+    ],
+    "question_order": 34
+  },
+  {
+    "question_text": "When spending time with my partner (or best friend), normally I:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Allow for quiet time together"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Ensure we do the things I want to do"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Participate in mutually prearranged, often new activities"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Share emotions to deepen our relationship"
+      }
+    ],
+    "question_order": 35
+  },
+  {
+    "question_text": "When talking, my friends and/or family-of-choice notice that I am typically:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Inquisitive and relaxed"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Precise and in charge"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Simple and monotonic"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Nurturing and gentle"
+      }
+    ],
+    "question_order": 36
+  },
+  {
+    "question_text": "When initially meeting strangers, I usually:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Open up and search for areas of connection"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Hold back and wait"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Size them up"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Approach warmly and compliment them"
+      }
+    ],
+    "question_order": 37
+  },
+  {
+    "question_text": "Typically, when talking with friends, I:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Discuss ideas, opinions and recent accomplishments"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Explain private experiences about hobbies or routines"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Exchange passions and growth opportunities"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Connect with others by listening and sharing"
+      }
+    ],
+    "question_order": 38
+  },
+  {
+    "question_text": "When hanging out with my family, I usually prefer to:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Stay in the background"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Orchestrate and schedule structured activities"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Share and create memories together"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Engage intimately and interact with everyone"
+      }
+    ],
+    "question_order": 39
+  },
+  {
+    "question_text": "When encountering new situations in my personal life, I normally exhibit:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Courage with openness to grow"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "A take-charge attitude focused on goal achievement"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "An aloof manner and default to routines"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "A gentle demeanor with a desire to connect"
+      }
+    ],
+    "question_order": 40
+  },
+  {
+    "question_text": "In my personal life, I am normally drawn to:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Creating connections"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Learning and development"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Following routines"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Getting ahead"
+      }
+    ],
+    "question_order": 41
+  },
+  {
+    "question_text": "On a typical day, I prefer my personal space to be:",
+    "type": "environmental_preferences",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Orderly for function"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "As I left it"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Cozy"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Adjustable"
+      }
+    ],
+    "question_order": 42
+  },
+  {
+    "question_text": "When with my friends and/or family of choice, I am mostly motivated by:",
+    "type": "character_strengths_distressors",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Remaining supportive while maintaining traditions"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Instilling values leading to achievement and power"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Experiencing intimacy and promoting self-expression"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Acceptance and being together"
+      }
+    ],
+    "question_order": 43
+  },
+  {
+    "question_text": "I normally interact with my friends and family by:",
+    "type": "interaction_preferences",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Observing and letting them lead"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Recognizing their emotions and reacting appropriately"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Leading the conversation by asking questions"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Considering and matching their energy"
+      }
+    ],
+    "question_order": 44
+  },
+  {
+    "question_text": "At home, my common space is generally:",
+    "type": "environmental_preferences",
+    "situation": "typical",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Open and adaptable"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Arranged to be practical"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Of little concern to me"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Comforting, with others in mind"
+      }
+    ],
+    "question_order": 45
+  },
+  {
+    "question_text": "When encountering my personal critics while under stress, I:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Explain to them how they are wrong"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Listen carefully to allow for processing"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Take it personally and become passive-aggressive"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Become cynical and avoid interacting"
+      }
+    ],
+    "question_order": 46
+  },
+  {
+    "question_text": "When I'm with friends or family-of-choice while stressed, I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Tend to be more impatient and stubborn"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Recognize and do what's needed to improve"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Avoid promises resulting in additional commitments"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Am more apologetic and may appear needy"
+      }
+    ],
+    "question_order": 47
+  },
+  {
+    "question_text": "Under stress, I prefer to connect with my friends and/or family of choice by:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Debating or arguing ideas and opinions I care about"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Removing myself while they continue with what they are doing"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Recognizing the issues and encouraging cooperation"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Accommodating them in ways that will make them happy"
+      }
+    ],
+    "question_order": 48
+  },
+  {
+    "question_text": "In my personal life, I tend to fear:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Involvement or commitments"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Insignificance or lack of purpose"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Not having control or losing power"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Rejection or isolation"
+      }
+    ],
+    "question_order": 49
+  },
+  {
+    "question_text": "When I'm stressed while with family, I:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Share my feelings and seek comfort"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Consider the source and options to resolve it"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Point out how they are contributing to the situation can be critical"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Am mentally disengaged"
+      }
+    ],
+    "question_order": 50
+  },
+  {
+    "question_text": "When I am stressed, I prefer friends and family speak to me with:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Compassion and encouragement"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Respectful questions and requests"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Specific, clear instructions"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Their natural style, aware of my stress"
+      }
+    ],
+    "question_order": 51
+  },
+  {
+    "question_text": "When stressed and introduced to visitors or guests, I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Get to the point as quickly as possible"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "May appear reserved"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Rise to the occasion and carry on"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Greet them and downplay my concerns"
+      }
+    ],
+    "question_order": 52
+  },
+  {
+    "question_text": "In my personal life when I feel stressed, I recharge by:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Retreating to solitary activities (reading, music, art, gaming, etc.)"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Working on personal projects"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Being with those I care about"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Connecting with something bigger than myself"
+      }
+    ],
+    "question_order": 53
+  },
+  {
+    "question_text": "When stressed in my personal life, I:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Dislike mistakes, excuses or surprises"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Fear being left out or rejected"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Focus on what's in and out of my control"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Prefer to avoid commitment, activities and commotion"
+      }
+    ],
+    "question_order": 54
+  },
+  {
+    "question_text": "When under stress, I need my personal space to:",
+    "type": "environmental_preferences",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Be flexible and meet my needs"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Allow for intentional, uninterrupted time"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Be comfortable and help me unwind"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Allow for solitude and space"
+      }
+    ],
+    "question_order": 55
+  },
+  {
+    "question_text": "When stressed and encountering new situations in my personal life, I:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Give in to get along"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Get on with it to move forward"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Give up to avoid future problems"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Get ahead to prove I know what I'm doing"
+      }
+    ],
+    "question_order": 56
+  },
+  {
+    "question_text": "Under stress, my common space is generally:",
+    "type": "environmental_preferences",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Not of concern"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "I do what's needed to adapt"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Consider the concerns of others"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Want things in their place"
+      }
+    ],
+    "question_order": 57
+  },
+  {
+    "question_text": "When stressed, my speech becomes:",
+    "type": "character_strengths_distressors",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Flat, monotonic, sullen; minimal and sometimes apathetic"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Firm, abrupt, sharp; directive and at times accusatory"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Nervous, timid, soft; unsure and even apologetic"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Careful, slower, even; realistic and maybe cautious"
+      }
+    ],
+    "question_order": 58
+  },
+  {
+    "question_text": "When interacting with friends when I am stressed, I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Get distracted and second-guess myself"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Vent in a smaller group with my closest friends"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Direct the conversation"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Explain my issues and ask for feedback"
+      }
+    ],
+    "question_order": 59
+  },
+  {
+    "question_text": "When I experience stress, while with my partner (or best friend), I:",
+    "type": "interaction_preferences",
+    "situation": "stressful",
+    "life_context": "personal",
+    "version": 1,
+    "options": [
+      {
+        "color": "red",
+        "display_order": 1,
+        "option_text": "Look to them for comfort"
+      },
+      {
+        "color": "green",
+        "display_order": 2,
+        "option_text": "Prefer to take control"
+      },
+      {
+        "color": "blue",
+        "display_order": 3,
+        "option_text": "Let them take the lead"
+      },
+      {
+        "color": "grey",
+        "display_order": 4,
+        "option_text": "Process the issues and consider solutions"
+      }
+    ],
+    "question_order": 60
+  }
+]

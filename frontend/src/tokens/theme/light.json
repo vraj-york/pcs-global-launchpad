@@ -1,0 +1,570 @@
+{
+	"bg": {
+		"page": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "App background"
+		},
+		"surface": {
+			"value": "{gray.50}",
+			"type": "color",
+			"description": "Cards & Panels"
+		},
+		"surface-hover": {
+			"value": "{gray.100}",
+			"type": "color",
+			"description": "Hover cards"
+		},
+		"elevated": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "Dialogs & Sheets"
+		},
+		"muted": {
+			"value": "{gray.Base}",
+			"type": "color",
+			"description": "Disabled sections"
+		},
+		"selected": {
+			"value": "{blue.50}",
+			"type": "color",
+			"description": "Selected rows"
+		},
+		"overlay": {
+			"value": "{alpha.dark.600}",
+			"type": "color",
+			"description": "Modals"
+		},
+		"inverted": {
+			"value": "{gunmetal gray.Base}",
+			"type": "color",
+			"description": "Inverted"
+		},
+		"background": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "App background"
+		},
+		"card": {
+			"value": "{gray.50}",
+			"type": "color",
+			"description": "Cards & Panels"
+		},
+		"card-foreground": {
+			"value": "{gray.100}",
+			"type": "color",
+			"description": "Hover cards"
+		},
+		"popover": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "Dialogs & Sheets"
+		},
+		"accent": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "Accent"
+		},
+		"foreground": {
+			"value": "{gunmetal gray.Base}",
+			"type": "color",
+			"description": "foreground"
+		},
+		"secondary": {
+			"value": "{gray.100}",
+			"type": "color",
+			"description": "secondary"
+		},
+		"accent-foreground": {
+			"value": "{gunmetal gray.900}",
+			"type": "color",
+			"description": "Selected rows"
+		},
+		"sidebar-ring": {
+			"value": "{primary.Base}",
+			"type": "color",
+			"description": "Sidebar ring"
+		},
+		"sidebar-accent-foreground": {
+			"value": "{gunmetal gray.900}",
+			"type": "color",
+			"description": "Sidebar accent foreground"
+		},
+		"sidebar-accent": {
+			"value": "{gray.100}",
+			"type": "color",
+			"description": "Sidebar accent"
+		},
+		"sidebar-primary-foreground": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "Sidebar primary foreground"
+		},
+		"sidebar-border": {
+			"value": "{gray.300}",
+			"type": "color",
+			"description": "Sidebar border"
+		},
+		"sidebar-primary": {
+			"value": "{primary.Base}",
+			"type": "color",
+			"description": "Sidebar primary"
+		},
+		"sidebar-foreground": {
+			"value": "{gunmetal gray.900}",
+			"type": "color",
+			"description": "Sidebar Foreground"
+		},
+		"sidebar-background": {
+			"value": "{gray.50}",
+			"type": "color",
+			"description": "Sidebar Background"
+		},
+		"pure-bg": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "Sidebar ring"
+		}
+	},
+	"text": {
+		"primary": {
+			"value": "{gunmetal gray.900}",
+			"type": "color",
+			"description": "Headings"
+		},
+		"secondary": {
+			"value": "{gunmetal gray.700}",
+			"type": "color",
+			"description": "Body text"
+		},
+		"tertiary": {
+			"value": "{gunmetal gray.500}",
+			"type": "color",
+			"description": "Helper text"
+		},
+		"disabled": {
+			"value": "{gunmetal gray.400}",
+			"type": "color",
+			"description": "Disabled"
+		},
+		"inverse": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "On dark BG"
+		},
+		"link": {
+			"value": "{blue.Base}",
+			"type": "color",
+			"description": "Links"
+		},
+		"link-hover": {
+			"value": "{blue.700}",
+			"type": "color",
+			"description": "Hover"
+		},
+		"brand primary": {
+			"value": "{primary.Base}",
+			"type": "color",
+			"description": "Brand Primary"
+		},
+		"brand secondary": {
+			"value": "{secondary.Base}",
+			"type": "color",
+			"description": "Brand Secondary"
+		},
+		"brand gray": {
+			"value": "{gray.Base}",
+			"type": "color",
+			"description": "Brand Gray"
+		},
+		"brand green": {
+			"value": "{green.Base}",
+			"type": "color",
+			"description": "Brand Green"
+		},
+		"brand yellow": {
+			"value": "{yellow.Base}",
+			"type": "color",
+			"description": "Brand Yellow"
+		},
+		"brand red": {
+			"value": "{red.Base}",
+			"type": "color",
+			"description": "Brand Red"
+		},
+		"brand info": {
+			"value": "{blue.Base}",
+			"type": "color",
+			"description": "Brand Red"
+		},
+		"foreground": {
+			"value": "{gunmetal gray.900}",
+			"type": "color",
+			"description": "Headings"
+		},
+		"muted-foreground": {
+			"value": "{gunmetal gray.500}",
+			"type": "color",
+			"description": "Helper text"
+		},
+		"primary-foreground": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "Primary foreground"
+		},
+		"secondary-foreground": {
+			"value": "{gunmetal gray.900}",
+			"type": "color",
+			"description": "Secondary Foreground"
+		},
+		"popover-foreground": {
+			"value": "{gunmetal gray.900}",
+			"type": "color",
+			"description": "Popover foreground"
+		},
+		"light-same": {
+			"value": "{b&w.white}",
+			"type": "color"
+		},
+		"dark-same": {
+			"value": "{gunmetal gray.Base}",
+			"type": "color"
+		}
+	},
+	"border": {
+		"default": {
+			"value": "{gray.Base}",
+			"type": "color",
+			"description": "Inputs & Cards"
+		},
+		"muted": {
+			"value": "{gray.100}",
+			"type": "color",
+			"description": "Subtle dividers"
+		},
+		"strong": {
+			"value": "{gray.300}",
+			"type": "color",
+			"description": "Focused states"
+		},
+		"focus": {
+			"value": "{primary.Base}",
+			"type": "color",
+			"description": "Focus ring"
+		},
+		"error": {
+			"value": "{red.Base}",
+			"type": "color",
+			"description": "Errors"
+		},
+		"success": {
+			"value": "{green.Base}",
+			"type": "color",
+			"description": "Success"
+		},
+		"warning": {
+			"value": "{yellow.500}",
+			"type": "color",
+			"description": "Warning"
+		},
+		"info": {
+			"value": "{blue.Base}",
+			"type": "color",
+			"description": "Info"
+		},
+		"border": {
+			"value": "{gray.Base}",
+			"type": "color",
+			"description": "Inputs & Cards"
+		},
+		"input": {
+			"value": "{gray.300}",
+			"type": "color",
+			"description": "Focused states"
+		},
+		"ring": {
+			"value": "{primary.Base}",
+			"type": "color",
+			"description": "Focus ring"
+		},
+		"destructive": {
+			"value": "{red.Base}",
+			"type": "color",
+			"description": "Destructive"
+		},
+		"ring-offset": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "Focus ring offset"
+		},
+		"destructive-foreground": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "Destructive Foreground"
+		}
+	},
+	"icon": {
+		"primary": {
+			"value": "{gunmetal gray.800}",
+			"type": "color",
+			"description": "Default icons"
+		},
+		"secondary": {
+			"value": "{gunmetal gray.500}",
+			"type": "color",
+			"description": "Muted icons"
+		},
+		"disabled": {
+			"value": "{gunmetal gray.400}",
+			"type": "color",
+			"description": "Disabled"
+		},
+		"info": {
+			"value": "{blue.Base}",
+			"type": "color",
+			"description": "Active"
+		},
+		"inverse": {
+			"value": "{b&w.white}",
+			"type": "color",
+			"description": "On dark BG"
+		},
+		"success": {
+			"value": "{green.Base}",
+			"type": "color",
+			"description": "Success"
+		},
+		"warning": {
+			"value": "{yellow.500}",
+			"type": "color",
+			"description": "Warning"
+		},
+		"error": {
+			"value": "{red.Base}",
+			"type": "color",
+			"description": "Error"
+		},
+		"brand primary": {
+			"value": "{primary.Base}",
+			"type": "color",
+			"description": "Brand Primary"
+		},
+		"brand secondary": {
+			"value": "{secondary.500}",
+			"type": "color",
+			"description": "Brand Secondary"
+		},
+		"dark-same": {
+			"value": "{gunmetal gray.Base}",
+			"type": "color"
+		},
+		"light-same": {
+			"value": "{b&w.white}",
+			"type": "color"
+		}
+	},
+	"feedback": {
+		"success text": {
+			"value": "{green.700}",
+			"type": "color",
+			"description": "Success Text"
+		},
+		"success bg": {
+			"value": "{green.50}",
+			"type": "color",
+			"description": "Success Bg"
+		},
+		"warning text": {
+			"value": "{yellow.700}",
+			"type": "color",
+			"description": "Warning Text"
+		},
+		"warning bg": {
+			"value": "{yellow.50}",
+			"type": "color",
+			"description": "Warning Bg"
+		},
+		"error text": {
+			"value": "{red.700}",
+			"type": "color",
+			"description": "Error Text"
+		},
+		"error bg": {
+			"value": "{red.50}",
+			"type": "color",
+			"description": "Error Bg"
+		},
+		"info text": {
+			"value": "{blue.700}",
+			"type": "color",
+			"description": "Info Text"
+		},
+		"info bg": {
+			"value": "{blue.50}",
+			"type": "color",
+			"description": "Info Bg"
+		},
+		"brand primary text": {
+			"value": "{primary.700}",
+			"type": "color",
+			"description": "Brand Primary Text"
+		},
+		"brand primary bg": {
+			"value": "{primary.100}",
+			"type": "color",
+			"description": "Brand Primary Bg"
+		},
+		"brand secondary text": {
+			"value": "{secondary.600}",
+			"type": "color",
+			"description": "Brand Secondary Text"
+		},
+		"brand secondary bg": {
+			"value": "{secondary.50}",
+			"type": "color",
+			"description": "Brand Secondary Bg"
+		},
+		"brand gray text": {
+			"value": "{gray.700}",
+			"type": "color",
+			"description": "Brand Gray Text"
+		},
+		"brand gray bg": {
+			"value": "{gray.100}",
+			"type": "color",
+			"description": "Brand Gray Bg"
+		}
+	},
+	"interactive": {
+		"primary": {
+			"value": "{primary.Base}",
+			"type": "color",
+			"description": "Primary actions"
+		},
+		"primary hover": {
+			"value": "{primary.700}",
+			"type": "color",
+			"description": "Primary hover"
+		},
+		"primary active": {
+			"value": "{primary.800}",
+			"type": "color",
+			"description": "Primary active"
+		},
+		"neutral": {
+			"value": "{gray.Base}",
+			"type": "color",
+			"description": "Neutral"
+		},
+		"neutral hover": {
+			"value": "{gray.300}",
+			"type": "color",
+			"description": "Neutral hover"
+		},
+		"disabled": {
+			"value": "{gray.Base}",
+			"type": "color",
+			"description": "Disabled"
+		},
+		"focus ring": {
+			"value": "#3f74b866",
+			"type": "color",
+			"description": "Focus ring"
+		},
+		"secondary": {
+			"value": "{secondary.Base}",
+			"type": "color",
+			"description": "Secondary"
+		},
+		"secondary hover": {
+			"value": "{secondary.500}",
+			"type": "color",
+			"description": "Secondary hover"
+		},
+		"secondary active": {
+			"value": "{secondary.600}",
+			"type": "color",
+			"description": "Secondary active"
+		},
+		"success": {
+			"value": "{green.Base}",
+			"type": "color",
+			"description": "Success"
+		},
+		"success hover": {
+			"value": "{green.600}",
+			"type": "color",
+			"description": "Success hover"
+		},
+		"success active": {
+			"value": "{green.700}",
+			"type": "color",
+			"description": "Success active"
+		},
+		"warning": {
+			"value": "{yellow.Base}",
+			"type": "color",
+			"description": "Warning"
+		},
+		"warning hover": {
+			"value": "{yellow.400}",
+			"type": "color",
+			"description": "Warning hover"
+		},
+		"warning active": {
+			"value": "{yellow.500}",
+			"type": "color",
+			"description": "Warning active"
+		},
+		"error hover": {
+			"value": "{red.700}",
+			"type": "color",
+			"description": "Error hover"
+		},
+		"error active": {
+			"value": "{red.800}",
+			"type": "color",
+			"description": "Error active"
+		},
+		"error": {
+			"value": "{red.Base}",
+			"type": "color",
+			"description": "Error"
+		},
+		"info": {
+			"value": "{blue.Base}",
+			"type": "color",
+			"description": "Info"
+		},
+		"info hover": {
+			"value": "{blue.700}",
+			"type": "color",
+			"description": "Info hover"
+		},
+		"info active": {
+			"value": "{blue.800}",
+			"type": "color",
+			"description": "Info active"
+		},
+		"primary disabled": {
+			"value": "{primary.400}",
+			"type": "color",
+			"description": "Primary disabled"
+		},
+		"focus ring error": {
+			"value": "#c4475566",
+			"type": "color",
+			"description": "Focus ring error"
+		},
+		"neutral active": {
+			"value": "{gray.600}",
+			"type": "color",
+			"description": "Neutral active"
+		},
+		"secondary disabled": {
+			"value": "{secondary.300}",
+			"type": "color",
+			"description": "Secondary disabled"
+		}
+	}
+}

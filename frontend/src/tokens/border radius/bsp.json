@@ -1,0 +1,82 @@
+{
+	"absolute": {
+		"radius-8": {
+			"value": 8,
+			"type": "number"
+		},
+		"radius-6": {
+			"value": 6,
+			"type": "number"
+		},
+		"radius-12": {
+			"value": 12,
+			"type": "number"
+		},
+		"radius-4": {
+			"value": 4,
+			"type": "number"
+		},
+		"radius-10": {
+			"value": 10,
+			"type": "number"
+		},
+		"radius-infinite": {
+			"value": 9999,
+			"type": "number"
+		},
+		"radius-2": {
+			"value": 2,
+			"type": "number"
+		},
+		"radius-16": {
+			"value": 16,
+			"type": "number"
+		},
+		"radius-24": {
+			"value": 24,
+			"type": "number"
+		},
+		"radius-32": {
+			"value": 32,
+			"type": "number"
+		}
+	},
+	"semantic": {
+		"rounded-xs": {
+			"value": "{absolute.radius-2}",
+			"type": "number"
+		},
+		"rounded-lg": {
+			"value": "{absolute.radius-8}",
+			"type": "number"
+		},
+		"rounded-xl": {
+			"value": "{absolute.radius-12}",
+			"type": "number"
+		},
+		"rounded-md": {
+			"value": "{absolute.radius-6}",
+			"type": "number"
+		},
+		"rounded-sm": {
+			"value": "{absolute.radius-4}",
+			"type": "number"
+		},
+		"rounded-full": {
+			"value": "{absolute.radius-infinite}",
+			"type": "number"
+		},
+		"rounded-none": {
+			"value": 0,
+			"type": "number"
+		},
+		"rounded-2xl": {
+			"value": "{absolute.radius-16}",
+			"type": "number"
+		},
+		"rounded-3xl": {
+			"value": "{absolute.radius-24}",
+			"type": "number"
+		}
+	}
+}

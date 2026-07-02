@@ -1,0 +1,475 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'ECS Cluster, Fargate Service, Task Definition, and IAM Roles'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  ContainerImage:
+    Type: String
+    Default: ''
+    Description: ECR image URI (leave empty for initial deployment, update after pushing image)
+
+  ContainerPort:
+    Type: Number
+    Default: 3000
+    Description: Container port number
+
+  DesiredCount:
+    Type: Number
+    Default: 2
+    Description: Desired number of tasks
+    MinValue: 1
+    MaxValue: 10
+
+  Cpu:
+    Type: String
+    Default: '256'
+    AllowedValues: ['256', '512', '1024', '2048', '4096']
+    Description: CPU units for Fargate task (256 = 0.25 vCPU)
+
+  Memory:
+    Type: String
+    Default: '512'
+    AllowedValues: ['512', '1024', '2048', '4096', '8192', '16384']
+    Description: Memory for Fargate task in MB
+
+  AwsAccessKeyId:
+    Type: String
+    Default: ''
+    Description: AWS Access Key ID for the ECS task
+    NoEcho: true
+
+  AwsSecretAccessKey:
+    Type: String
+    Default: ''
+    Description: AWS Secret Access Key for the ECS task
+    NoEcho: true
+
+  SesSenderEmail:
+    Type: String
+    Default: 'notifications@bspblueprint.com'
+    Description: SES sender email address
+
+  SupportContactEmail:
+    Type: String
+    Default: 'support@bspblueprint.com'
+    Description: Inbox for support request notifications and invite email footer contact
+
+  DatabaseUrl:
+    Type: String
+    Default: ''
+    Description: PostgreSQL database connection URL
+
+  DatabaseHost:
+    Type: String
+    Default: ''
+    Description: Database host (leave empty to import RDSInstanceEndpoint from RDS stack)
+
+  DatabasePort:
+    Type: String
+    Default: '5432'
+    Description: Database port
+
+  DatabaseName:
+    Type: String
+    Default: ''
+    Description: Database name (leave empty to import DatabaseName from RDS stack)
+
+  DatabaseUsername:
+    Type: String
+    Default: ''
+    Description: Database username (leave empty if using Secrets Manager)
+
+  DatabasePassword:
+    Type: String
+    Default: ''
+    Description: Database password (leave empty if using Secrets Manager)
+    NoEcho: true
+
+  EmailLogoUrl:
+    Type: String
+    Default: ''
+    Description: Public URL to logo image (hosted on CloudFront/CDN). Do not use base64; email clients block it.
+
+  CloudFrontUrl:
+    Type: String
+    Default: ''
+    Description: Frontend CloudFront base URL (HTTPS) for public asset URLs e.g. brand logos. Leave empty to use S3 URLs.
+
+  StripeSecretKey:
+    Type: String
+    Default: ''
+    Description: Stripe secret key
+    NoEcho: true
+
+  StripeWebhookSecret:
+    Type: String
+    Default: ''
+    Description: Stripe webhook secret
+    NoEcho: true
+
+  StripeCheckoutSuccessUrl:
+    Type: String
+    Default: ''
+    Description: Stripe checkout success URL
+
+  StripeCheckoutCancelUrl:
+    Type: String
+    Default: ''
+    Description: Stripe checkout cancel URL
+
+  StripeMonthlyPriceId:
+    Type: String
+    Default: ''
+    Description: Stripe monthly price ID
+
+  StripeAnnualPriceId:
+    Type: String
+    Default: ''
+    Description: Stripe annual price ID
+
+  StripeOneTimePriceId:
+    Type: String
+    Default: ''
+    Description: Stripe one time price ID
+
+  StripeImplementationFeePriceId:
+    Type: String
+    Default: ''
+    Description: Stripe Price ID (one-time) for the mandatory implementation onboarding fee
+
+  StripeOnsiteTrainingPriceId:
+    Type: String
+    Default: ''
+    Description: Stripe Price ID (one-time, per day) for onsite training. Checkout uses quantity 1 for "1_day" and 2 for "2_days".
+
+  AcceptInviteOrigin:
+    Type: String
+    Default: ''
+    Description: Accept invite origin
+
+  PostHogApiKey:
+    Type: String
+    Default: ''
+    Description: PostHog API key
+    NoEcho: true
+
+  PostHogHost:
+    Type: String
+    Default: ''
+    Description: PostHog host
+
+  PostHogPersonalApiKey:
+    Type: String
+    Default: ''
+    Description: PostHog personal API key
+    NoEcho: true
+
+  PostHogProjectId:
+    Type: String
+    Default: ''
+    Description: PostHog project ID (e.g. "1234567890")
+
+  SentryDsn:
+    Type: String
+    Default: ''
+    Description: Sentry DSN for error monitoring (staging/uat only)
+    NoEcho: true
+
+  ApiPublicBaseUrl:
+    Type: String
+    Default: ''
+    Description: API public base URL
+  
+  ChatbotApiUrl:
+    Type: String
+    Default: ''
+    Description: Chatbot API base URL
+
+
+Conditions:
+  HasContainerImage: !Not [!Equals [!Ref ContainerImage, '']]
+  HasDatabaseHost: !Not [!Equals [!Ref DatabaseHost, '']]
+  HasDatabasePort: !Not [!Equals [!Ref DatabasePort, '']]
+  HasDatabaseName: !Not [!Equals [!Ref DatabaseName, '']]
+
+Resources:
+  # ECS Cluster
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub '${ProjectName}-${Environment}-cluster'
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-cluster'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # IAM Role for ECS Task Execution
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-${Environment}-ecs-task-execution-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyName: ECRAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+  # IAM Role for ECS Task
+  ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-${Environment}-ecs-task-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub 'arn:aws:s3:::${ProjectName}-${Environment}-*/*'
+        - PolicyName: CognitoAdminAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminGetUser
+                  - cognito-idp:AdminSetUserPassword
+                Resource:
+                  Fn::ImportValue: !Sub '${ProjectName}-${Environment}-UserPoolArn'
+        - PolicyName: SESAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                  - ses:SendRawEmail
+                Resource: '*'
+
+  # CloudWatch Log Group
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/ecs/${ProjectName}-${Environment}'
+      RetentionInDays: 7
+
+  # ECS Task Definition
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub '${ProjectName}-${Environment}-task'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+      RuntimePlatform:
+        CpuArchitecture: X86_64
+        OperatingSystemFamily: LINUX
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: !Sub '${ProjectName}-${Environment}-container'
+          Image: !If
+            - HasContainerImage
+            - !Ref ContainerImage
+            - !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProjectName}-${Environment}:latest'
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+              Protocol: tcp
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+          Environment:
+            - Name: PORT
+              Value: !Ref ContainerPort
+            - Name: NODE_ENV
+              Value: !Ref Environment
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: AWS_ACCESS_KEY_ID
+              Value: !Ref AwsAccessKeyId
+            - Name: AWS_SECRET_ACCESS_KEY
+              Value: !Ref AwsSecretAccessKey
+            - Name: COGNITO_USER_POOL_ID
+              Value:
+                Fn::ImportValue: !Sub '${ProjectName}-${Environment}-UserPoolId'
+            - Name: SES_SENDER_EMAIL
+              Value: !Ref SesSenderEmail
+            - Name: SUPPORT_CONTACT_EMAIL
+              Value: !Ref SupportContactEmail
+            - Name: DATABASE_HOST
+              Value: !If
+                - HasDatabaseHost
+                - !Ref DatabaseHost
+                - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-RDSInstanceEndpoint'
+            - Name: DATABASE_PORT
+              Value: !If
+                - HasDatabasePort
+                - !Ref DatabasePort
+                - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-RDSInstancePort'
+            - Name: DATABASE_NAME
+              Value: !If
+                - HasDatabaseName
+                - !Ref DatabaseName
+                - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-DatabaseName'
+            - Name: DATABASE_USERNAME
+              Value: !Ref DatabaseUsername
+            - Name: DATABASE_PASSWORD
+              Value: !Ref DatabasePassword
+            - Name: DATABASE_URL
+              Value: !Ref DatabaseUrl
+            - Name: EMAIL_LOGO_URL
+              Value: !Ref EmailLogoUrl
+            - Name: CLOUDFRONT_URL
+              Value: !Ref CloudFrontUrl
+            - Name: STRIPE_SECRET_KEY
+              Value: !Ref StripeSecretKey
+            - Name: STRIPE_WEBHOOK_SECRET
+              Value: !Ref StripeWebhookSecret
+            - Name: STRIPE_CHECKOUT_SUCCESS_URL
+              Value: !Ref StripeCheckoutSuccessUrl
+            - Name: STRIPE_CHECKOUT_CANCEL_URL
+              Value: !Ref StripeCheckoutCancelUrl
+            - Name: STRIPE_MONTHLY_PRICE_ID
+              Value: !Ref StripeMonthlyPriceId
+            - Name: STRIPE_ANNUAL_PRICE_ID
+              Value: !Ref StripeAnnualPriceId
+            - Name: STRIPE_ONE_TIME_PRICE_ID
+              Value: !Ref StripeOneTimePriceId
+            - Name: STRIPE_IMPLEMENTATION_FEE_PRICE_ID
+              Value: !Ref StripeImplementationFeePriceId
+            - Name: STRIPE_ONSITE_TRAINING_PRICE_ID
+              Value: !Ref StripeOnsiteTrainingPriceId
+            - Name: ACCEPT_INVITE_ORIGIN
+              Value: !Ref AcceptInviteOrigin
+            - Name: POSTHOG_API_KEY
+              Value: !Ref PostHogApiKey
+            - Name: POSTHOG_HOST
+              Value: !Ref PostHogHost
+            - Name: POSTHOG_PERSONAL_API_KEY
+              Value: !Ref PostHogPersonalApiKey
+            - Name: POSTHOG_PROJECT_ID
+              Value: !Ref PostHogProjectId
+            - Name: SENTRY_DSN
+              Value: !Ref SentryDsn
+            - Name: CHATBOT_API_URL
+              Value: !Ref ChatbotApiUrl
+            - Name: SENTRY_ENVIRONMENT
+              Value: !Ref Environment
+            - Name: SENTRY_RELEASE
+              Value: !Sub '${AWS::StackName}-latest'
+            - Name: API_PUBLIC_BASE_URL
+              Value: !Ref ApiPublicBaseUrl
+          # Health check - make it more lenient for initial deployment
+          # Increase StartPeriod to give app more time to start
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - !Sub 'wget --no-verbose --tries=1 --spider http://localhost:${ContainerPort}/health || exit 1'
+            Interval: 30
+            Timeout: 10
+            Retries: 5
+            StartPeriod: 120
+
+  # ECS Service
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Sub '${ProjectName}-${Environment}-service'
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref ECSTaskDefinition
+      DesiredCount: !Ref DesiredCount
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          Subnets:
+            - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-PrivateSubnet1Id'
+            - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-PrivateSubnet2Id'
+          SecurityGroups:
+            - Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ECSSecurityGroupId'
+      # LoadBalancers configuration - Target Group is created in ALB stack
+      # Uncomment after ALB stack is deployed
+      # LoadBalancers:
+      #   - ContainerName: !Sub '${ProjectName}-${Environment}-container'
+      #     ContainerPort: !Ref ContainerPort
+      #     TargetGroupArn:
+      #       Fn::ImportValue: !Sub '${ProjectName}-${Environment}-ECSTargetGroupArn'
+      HealthCheckGracePeriodSeconds: 300
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 0
+        # Temporarily disable circuit breaker to see actual errors
+        # Re-enable after fixing the root cause
+        DeploymentCircuitBreaker:
+          Enable: false
+          Rollback: false
+
+Outputs:
+  ECSClusterName:
+    Description: ECS Cluster Name
+    Value: !Ref ECSCluster
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ECSClusterName'
+
+  ECSServiceName:
+    Description: ECS Service Name (short name for CloudWatch dimensions, not ARN)
+    Value: !GetAtt ECSService.Name
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ECSServiceName'
+
+  ECSTaskDefinitionArn:
+    Description: ECS Task Definition ARN
+    Value: !Ref ECSTaskDefinition
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ECSTaskDefinitionArn'

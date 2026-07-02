@@ -1,0 +1,18 @@
+# IDE/Editor directories
+.vscode/*
+.idea/*
+.cursor/*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+
+graphify-out

@@ -1,0 +1,134 @@
+{
+  "vpc-provider:account=585890465993:filter.vpc-id=vpc-00c173268c2519e93:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-00c173268c2519e93",
+    "vpcCidrBlock": "10.0.0.0/22",
+    "ownerAccountId": "585890465993",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-036bd76a9ada91d1d",
+            "cidr": "10.0.2.0/24",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-04abe1acebef307e1"
+          },
+          {
+            "subnetId": "subnet-0ad5b8b146cc134a7",
+            "cidr": "10.0.3.0/24",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-04abe1acebef307e1"
+          }
+        ]
+      },
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-08cdb5b86e610aa8c",
+            "cidr": "10.0.0.0/24",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0f591d6757d296907"
+          },
+          {
+            "subnetId": "subnet-0bc3371ecfa279e9f",
+            "cidr": "10.0.1.0/24",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-0ac20e7f63643fb8e"
+          }
+        ]
+      }
+    ]
+  },
+  "vpc-provider:account=585890465993:filter.vpc-id=vpc-0340bd87b850e525e:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-0340bd87b850e525e",
+    "vpcCidrBlock": "10.0.0.0/22",
+    "ownerAccountId": "585890465993",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-05b3c84c73a943f00",
+            "cidr": "10.0.0.0/24",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0838cb5e6b96a8ed0"
+          },
+          {
+            "subnetId": "subnet-0c8776ec01ab19be2",
+            "cidr": "10.0.1.0/24",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-09b7bc7a5cbd072f9"
+          }
+        ]
+      },
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-0de21dce198916ce9",
+            "cidr": "10.0.2.0/24",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0f66afc55663a8170"
+          },
+          {
+            "subnetId": "subnet-0d0308aed7eb1d9c4",
+            "cidr": "10.0.3.0/24",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-0f66afc55663a8170"
+          }
+        ]
+      }
+    ]
+  },
+  "vpc-provider:account=585890465993:filter.vpc-id=vpc-0fa5ad6b459c50d12:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-0fa5ad6b459c50d12",
+    "vpcCidrBlock": "10.0.0.0/22",
+    "ownerAccountId": "585890465993",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-0c471e6321fe5083b",
+            "cidr": "10.0.0.0/24",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-018672cf999781aed"
+          },
+          {
+            "subnetId": "subnet-0d3cd3da25706f6a6",
+            "cidr": "10.0.1.0/24",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-04ea9a0b34a6d4268"
+          }
+        ]
+      },
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-010bf5b0c5a3c7ee9",
+            "cidr": "10.0.2.0/24",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-08b38e464096083db"
+          },
+          {
+            "subnetId": "subnet-0b4149bd2422fa888",
+            "cidr": "10.0.3.0/24",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-08b38e464096083db"
+          }
+        ]
+      }
+    ]
+  }
+}

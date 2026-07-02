@@ -1,0 +1,550 @@
+image: atlassian/default-image:3
+
+definitions:
+  steps:
+    - step: &build-and-push-docker
+        name: Build and Push Docker Image
+        services:
+          - docker
+        caches:
+          - docker
+        script:
+          # Install AWS CLI
+          - apt-get update && apt-get install -y python3-pip
+          - pip3 install awscli
+
+          # Configure AWS credentials from repository variables
+          - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          - export AWS_DEFAULT_REGION=${AWS_REGION:-us-east-1}
+
+          # Set project variables
+          - export PROJECT_NAME=${PROJECT_NAME:-bsp-blueprint}
+          - |
+            if [ "$BITBUCKET_BRANCH" = "staging" ]; then
+              export ENVIRONMENT=staging
+            elif [ "$BITBUCKET_BRANCH" = "uat" ]; then
+              export ENVIRONMENT=uat
+            else
+              export ENVIRONMENT=${ENVIRONMENT:-dev}
+            fi
+
+          # Get ECR repository URI from CloudFormation
+          - |
+            echo "Getting ECR repository URI from CloudFormation..."
+            ECR_URI=$(aws cloudformation describe-stacks \
+              --stack-name ${PROJECT_NAME}-${ENVIRONMENT}-ecr \
+              --query "Stacks[0].Outputs[?OutputKey=='ECRRepositoryUri'].OutputValue" \
+              --output text \
+              --region $AWS_DEFAULT_REGION)
+
+            if [ -z "$ECR_URI" ]; then
+              echo "ERROR: Could not find ECR repository. Make sure the ECR stack is deployed."
+              exit 1
+            fi
+
+            echo "ECR Repository: $ECR_URI"
+            echo "export ECR_URI=$ECR_URI" >> $BITBUCKET_CLONE_DIR/build.env
+
+          # Login to ECR
+          - |
+            source $BITBUCKET_CLONE_DIR/build.env
+            echo "Logging in to ECR..."
+            aws ecr get-login-password --region $AWS_DEFAULT_REGION | \
+              docker login --username AWS --password-stdin $ECR_URI
+
+          # Build Docker image for linux/amd64 (required for ECS Fargate)
+          - |
+            source $BITBUCKET_CLONE_DIR/build.env
+            cd backend
+            echo "Building Docker image for platform linux/amd64..."
+            echo "Build context: $(pwd)"
+
+            # Verify Dockerfile exists
+            if [ ! -f "Dockerfile" ]; then
+              echo "ERROR: Dockerfile not found in backend directory"
+              exit 1
+            fi
+
+            # Build image
+            BUILD_ARGS="--platform linux/amd64"
+            if [ "$ENVIRONMENT" = "staging" ] || [ "$ENVIRONMENT" = "uat" ]; then
+              BUILD_ARGS="$BUILD_ARGS \
+                --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
+                --build-arg SENTRY_ORG=$SENTRY_ORG \
+                --build-arg SENTRY_PROJECT=$SENTRY_PROJECT_BACKEND \
+                --build-arg SENTRY_RELEASE=$BITBUCKET_COMMIT"
+            fi
+            docker build $BUILD_ARGS -t ${PROJECT_NAME}:latest .
+
+          # Tag and push images
+          - |
+            source $BITBUCKET_CLONE_DIR/build.env
+            echo "Tagging Docker image..."
+            docker tag ${PROJECT_NAME}:latest $ECR_URI:latest
+            docker tag ${PROJECT_NAME}:latest $ECR_URI:$BITBUCKET_COMMIT
+
+            echo "Pushing images to ECR..."
+            docker push $ECR_URI:latest
+            docker push $ECR_URI:$BITBUCKET_COMMIT
+
+            echo "✅ Docker image pushed successfully!"
+            echo "Repository: $ECR_URI"
+            echo "Tags: latest, $BITBUCKET_COMMIT"
+        after-script:
+          - docker logout || true
+
+    - step: &build-and-deploy-frontend
+        name: Build and Deploy Frontend
+        # Large Vite builds (sourcemaps + Sentry) need more than the default 4 GB runner heap.
+        size: 2x
+        script:
+          # Install AWS CLI
+          - apt-get update && apt-get install -y python3-pip
+          - pip3 install awscli
+
+          # Configure AWS credentials
+          - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          - export AWS_DEFAULT_REGION=${AWS_REGION:-us-east-1}
+
+          # Set project variables
+          - export PROJECT_NAME=${PROJECT_NAME:-bsp-blueprint}
+          - |
+            if [ "$BITBUCKET_BRANCH" = "staging" ]; then
+              export ENVIRONMENT=staging
+            elif [ "$BITBUCKET_BRANCH" = "uat" ]; then
+              export ENVIRONMENT=uat
+            else
+              export ENVIRONMENT=${ENVIRONMENT:-dev}
+            fi
+
+          # Install Node.js 24 using nvm
+          - |
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 24
+            nvm use 24
+            node --version
+            npm --version
+
+          # Install pnpm
+          - |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 24
+            npm install -g pnpm@10.27.0
+            pnpm --version
+
+          # Build React app
+          - |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 24
+
+            echo "Current directory: $(pwd)"
+            echo "Listing directory contents:"
+            ls -la
+
+            if [ ! -d "frontend" ]; then
+              echo "ERROR: frontend directory not found"
+              echo "Available directories:"
+              ls -d */
+              exit 1
+            fi
+
+            cd frontend
+            echo "Now in frontend directory: $(pwd)"
+            echo "Node.js version: $(node --version)"
+            echo "pnpm version: $(pnpm --version)"
+
+            # Create .env file from Bitbucket repository variables
+            # These should be set in Bitbucket: Repository Settings > Pipelines > Repository variables
+            if [ -n "${VITE_AWS_USER_POOL_ID:-}" ] && [ -n "${VITE_AWS_USER_POOL_CLIENT_ID:-}" ]; then
+              echo "Creating .env file from repository variables..."
+              echo "VITE_AWS_USER_POOL_ID=${VITE_AWS_USER_POOL_ID}" > .env
+              echo "VITE_AWS_USER_POOL_CLIENT_ID=${VITE_AWS_USER_POOL_CLIENT_ID}" >> .env
+              # Optional remember-me client ID (longer refresh token)
+              if [ -n "${VITE_AWS_USER_POOL_CLIENT_ID_REMEMBER:-}" ]; then
+                echo "VITE_AWS_USER_POOL_CLIENT_ID_REMEMBER=${VITE_AWS_USER_POOL_CLIENT_ID_REMEMBER}" >> .env
+              fi
+              if [ -n "${VITE_API_BASE_URL:-}" ]; then
+                echo "VITE_API_BASE_URL=${VITE_API_BASE_URL}" >> .env
+              fi
+              if [ -n "${VITE_CHATBOT_API_URL:-}" ]; then
+                echo "VITE_CHATBOT_API_URL=${VITE_CHATBOT_API_URL}" >> .env
+              fi
+              if [ -n "${VITE_SENTRY_DSN:-}" ]; then
+                echo "VITE_SENTRY_DSN=${VITE_SENTRY_DSN}" >> .env
+                echo "VITE_SENTRY_ENVIRONMENT=${ENVIRONMENT}" >> .env
+                echo "VITE_SENTRY_RELEASE=${BITBUCKET_COMMIT}" >> .env
+              fi
+              echo "✅ .env file created"
+            elif [ -f ".env" ]; then
+              echo "Using existing .env file"
+              # Add VITE_API_BASE_URL to existing .env if it's set and not already present
+              if [ -n "${VITE_API_BASE_URL:-}" ] && ! grep -q "^VITE_API_BASE_URL=" .env 2>/dev/null; then
+                echo "VITE_API_BASE_URL=${VITE_API_BASE_URL}" >> .env
+              fi
+              # Add VITE_CHATBOT_API_URL to existing .env if it's set and not already present
+              if [ -n "${VITE_CHATBOT_API_URL:-}" ] && ! grep -q "^VITE_CHATBOT_API_URL=" .env 2>/dev/null; then
+                echo "VITE_CHATBOT_API_URL=${VITE_CHATBOT_API_URL}" >> .env
+              fi
+              if [ -n "${VITE_SENTRY_DSN:-}" ]; then
+                echo "VITE_SENTRY_DSN=${VITE_SENTRY_DSN}" >> .env
+                echo "VITE_SENTRY_ENVIRONMENT=${ENVIRONMENT}" >> .env
+                echo "VITE_SENTRY_RELEASE=${BITBUCKET_COMMIT}" >> .env
+              fi
+            else
+              echo "ERROR: VITE_AWS_USER_POOL_ID and VITE_AWS_USER_POOL_CLIENT_ID must be set."
+              echo "Please set them in Bitbucket repository variables or create a .env file."
+              exit 1
+            fi
+
+            echo "Environment variables:"
+            echo "  VITE_AWS_USER_POOL_ID=${VITE_AWS_USER_POOL_ID:-$(grep VITE_AWS_USER_POOL_ID .env 2>/dev/null | cut -d '=' -f2 || echo 'not set')}"
+            echo "  VITE_AWS_USER_POOL_CLIENT_ID=${VITE_AWS_USER_POOL_CLIENT_ID:-$(grep VITE_AWS_USER_POOL_CLIENT_ID .env 2>/dev/null | cut -d '=' -f2 || echo 'not set')}"
+            echo "  VITE_AWS_USER_POOL_CLIENT_ID_REMEMBER=${VITE_AWS_USER_POOL_CLIENT_ID_REMEMBER:-$(grep VITE_AWS_USER_POOL_CLIENT_ID_REMEMBER .env 2>/dev/null | cut -d '=' -f2 || echo 'not set')}"
+            echo "  VITE_API_BASE_URL=${VITE_API_BASE_URL:-$(grep VITE_API_BASE_URL .env 2>/dev/null | cut -d '=' -f2 || echo 'not set')}"
+            echo "  VITE_CHATBOT_API_URL=${VITE_CHATBOT_API_URL:-$(grep VITE_CHATBOT_API_URL .env 2>/dev/null | cut -d '=' -f2 || echo 'not set')}"
+
+            echo "Installing frontend dependencies..."
+            pnpm install --frozen-lockfile
+
+            export SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT_FRONTEND
+            export VITE_SENTRY_RELEASE=$BITBUCKET_COMMIT
+            export NODE_OPTIONS="--max-old-space-size=6144"
+
+            echo "Building React application (NODE_OPTIONS=${NODE_OPTIONS})..."
+            pnpm run build
+
+            # Check build output (Vite uses 'dist')
+            if [ ! -d "dist" ]; then
+              echo "ERROR: Build output 'dist' directory not found"
+              echo "Listing frontend directory:"
+              ls -la
+              echo "Checking for other build directories:"
+              ls -la | grep -E "(build|out|dist)" || echo "No build directories found"
+              exit 1
+            fi
+
+            echo "✅ Frontend build completed"
+            echo "Build output contents:"
+            ls -la dist/ | head -10
+
+          # Get S3 bucket name
+          - |
+            echo "Getting S3 bucket name..."
+            BUCKET_NAME=$(aws cloudformation describe-stacks \
+              --stack-name ${PROJECT_NAME}-${ENVIRONMENT}-frontend-s3 \
+              --query "Stacks[0].Outputs[?OutputKey=='FrontendBucketName'].OutputValue" \
+              --output text \
+              --region $AWS_DEFAULT_REGION 2>/dev/null || echo "")
+
+            if [ -z "$BUCKET_NAME" ] || [ "$BUCKET_NAME" = "None" ]; then
+              echo "ERROR: Frontend S3 bucket not found. Make sure frontend-s3 stack is deployed."
+              exit 1
+            fi
+
+            echo "S3 Bucket: $BUCKET_NAME"
+            export BUCKET_NAME
+
+          # Upload to S3
+          - |
+            # Ensure we're in the repository root
+            cd $BITBUCKET_CLONE_DIR
+            echo "Current directory: $(pwd)"
+            echo "Listing directory contents:"
+            ls -la
+
+            if [ ! -d "frontend" ]; then
+              echo "ERROR: frontend directory not found"
+              echo "Available directories:"
+              ls -d */ || echo "No subdirectories found"
+              exit 1
+            fi
+
+            if [ ! -d "frontend/dist" ]; then
+              echo "ERROR: frontend/dist directory not found"
+              echo "Frontend directory contents:"
+              ls -la frontend/
+              exit 1
+            fi
+
+            cd frontend
+            echo "Uploading files to S3 from: $(pwd)"
+            echo "Dist directory contents:"
+            ls -la dist/ | head -10
+
+            # Do NOT use --delete: user-uploaded content (e.g. corporation-brand-logos/) must be preserved
+            # Upload static assets with long cache
+            aws s3 sync dist/ s3://$BUCKET_NAME/ \
+              --region $AWS_DEFAULT_REGION \
+              --cache-control "public, max-age=31536000, immutable" \
+              --exclude "*.html" \
+              --exclude "*.json"
+
+            # Upload HTML files with no-cache
+            aws s3 sync dist/ s3://$BUCKET_NAME/ \
+              --region $AWS_DEFAULT_REGION \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --exclude "*" \
+              --include "*.html" \
+              --include "*.json"
+
+            echo "✅ Files uploaded to S3"
+
+          # Invalidate CloudFront cache
+          - |
+            echo "Invalidating CloudFront cache..."
+            DIST_ID=$(aws cloudformation describe-stacks \
+              --stack-name ${PROJECT_NAME}-${ENVIRONMENT}-frontend-cloudfront \
+              --query "Stacks[0].Outputs[?OutputKey=='FrontendCloudFrontDistributionId'].OutputValue" \
+              --output text \
+              --region $AWS_DEFAULT_REGION 2>/dev/null || echo "")
+
+            if [ -n "$DIST_ID" ] && [ "$DIST_ID" != "None" ]; then
+              aws cloudfront create-invalidation \
+                --distribution-id $DIST_ID \
+                --paths "/*" \
+                --region $AWS_DEFAULT_REGION > /dev/null
+              echo "✅ CloudFront cache invalidation created"
+            else
+              echo "⚠️  CloudFront distribution not found. Skipping cache invalidation."
+            fi
+
+    - step: &run-database-migrations
+        name: Run Database Migrations
+        script:
+          # RDS is private (VPC-only). Migrations run via a one-off ECS task, not from Bitbucket runners.
+          - apt-get update && apt-get install -y python3-pip jq
+          - pip3 install awscli
+
+          # Configure AWS credentials
+          - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          - export AWS_DEFAULT_REGION=${AWS_REGION:-us-east-1}
+
+          # Set project variables
+          - export PROJECT_NAME=${PROJECT_NAME:-bsp-blueprint}
+          - |
+            if [ "$BITBUCKET_BRANCH" = "staging" ]; then
+              export ENVIRONMENT=staging
+            elif [ "$BITBUCKET_BRANCH" = "uat" ]; then
+              export ENVIRONMENT=uat
+            else
+              export ENVIRONMENT=${ENVIRONMENT:-dev}
+            fi
+
+          - |
+            CLUSTER_NAME="${PROJECT_NAME}-${ENVIRONMENT}-cluster"
+            SERVICE_NAME="${PROJECT_NAME}-${ENVIRONMENT}-service"
+
+            if ! aws ecs describe-services \
+              --cluster "$CLUSTER_NAME" \
+              --services "$SERVICE_NAME" \
+              --region "$AWS_DEFAULT_REGION" \
+              --query 'services[0].status' \
+              --output text 2>/dev/null | grep -q ACTIVE; then
+              echo "⏭️  Skipping database migrations (ECS service ${SERVICE_NAME} not found or not active)"
+              exit 0
+            fi
+
+            chmod +x backend/cloudformation/run-migrations-ecs.sh
+            ./backend/cloudformation/run-migrations-ecs.sh -e "$ENVIRONMENT" --region "$AWS_DEFAULT_REGION"
+
+    - step: &deploy-to-ecs
+        name: Deploy to ECS
+        script:
+          # Install AWS CLI and jq
+          - apt-get update && apt-get install -y python3-pip jq
+          - pip3 install awscli
+
+          # Configure AWS credentials
+          - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          - export AWS_DEFAULT_REGION=${AWS_REGION:-us-east-1}
+
+          # Set project variables
+          - export PROJECT_NAME=${PROJECT_NAME:-bsp-blueprint}
+          - |
+            if [ "$BITBUCKET_BRANCH" = "staging" ]; then
+              export ENVIRONMENT=staging
+            elif [ "$BITBUCKET_BRANCH" = "uat" ]; then
+              export ENVIRONMENT=uat
+            else
+              export ENVIRONMENT=${ENVIRONMENT:-dev}
+            fi
+
+          # Get ECR repository URI
+          - |
+            echo "Getting ECR repository URI..."
+            ECR_URI=$(aws cloudformation describe-stacks \
+              --stack-name ${PROJECT_NAME}-${ENVIRONMENT}-ecr \
+              --query "Stacks[0].Outputs[?OutputKey=='ECRRepositoryUri'].OutputValue" \
+              --output text \
+              --region $AWS_DEFAULT_REGION)
+            echo "ECR URI: $ECR_URI"
+            export ECR_URI
+
+          # Get current task definition
+          - |
+            echo "Getting current task definition..."
+            CLUSTER_NAME="${PROJECT_NAME}-${ENVIRONMENT}-cluster"
+            SERVICE_NAME="${PROJECT_NAME}-${ENVIRONMENT}-service"
+
+            CURRENT_TASK_DEF=$(aws ecs describe-services \
+              --cluster $CLUSTER_NAME \
+              --services $SERVICE_NAME \
+              --region $AWS_DEFAULT_REGION \
+              --query 'services[0].taskDefinition' \
+              --output text)
+
+            echo "Current task definition: $CURRENT_TASK_DEF"
+            export CURRENT_TASK_DEF
+            export CLUSTER_NAME
+            export SERVICE_NAME
+
+          # Update task definition with new image
+          - |
+            echo "Updating task definition with latest image..."
+            NEW_IMAGE="${ECR_URI}:latest"
+
+            # Get task definition JSON
+            TASK_DEF_JSON=$(aws ecs describe-task-definition \
+              --task-definition $CURRENT_TASK_DEF \
+              --region $AWS_DEFAULT_REGION)
+
+            # Extract family name
+            FAMILY=$(echo "$TASK_DEF_JSON" | jq -r '.taskDefinition.family')
+
+            # Update container image
+            if [ "$ENVIRONMENT" = "staging" ] || [ "$ENVIRONMENT" = "uat" ]; then
+              UPDATED_CONTAINER=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" --arg RELEASE "$BITBUCKET_COMMIT" '
+                .taskDefinition.containerDefinitions[0].image = $IMAGE |
+                .taskDefinition.containerDefinitions[0].environment |=
+                  (map(if .name == "SENTRY_RELEASE" then .value = $RELEASE else . end)) |
+                .taskDefinition.containerDefinitions[0]
+              ')
+            else
+              UPDATED_CONTAINER=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" '
+                .taskDefinition.containerDefinitions[0].image = $IMAGE |
+                .taskDefinition.containerDefinitions[0]
+              ')
+            fi
+
+            # Register new task definition
+            NEW_TASK_DEF=$(aws ecs register-task-definition \
+              --family $FAMILY \
+              --network-mode $(echo "$TASK_DEF_JSON" | jq -r '.taskDefinition.networkMode') \
+              --requires-compatibilities $(echo "$TASK_DEF_JSON" | jq -r '.taskDefinition.requiresCompatibilities[]') \
+              --cpu $(echo "$TASK_DEF_JSON" | jq -r '.taskDefinition.cpu') \
+              --memory $(echo "$TASK_DEF_JSON" | jq -r '.taskDefinition.memory') \
+              --execution-role-arn $(echo "$TASK_DEF_JSON" | jq -r '.taskDefinition.executionRoleArn') \
+              --task-role-arn $(echo "$TASK_DEF_JSON" | jq -r '.taskDefinition.taskRoleArn') \
+              --runtime-platform $(echo "$TASK_DEF_JSON" | jq -c '.taskDefinition.runtimePlatform') \
+              --container-definitions "[$UPDATED_CONTAINER]" \
+              --region $AWS_DEFAULT_REGION \
+              --query 'taskDefinition.taskDefinitionArn' \
+              --output text)
+
+            echo "New task definition: $NEW_TASK_DEF"
+            export NEW_TASK_DEF
+
+          # Update ECS service with new task definition and force deployment
+          - |
+            echo "Updating ECS service with new task definition..."
+            aws ecs update-service \
+              --cluster $CLUSTER_NAME \
+              --service $SERVICE_NAME \
+              --task-definition $NEW_TASK_DEF \
+              --force-new-deployment \
+              --region $AWS_DEFAULT_REGION
+
+            echo "✅ ECS service update initiated"
+            echo "The service will pull the latest image (${ECR_URI}:latest) and start new tasks."
+            echo "This may take 2-5 minutes to complete."
+
+pipelines:
+  # Default pipeline for all branches - build and push only
+  default:
+    - step: *build-and-push-docker
+
+  # Branch-specific pipelines - build, push, and auto-deploy
+  branches:
+    main:
+      - step: *build-and-push-docker
+      - step: *run-database-migrations
+      - step: *deploy-to-ecs
+      - step: *build-and-deploy-frontend
+
+    dev:
+      - step: *build-and-push-docker
+      - step: *run-database-migrations
+      - step: *deploy-to-ecs
+      - step: *build-and-deploy-frontend
+
+    staging:
+      - step: *build-and-push-docker
+      - step: *run-database-migrations
+      - step: *deploy-to-ecs
+      - step:
+          <<: *build-and-deploy-frontend
+          deployment: staging
+
+    uat:
+      - step: *build-and-push-docker
+      - step: *run-database-migrations
+      - step: *deploy-to-ecs
+      - step:
+          <<: *build-and-deploy-frontend
+          deployment: uat
+
+  # Pull requests - only build (don't push to save resources)
+  pull-requests:
+    '**':
+      - step:
+          name: Build Docker Image (PR Check)
+          services:
+            - docker
+          caches:
+            - docker
+          script:
+            - apt-get update && apt-get install -y python3-pip
+            - pip3 install awscli
+            - |
+              cd backend
+              echo "Building Docker image for PR validation..."
+              if [ ! -f "Dockerfile" ]; then
+                echo "ERROR: Dockerfile not found"
+                exit 1
+              fi
+              # Sanitize branch name: replace slashes with hyphens for Docker tag compatibility
+              SANITIZED_BRANCH=$(echo "$BITBUCKET_BRANCH" | tr '/' '-')
+              docker build --platform linux/amd64 -t ${PROJECT_NAME:-bsp-blueprint}:pr-$SANITIZED_BRANCH .
+              echo "✅ Docker image built successfully (not pushed for PR)"
+              echo "Image tag: pr-$SANITIZED_BRANCH"
+
+  # Custom pipelines for manual triggers
+  custom:
+    deploy-production:
+      - step: *build-and-push-docker
+      - step: *run-database-migrations
+      - step:
+          name: Deploy to Production ECS
+          script:
+            - apt-get update && apt-get install -y python3-pip
+            - pip3 install awscli
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=${AWS_REGION:-us-east-1}
+            - export PROJECT_NAME=${PROJECT_NAME:-bsp-blueprint}
+            - export ENVIRONMENT=prod
+            - |
+              aws ecs update-service \
+                --cluster ${PROJECT_NAME}-prod-cluster \
+                --service ${PROJECT_NAME}-prod-service \
+                --force-new-deployment \
+                --region $AWS_DEFAULT_REGION
+            - echo "✅ Production deployment initiated"

@@ -1,0 +1,19 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsIn, IsOptional } from 'class-validator';
+import {
+  TIME_RANGE_FILTER,
+  type TimeRangeFilter,
+} from '../../common/time-range-filter.util';
+
+/** Optional time window for Company Admin dashboard analytics. */
+export class CompanyDashboardAnalyticsQueryDto {
+  @ApiPropertyOptional({
+    description:
+      'Optional UTC time window. Active/pending users match created_at; blocked/cancelled match blocked_cancelled_on; expired uses the 7-day invite expiry rule; deleted matches deleted_at. Assessments: completed (report_generated) matches completed_at; in progress matches started_at; avgTimeToComplete matches completed_at. Omit for all-time counts.',
+    enum: TIME_RANGE_FILTER,
+    example: 'last7Days',
+  })
+  @IsOptional()
+  @IsIn(TIME_RANGE_FILTER)
+  timeFilter?: TimeRangeFilter;
+}

@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS Client VPN endpoint for private VPC access (e.g. RDS). Requires ACM server and client CA certificates.'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: bsp-blueprint
+    Description: Project name for resource naming
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, uat, prod]
+    Description: Environment name
+
+  ServerCertificateArn:
+    Type: String
+    Description: ACM ARN of the server certificate for the Client VPN endpoint (must be in this region)
+
+  ClientRootCertificateChainArn:
+    Type: String
+    Description: ACM ARN of the client root CA certificate chain for mutual TLS authentication
+
+  ClientCidrBlock:
+    Type: String
+    Default: 172.16.0.0/22
+    Description: CIDR block assigned to VPN clients (must not overlap with the VPC CIDR 10.0.0.0/22)
+    AllowedPattern: '^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$'
+
+  VpcCidrBlock:
+    Type: String
+    Default: 10.0.0.0/22
+    Description: VPC CIDR block that VPN clients are authorized to reach
+    AllowedPattern: '^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$'
+
+  SplitTunnel:
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    Description: When true, only VPC traffic routes through the VPN (recommended)
+
+Conditions:
+  IsSplitTunnelEnabled: !Equals [!Ref SplitTunnel, 'true']
+
+Resources:
+  ClientVpnLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/clientvpn/${ProjectName}-${Environment}'
+      RetentionInDays: 30
+
+  ClientVpnSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${ProjectName}-${Environment}-client-vpn-sg'
+      GroupDescription: Security group for AWS Client VPN endpoint
+      VpcId:
+        Fn::ImportValue: !Sub '${ProjectName}-${Environment}-VPCId'
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+          Description: Allow all outbound from VPN endpoint
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-client-vpn-sg'
+        - Key: Environment
+          Value: !Ref Environment
+
+  ClientVpnEndpoint:
+    Type: AWS::EC2::ClientVpnEndpoint
+    Properties:
+      Description: !Sub '${ProjectName}-${Environment} Client VPN for private DB and VPC access'
+      ClientCidrBlock: !Ref ClientCidrBlock
+      ServerCertificateArn: !Ref ServerCertificateArn
+      AuthenticationOptions:
+        - Type: certificate-authentication
+          MutualAuthentication:
+            ClientRootCertificateChainArn: !Ref ClientRootCertificateChainArn
+      ConnectionLogOptions:
+        Enabled: true
+        CloudwatchLogGroup: !Ref ClientVpnLogGroup
+      SplitTunnel: !If [IsSplitTunnelEnabled, true, false]
+      TransportProtocol: udp
+      VpcId:
+        Fn::ImportValue: !Sub '${ProjectName}-${Environment}-VPCId'
+      SecurityGroupIds:
+        - !Ref ClientVpnSecurityGroup
+      TagSpecifications:
+        - ResourceType: client-vpn-endpoint
+          Tags:
+            - Key: Name
+              Value: !Sub '${ProjectName}-${Environment}-client-vpn'
+            - Key: Environment
+              Value: !Ref Environment
+
+  ClientVpnTargetNetworkAssociation:
+    Type: AWS::EC2::ClientVpnTargetNetworkAssociation
+    Properties:
+      ClientVpnEndpointId: !Ref ClientVpnEndpoint
+      SubnetId:
+        Fn::ImportValue: !Sub '${ProjectName}-${Environment}-PrivateSubnet1Id'
+
+  ClientVpnAuthorizationRule:
+    Type: AWS::EC2::ClientVpnAuthorizationRule
+    Properties:
+      ClientVpnEndpointId: !Ref ClientVpnEndpoint
+      TargetNetworkCidr: !Ref VpcCidrBlock
+      AuthorizeAllGroups: true
+      Description: Allow VPN clients to reach VPC resources including private RDS
+
+Outputs:
+  ClientVpnEndpointId:
+    Description: Client VPN endpoint ID
+    Value: !Ref ClientVpnEndpoint
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ClientVpnEndpointId'
+
+  ClientVpnClientCidrBlock:
+    Description: CIDR block assigned to connected VPN clients (use in RDS security group)
+    Value: !Ref ClientCidrBlock
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ClientVpnClientCidrBlock'
+
+  ClientVpnSecurityGroupId:
+    Description: Security group attached to the Client VPN endpoint
+    Value: !Ref ClientVpnSecurityGroup
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-ClientVpnSecurityGroupId'
