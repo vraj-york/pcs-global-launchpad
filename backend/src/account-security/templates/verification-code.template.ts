@@ -35,13 +35,14 @@ export function getVerificationCodeHtml(
     title: 'Verification Code - BSPBlueprint',
     contentRows: renderEmailBodyRow({
       align: 'center',
-      innerHtml: `<h1 style="margin:0 0 10px;padding:0;font-weight:600;font-size:20px;line-height:25px;color:#2F414A;">Verification Code</h1>
-                            <p style="margin:0 0 20px;padding:0;font-weight:400;font-size:14px;line-height:21px;color:#385966;">This code is valid for the next 3 minutes.</p>
-                            <div style="font-weight:700;font-size:50px;line-height:60px;color:#2F414A;margin-top:20px;margin-bottom:20px;">${formattedCode}</div>
-                            <hr style="border:none;border-top:1px solid #e5e5e5;margin:28px 0 16px;" />
-                            <p style="margin:0;font-size:12px;line-height:1.5;color:#888888;text-align:center;">
+      padding: '40px 24px',
+      innerHtml: `<h1 style="margin:0 0 8px;padding:0;font-weight:600;font-size:21px;line-height:25px;color:#2F414A;">Verification Code</h1>
+                            <p style="margin:0;padding:0;font-weight:400;font-size:15px;line-height:22px;color:#385966;">This code is valid for the next ${VERIFICATION_CODE_VALID_MINUTES} minutes.</p>
+                            <div style="margin:40px 0 0;padding:0;font-weight:700;font-size:50px;line-height:60px;letter-spacing:-0.42px;color:#2F414A;">${formattedCode}</div>
+                            <hr style="border:none;border-top:1px solid #DDD9EB;margin:40px 0 0;" />
+                            <p style="margin:40px 0 0;padding:0;font-weight:400;font-size:15px;line-height:22px;color:#385966;text-align:center;">
                                 In case you didn&#39;t trigger this, please contact our
-                                <a href="mailto:support@bspblueprint.com" style="color:#1a73e8;">Support Team</a>.
+                                <a href="mailto:support@bspblueprint.com" style="color:#3A6FD8;text-decoration:none;">Support Team</a>
                             </p>`,
     }),
   });
