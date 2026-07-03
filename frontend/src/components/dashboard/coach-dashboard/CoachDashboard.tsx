@@ -47,6 +47,7 @@ import {
 	type CoachSession,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { Resources } from "./Resources";
 
 const C = COACH_DASHBOARD_CONTENT;
 
@@ -369,6 +370,9 @@ export function CoachDashboard() {
 					</section>
 				</div>
 			</div>
+
+			{/* Resources — Figma node 4:19379 */}
+			<Resources />
 		</div>
 	);
 }

@@ -38,6 +38,21 @@ export interface CoachAvailabilityRow {
 	value: string;
 }
 
+export type CoachResourceAccent = "green" | "blue" | "red";
+
+export interface CoachResource {
+	id: string;
+	/** Bold lead-in of the label (Figma node 4:19379 heading, weight 700). */
+	lead: string;
+	/** Regular connector word between the lead and the link ("on" / "in"). */
+	connector: string;
+	/** Underlined link text. */
+	linkLabel: string;
+	href: string;
+	icon: "book-open" | "sparkles" | "life-buoy";
+	accent: CoachResourceAccent;
+}
+
 export const COACH_DASHBOARD_CONTENT = {
 	breadcrumbLabel: "Dashboard",
 	welcomeTitle: "Welcome, Coach!",
@@ -64,6 +79,11 @@ export const COACH_DASHBOARD_CONTENT = {
 		title: "Your Availability",
 		subtitle: "Manage coaching hours & availability windows.",
 		manage: "Manage Availability",
+	},
+	resources: {
+		title: "Resources",
+		subtitle: "Guides and updates to help you coach with confidence.",
+		emptyState: "No resources available right now.",
 	},
 	emptyStates: {
 		sessions: "No sessions scheduled for today.",
@@ -155,5 +175,35 @@ export const COACH_AVAILABILITY: CoachAvailabilityRow[] = [
 		id: "buffer-time",
 		label: "Buffer Time (In-between Sessions)",
 		value: "15 min",
+	},
+];
+
+export const COACH_RESOURCES: CoachResource[] = [
+	{
+		id: "coach-playbook",
+		lead: "Master your coaching workflow",
+		connector: "in",
+		linkLabel: "the Coach Playbook",
+		href: "/support",
+		icon: "book-open",
+		accent: "green",
+	},
+	{
+		id: "platform-updates",
+		lead: "Recap the latest platform updates",
+		connector: "on",
+		linkLabel: "Release notes",
+		href: "/support",
+		icon: "sparkles",
+		accent: "blue",
+	},
+	{
+		id: "best-practices",
+		lead: "Learn coaching best practices",
+		connector: "in",
+		linkLabel: "the Help center",
+		href: "/support",
+		icon: "life-buoy",
+		accent: "red",
 	},
 ];
