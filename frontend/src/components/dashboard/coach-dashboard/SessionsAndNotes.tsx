@@ -13,8 +13,9 @@ import {
 	CalendarSync,
 	CalendarX2,
 	ChevronDown,
-	ClipboardPen,
 	EllipsisVertical,
+	NotepadText,
+	Save,
 	Video,
 	X,
 	Zap,
@@ -155,7 +156,7 @@ function PastSessionCard({
 			<Button
 				variant="outline"
 				size="sm"
-				icon={ClipboardPen}
+				icon={NotepadText}
 				className="shrink-0"
 				onClick={() => onViewNotes(session)}
 			>
@@ -247,7 +248,7 @@ export function SessionsAndNotes() {
 
 			{/* Session Notes panel */}
 			<Card className="flex min-w-0 flex-1 flex-col gap-0 rounded-[10px] border border-border bg-background p-0 shadow-none">
-				<header className="flex h-14 shrink-0 items-center gap-1 border-b border-border p-4">
+				<header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border py-4 pr-2.5 pl-4">
 					<h3 className="flex-1 text-base font-medium text-text-secondary">
 						{C.notesTitle}
 					</h3>
@@ -257,6 +258,7 @@ export function SessionsAndNotes() {
 							size="icon-sm"
 							icon={X}
 							aria-label={C.close}
+							className="bg-card hover:bg-card/70"
 							onClick={handleClose}
 						/>
 					) : null}
@@ -276,11 +278,7 @@ export function SessionsAndNotes() {
 							<Button variant="outline" onClick={handleClose}>
 								{C.close}
 							</Button>
-							<Button
-								icon={ClipboardPen}
-								isLoading={saving}
-								onClick={handleSave}
-							>
+							<Button icon={Save} isLoading={saving} onClick={handleSave}>
 								{C.save}
 							</Button>
 						</footer>
