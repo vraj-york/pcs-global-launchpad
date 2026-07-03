@@ -70,6 +70,27 @@ export interface CoachCalendarEvent {
 	description: string;
 }
 
+/** Month-view event accent (left border + label color). */
+export type CoachCalendarMonthAccent = "error" | "success" | "warning";
+
+export interface CoachCalendarMonthEvent {
+	id: string;
+	title: string;
+	accent: CoachCalendarMonthAccent;
+	clientName: string;
+	clientInitials?: string;
+	clientAvatar?: string;
+	timeRange: string;
+}
+
+export interface CoachCalendarMonthDay {
+	/** Day-of-month number rendered in the cell. */
+	date: number;
+	/** False for leading/trailing days that belong to the adjacent month. */
+	inMonth: boolean;
+	events?: CoachCalendarMonthEvent[];
+}
+
 export type CoachResourceAccent = "green" | "blue" | "red";
 
 export interface CoachWelcomeHighlight {
@@ -306,6 +327,26 @@ export const COACH_DASHBOARD_CONTENT = {
 			month: "Month",
 		},
 		monthViewPlaceholder: "Month view is coming soon.",
+		monthView: {
+			weekdayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+			fullWeekdays: [
+				"Monday",
+				"Tuesday",
+				"Wednesday",
+				"Thursday",
+				"Friday",
+				"Saturday",
+				"Sunday",
+			],
+			monthName: "May",
+			year: "2026",
+			// May 1, 2026 is a Friday → index 4 with Monday as the 0th weekday.
+			firstWeekdayIndex: 4,
+			eventScheduledSingular: "event scheduled",
+			eventScheduledPlural: "events scheduled",
+			noEvents: "No events scheduled",
+			moreActionsLabel: "More session actions",
+		},
 		detailsTitle: "Session Details",
 		fieldLabels: {
 			title: "Title",
@@ -390,6 +431,103 @@ export const COACH_CALENDAR_EVENTS: CoachCalendarEvent[] = [
 		description: "Quarterly goal review and progress check-in.",
 	},
 ];
+
+/**
+ * May 2026 month grid (Monday-first). May 1, 2026 falls on a Friday, so the
+ * first row leads with Apr 27–30. The final Sunday cell is May 31 (the Figma
+ * mock showed "1" there as a placeholder — corrected to the real date). Events
+ * land on the 12th (1:1 Coaching), 13th (Goal Review) and 15th (Communication
+ * Conflict), matching the design.
+ */
+export const COACH_CALENDAR_MONTH_WEEKS: CoachCalendarMonthDay[][] = [
+	[
+		{ date: 27, inMonth: false },
+		{ date: 28, inMonth: false },
+		{ date: 29, inMonth: false },
+		{ date: 30, inMonth: false },
+		{ date: 1, inMonth: true },
+		{ date: 2, inMonth: true },
+		{ date: 3, inMonth: true },
+	],
+	[
+		{ date: 4, inMonth: true },
+		{ date: 5, inMonth: true },
+		{ date: 6, inMonth: true },
+		{ date: 7, inMonth: true },
+		{ date: 8, inMonth: true },
+		{ date: 9, inMonth: true },
+		{ date: 10, inMonth: true },
+	],
+	[
+		{ date: 11, inMonth: true },
+		{
+			date: 12,
+			inMonth: true,
+			events: [
+				{
+					id: "month-one-on-one",
+					title: "1:1 Coaching",
+					accent: "error",
+					clientName: "Nicolas Hamilton",
+					clientInitials: "NH",
+					timeRange: "10:00 AM - 10:15 AM",
+				},
+			],
+		},
+		{
+			date: 13,
+			inMonth: true,
+			events: [
+				{
+					id: "month-goal-review",
+					title: "Goal Review",
+					accent: "success",
+					clientName: "Clara Nevada",
+					clientInitials: "CN",
+					timeRange: "4:30 PM - 4:45 PM",
+				},
+			],
+		},
+		{ date: 14, inMonth: true },
+		{
+			date: 15,
+			inMonth: true,
+			events: [
+				{
+					id: "month-communication-conflict",
+					title: "Communication Conflict",
+					accent: "warning",
+					clientName: "Emma Thompson",
+					clientInitials: "ET",
+					timeRange: "12:00 PM - 12:15 PM",
+				},
+			],
+		},
+		{ date: 16, inMonth: true },
+		{ date: 17, inMonth: true },
+	],
+	[
+		{ date: 18, inMonth: true },
+		{ date: 19, inMonth: true },
+		{ date: 20, inMonth: true },
+		{ date: 21, inMonth: true },
+		{ date: 22, inMonth: true },
+		{ date: 23, inMonth: true },
+		{ date: 24, inMonth: true },
+	],
+	[
+		{ date: 25, inMonth: true },
+		{ date: 26, inMonth: true },
+		{ date: 27, inMonth: true },
+		{ date: 28, inMonth: true },
+		{ date: 29, inMonth: true },
+		{ date: 30, inMonth: true },
+		{ date: 31, inMonth: true },
+	],
+];
+
+/** Default selected day for the month view (matches the Figma mock). */
+export const COACH_CALENDAR_MONTH_SELECTED_DATE = 12;
 
 export const COACH_SESSIONS: CoachSession[] = [
 	{

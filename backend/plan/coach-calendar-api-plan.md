@@ -1,6 +1,11 @@
-# Coach — Calendar (Week View) — Backend Implementation Plan
+# Coach — Calendar (Week + Month View) — Backend Implementation Plan
 
-Backend support for the coach's **Calendar** page (Figma `PCS_Global_Coach_Persona_Launchpad_Test`, node `4:21292`). The frontend (`frontend/src/components/dashboard/coach-dashboard/CoachCalendar.tsx`, route `/coach-calendar` → `CoachCalendarPage`) renders a **week grid** (8 AM–6 PM × Mon–Fri) with color-coded event blocks and a **Session Details** side panel. It is currently backed by static placeholder data in `frontend/src/const/dashboard/coach-dashboard.const.ts` (`COACH_CALENDAR_EVENTS`, `COACH_CALENDAR_DAYS`, `calendarPage`).
+Backend support for the coach's **Calendar** page (Figma `PCS_Global_Coach_Persona_Launchpad_Test`, nodes `4:21292` "Week View" and `4:21562` "Month View"). The frontend (`frontend/src/components/dashboard/coach-dashboard/CoachCalendar.tsx`, route `/coach-calendar` → `CoachCalendarPage`) renders a Week/Month segmented toggle:
+
+- **Week view** (node `4:21292`): a **week grid** (8 AM–6 PM × Mon–Fri) with color-coded event blocks and a **Session Details** side panel.
+- **Month view** (node `4:21562`): a **7-column month grid** (Monday-first, adjacent-month days muted) with per-day event chips (left-border accent: error `#C44755` / success `#2F8F6B` / warning `#CB9127`). Selecting a day drives a side panel showing "`<Weekday>, May D, 2026`" + "N event(s) scheduled" and compact event cards (title / client / time + **Join** + a more-actions dropdown: Reschedule / Quick Prep / Cancel Session).
+
+Both views are currently backed by static placeholder data in `frontend/src/const/dashboard/coach-dashboard.const.ts` (`COACH_CALENDAR_EVENTS`, `COACH_CALENDAR_DAYS` for the week; `COACH_CALENDAR_MONTH_WEEKS`, `COACH_CALENDAR_MONTH_SELECTED_DATE`, `calendarPage.monthView` for the month).
 
 The calendar is a **time-windowed projection of the same `CoachingSession` data** used by the dashboard and Sessions pages. It needs **no new tables** — only a date-range query and a detail projection. Align with the existing NestJS + Prisma + Cognito + AWS (ECS Fargate / ALB / RDS Postgres) stack.
 
@@ -33,7 +38,7 @@ All authenticated, coach-scoped. Timestamps UTC ISO-8601; the client positions b
 | Method | Path | Purpose | Maps to UI |
 |---|---|---|---|
 | `GET` | `/coach/calendar?view=week&start=YYYY-MM-DD` | Sessions within the week starting `start` (inclusive) → grouped by day. | Week grid + prev/next range |
-| `GET` | `/coach/calendar?view=month&start=YYYY-MM-01` | Sessions within the month (for the "Month" toggle). | Month view (placeholder in v1) |
+| `GET` | `/coach/calendar?view=month&start=YYYY-MM-01` | Sessions within the calendar month grid (leading/trailing adjacent-month days included) → grouped by day. | Month view grid + per-day chips |
 | `GET` | `/coach/sessions/:id` | Full session detail (reuses the Sessions-page endpoint). | "Session Details" side panel |
 
 Detail-panel / block actions reuse existing endpoints (no duplication):
@@ -73,8 +78,8 @@ DTOs via `class-validator` (`CalendarQueryDto { view: 'week'|'month'; start: str
 ## 4. Service layer
 
 - `CoachCalendarService` (Prisma, filtered by `coachId`).
-- Compute `[rangeStart, rangeEnd)` from `view` + `start` in the coach's timezone (`CoachAvailability.timezone`); query `CoachingSession` where `startsAt` in range, ordered by `startsAt`.
-- Group events by local day; derive `category` from `type`/`status`; project client name/email/avatar (signed S3 URL via `S3Module`, else initials).
+- Compute `[rangeStart, rangeEnd)` from `view` + `start` in the coach's timezone (`CoachAvailability.timezone`); query `CoachingSession` where `startsAt` in range, ordered by `startsAt`. For `view=month`, expand the range to the full **Monday-first grid** (lead with the trailing days of the previous month and trail into the next month) so adjacent-month cells render, flagging each returned day with `inMonth`.
+- Group events by local day; derive `category`/accent from `type`/`status`; project client name/email/avatar (signed S3 URL via `S3Module`, else initials). Month chips need only `title` + accent + client + `timeRange`; the week grid needs start/end minutes for positioning.
 - Return `monthLabel` / `rangeLabel` pre-formatted (or let the client format from the range — current frontend formats labels itself).
 - Register the module in `src/app.module.ts`.
 
@@ -83,8 +88,8 @@ DTOs via `class-validator` (`CalendarQueryDto { view: 'week'|'month'; start: str
 ## 5. Frontend wiring (follow-up)
 
 - Add `getCoachCalendar(view, start)` to `src/api/coach-dashboard.api.ts` (Axios, same pattern as other `src/api/*`).
-- Replace the static `COACH_CALENDAR_EVENTS` / `COACH_CALENDAR_DAYS` with fetched data (React Query), keeping the `CoachCalendarEvent` shape so `CoachCalendar.tsx` needs minimal change.
-- Wire prev/next month + range controls to refetch with a new `start`; wire the Week/Month toggle to `view`; wire block/detail actions to the existing session endpoints.
+- Replace the static week data (`COACH_CALENDAR_EVENTS` / `COACH_CALENDAR_DAYS`) and month data (`COACH_CALENDAR_MONTH_WEEKS`) with fetched data (React Query), keeping the `CoachCalendarEvent` / `CoachCalendarMonthDay` shapes so `CoachCalendar.tsx` needs minimal change. Compute the selected-day weekday label from the returned ISO date instead of the current `firstWeekdayIndex` constant.
+- Wire prev/next month + range controls to refetch with a new `start`; wire the Week/Month toggle to `view`; wire block/detail/day-card actions (Join / Reschedule / Quick Prep / Cancel Session) to the existing session endpoints.
 
 ---
 
