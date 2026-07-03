@@ -19,8 +19,8 @@ export const APP_USER_TYPE = {
 
 export const USER_DIRECTORY_PAGE_CONTENT = {
 	breadcrumbsTitle: "User Directory",
-	title: "Users",
-	subtitle: "Manage users across all corporations",
+	title: "User Directory",
+	subtitle: "Manage users across overall organization",
 	bulkUploadButton: "Bulk Upload",
 	inviteUserButton: "Invite User",
 	searchAriaLabel: "Search users",
