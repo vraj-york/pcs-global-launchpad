@@ -78,7 +78,8 @@ Base path `/coach-dashboard`. All authenticated + coach-scoped. Timestamps retur
 | `POST` | `/coach-dashboard/sessions` | Schedule a new session. Validates availability window + buffer, prevents overlaps. | "Schedule Session" |
 | `PATCH` | `/coach-dashboard/sessions/:id/reschedule` | Reschedule (new `startsAt`), writes activity + audit entry. | "Reschedule" |
 | `POST` | `/coach-dashboard/sessions/:id/join` | Returns/creates `meetingUrl` (video provider integration). | "Join" |
-| `DELETE` | `/coach-dashboard/sessions/:id` | Cancel session. | more-actions menu |
+| `GET` | `/coach-dashboard/sessions/:id/quick-prep` | Returns a coaching prep brief for the session (client summary, last notes, goals, suggested talking points). | more-actions menu → "Quick Prep" |
+| `DELETE` | `/coach-dashboard/sessions/:id` | Cancel session (writes `SESSION_CANCELLED` activity + audit). | more-actions menu → "Cancel Session" |
 | `GET` | `/coach-dashboard/activity?limit=10` | Recent client activity feed, newest first. | "Client Activity" |
 | `GET` | `/coach-dashboard/insight?period=month` | KPIs: `totalSessions`, `activeClients`, `overallCoachingMinutes`. | "This Month Insight" |
 | `GET` | `/coach-dashboard/availability` | Current availability settings. | "Your Availability" |

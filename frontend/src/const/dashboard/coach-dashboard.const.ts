@@ -50,6 +50,8 @@ export const COACH_DASHBOARD_CONTENT = {
 		reschedule: "Reschedule",
 		join: "Join",
 		moreActionsLabel: "More session actions",
+		quickPrep: "Quick Prep",
+		cancelSession: "Cancel Session",
 	},
 	clientActivity: {
 		title: "Client Activity",

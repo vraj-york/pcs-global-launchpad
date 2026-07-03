@@ -14,6 +14,7 @@ import {
 	CalendarDays,
 	CalendarFold,
 	CalendarSync,
+	CalendarX2,
 	CircleCheckBig,
 	EllipsisVertical,
 	Hourglass,
@@ -23,11 +24,18 @@ import {
 	TrendingUp,
 	Users,
 	Video,
+	Zap,
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
 	COACH_AVAILABILITY,
 	COACH_CLIENT_ACTIVITY,
@@ -48,7 +56,15 @@ const INSIGHT_STAT_ICONS: Record<CoachInsightStat["icon"], LucideIcon> = {
 	hourglass: Hourglass,
 };
 
-function SessionRow({ session }: { session: CoachSession }) {
+function SessionRow({
+	session,
+	onQuickPrep,
+	onCancel,
+}: {
+	session: CoachSession;
+	onQuickPrep: (session: CoachSession) => void;
+	onCancel: (session: CoachSession) => void;
+}) {
 	return (
 		<div className="flex items-center gap-4 rounded-xl border border-border bg-background p-4">
 			<Avatar size="lg" className="size-10 shrink-0">
@@ -90,12 +106,36 @@ function SessionRow({ session }: { session: CoachSession }) {
 				<Button size="sm" icon={Video}>
 					{C.todaysSessions.join}
 				</Button>
-				<Button
-					variant="ghost"
-					size="icon-sm"
-					icon={EllipsisVertical}
-					aria-label={C.todaysSessions.moreActionsLabel}
-				/>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button
+							variant="ghost"
+							size="icon-sm"
+							icon={EllipsisVertical}
+							aria-label={C.todaysSessions.moreActionsLabel}
+						/>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent
+						align="end"
+						className="min-w-40 rounded-lg border border-border bg-background p-0.5 shadow-xl"
+					>
+						<DropdownMenuItem
+							onClick={() => onQuickPrep(session)}
+							className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground"
+						>
+							<Zap className="size-5" aria-hidden />
+							<span>{C.todaysSessions.quickPrep}</span>
+						</DropdownMenuItem>
+						<DropdownMenuItem
+							variant="destructive"
+							onClick={() => onCancel(session)}
+							className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small"
+						>
+							<CalendarX2 className="size-5" aria-hidden />
+							<span>{C.todaysSessions.cancelSession}</span>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 		</div>
 	);
@@ -167,6 +207,14 @@ export function CoachDashboard() {
 		setTimeout(() => setScheduling(false), 1000);
 	}, []);
 
+	const handleQuickPrep = useCallback((_session: CoachSession) => {
+		// Placeholder until the Quick Prep flow API is wired up.
+	}, []);
+
+	const handleCancelSession = useCallback((_session: CoachSession) => {
+		// Placeholder until the cancel-session API is wired up.
+	}, []);
+
 	return (
 		<div className="flex flex-col gap-6">
 			{/* Title */}
@@ -222,7 +270,12 @@ export function CoachDashboard() {
 								</p>
 							) : (
 								COACH_SESSIONS.map((session) => (
-									<SessionRow key={session.id} session={session} />
+									<SessionRow
+										key={session.id}
+										session={session}
+										onQuickPrep={handleQuickPrep}
+										onCancel={handleCancelSession}
+									/>
 								))
 							)}
 						</div>
