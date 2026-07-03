@@ -79,6 +79,7 @@ Status → UI badge: `PENDING` → "New Request" (blue), `PROPOSED` → "Propose
 - `GET` returns the projected shape the frontend `CoachSessionRequest` expects: `title`, `status`, `statusLabel`, `client {name, avatarUrl, initials}`, `metaText` pieces (or raw fields for the client to compose), `proposedSlots` (→ tooltip lines), and the allowed `actions[]` for the current status.
 - The **employee filter** options come from the distinct clients that have requests for this coach (`GET /coach/session-requests/employees` or derived client-side, as the frontend currently does).
 - "Remind" uses the existing **SES** integration (see `coach-early-access-waitlist-api-plan.md` for the SES pattern).
+- **View Reason modal (node `4:21775`)** — implemented as `frontend/src/components/dashboard/coach-dashboard/ViewReasonModal.tsx` (reused `ContentModal` + `Button`; 640px, header "View Reason", read-only reason paragraph, footer Cancel / "Okay, Understood"). It is opened from the "View Reason" action on cancelled requests and shows `cancelReason`. Since the list `GET /coach/session-requests` projection already returns each cancelled request's fields, the cleanest wiring is to include `reason` (= `cancelReason`) inline on the request DTO (the frontend `CoachSessionRequest.reason` already models this) — the dedicated `GET /coach/session-requests/:id/reason` remains available for lazy fetch but is **not required** for this modal.
 
 ---
 

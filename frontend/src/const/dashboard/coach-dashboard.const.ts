@@ -143,6 +143,8 @@ export interface CoachSessionRequest {
 	linkLabel?: string;
 	/** Tooltip lines shown on hovering the link. */
 	tooltipLines?: string[];
+	/** Cancellation reason shown in the "View Reason" modal. */
+	reason?: string;
 	actions: CoachRequestActionId[];
 }
 
@@ -312,6 +314,11 @@ export const COACH_DASHBOARD_CONTENT = {
 				editSlots: "Edit Slots",
 				remind: "Remind",
 				viewReason: "View Reason",
+			},
+			viewReasonModal: {
+				title: "View Reason",
+				cancel: "Cancel",
+				confirm: "Okay, Understood",
 			},
 		},
 	},
@@ -759,6 +766,8 @@ export const COACH_SESSION_REQUESTS: CoachSessionRequest[] = [
 		status: "cancelled",
 		statusLabel: "Cancelled",
 		metaText: "You’ve cancelled the session request of 18 May, 2026 at 11:30 AM",
+		reason:
+			"Due to an unexpected scheduling conflict, I’m unable to attend the session at the planned time.",
 		actions: ["viewReason"],
 	},
 	{
@@ -769,6 +778,8 @@ export const COACH_SESSION_REQUESTS: CoachSessionRequest[] = [
 		clientName: "Kianna Dokidis",
 		clientInitials: "KD",
 		metaText: "has cancelled a session request of 30 Apr, 2026 at 5:15 PM",
+		reason:
+			"Due to an unexpected scheduling conflict, I’m unable to attend the session at the planned time.",
 		actions: ["viewReason"],
 	},
 ];

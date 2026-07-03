@@ -7,5 +7,6 @@ export * from "./Resources";
 export * from "./ScheduleSessionModal";
 export * from "./SessionsAndNotes";
 export * from "./TimeRangeField";
+export * from "./ViewReasonModal";
 export * from "./WelcomeBanner";
 export * from "./WhatLaunched";

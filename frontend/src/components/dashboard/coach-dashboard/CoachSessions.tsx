@@ -74,6 +74,7 @@ import {
 	type CoachSessionRequest,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { ViewReasonModal } from "./ViewReasonModal";
 
 const C = COACH_DASHBOARD_CONTENT.sessionsPage;
 const R = C.requests;
@@ -415,7 +416,13 @@ function SessionNotesPanel({
 	);
 }
 
-function RequestActions({ request }: { request: CoachSessionRequest }) {
+function RequestActions({
+	request,
+	onViewReason,
+}: {
+	request: CoachSessionRequest;
+	onViewReason?: () => void;
+}) {
 	return (
 		<div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
 			{request.actions.map((actionId) => {
@@ -427,6 +434,7 @@ function RequestActions({ request }: { request: CoachSessionRequest }) {
 						size="sm"
 						icon={action.icon}
 						className={action.className}
+						onClick={actionId === "viewReason" ? onViewReason : undefined}
 					>
 						{action.label}
 					</Button>
@@ -478,7 +486,13 @@ function RequestMeta({ request }: { request: CoachSessionRequest }) {
 	);
 }
 
-function RequestCard({ request }: { request: CoachSessionRequest }) {
+function RequestCard({
+	request,
+	onViewReason,
+}: {
+	request: CoachSessionRequest;
+	onViewReason?: () => void;
+}) {
 	return (
 		<Card className="flex w-full flex-row items-center gap-4 rounded-[10px] border border-border bg-background p-4 shadow-none">
 			<div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -495,7 +509,7 @@ function RequestCard({ request }: { request: CoachSessionRequest }) {
 				</div>
 				<RequestMeta request={request} />
 			</div>
-			<RequestActions request={request} />
+			<RequestActions request={request} onViewReason={onViewReason} />
 		</Card>
 	);
 }
@@ -503,6 +517,8 @@ function RequestCard({ request }: { request: CoachSessionRequest }) {
 function SessionRequests() {
 	const [status, setStatus] = useState("all");
 	const [employee, setEmployee] = useState("all");
+	const [reasonRequest, setReasonRequest] =
+		useState<CoachSessionRequest | null>(null);
 
 	const employeeOptions = useMemo(
 		() =>
@@ -571,10 +587,22 @@ function SessionRequests() {
 			) : (
 				<div className="flex flex-col gap-4">
 					{filtered.map((request) => (
-						<RequestCard key={request.id} request={request} />
+						<RequestCard
+							key={request.id}
+							request={request}
+							onViewReason={() => setReasonRequest(request)}
+						/>
 					))}
 				</div>
 			)}
+
+			<ViewReasonModal
+				open={reasonRequest !== null}
+				onOpenChange={(open) => {
+					if (!open) setReasonRequest(null);
+				}}
+				reason={reasonRequest?.reason ?? ""}
+			/>
 		</div>
 	);
 }
