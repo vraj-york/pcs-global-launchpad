@@ -1,6 +1,9 @@
 # Coach — Sessions Page — Backend Implementation Plan
 
-Backend support for the coach's standalone **Sessions** page (Figma `PCS_Global_Coach_Persona_Launchpad_Test`, node `4:21082`). The frontend (`frontend/src/components/dashboard/coach-dashboard/CoachSessions.tsx`, route `/coach-sessions` → `CoachSessionsPage`) renders **All Requests / All Sessions** tabs, a master list of **Upcoming / Past** sessions (client avatar + name), and a **Session Details** master-detail panel. It is currently backed by static placeholder data in `frontend/src/const/dashboard/coach-dashboard.const.ts` (`COACH_SCHEDULED_SESSIONS`, `sessionsPage`).
+Backend support for the coach's standalone **Sessions** page (Figma `PCS_Global_Coach_Persona_Launchpad_Test`, nodes `4:21082` "Sessions - Upcoming" and `4:20999` "Sessions - Past"). The frontend (`frontend/src/components/dashboard/coach-dashboard/CoachSessions.tsx`, route `/coach-sessions` → `CoachSessionsPage`) renders **All Requests / All Sessions** tabs, a master list of **Upcoming / Past** sessions (client avatar + name), and a right-hand master-detail panel whose variant depends on the selected session's scope. It is currently backed by static placeholder data in `frontend/src/const/dashboard/coach-dashboard.const.ts` (`COACH_SCHEDULED_SESSIONS`, `sessionsPage`).
+
+- **Upcoming** session selected (node `4:21082`) → **Session Details** panel (Title / Date / Time / Duration / Client / Description + footer Reschedule / Quick Prep / Cancel Session / Join).
+- **Past** session selected via **View Notes** (node `4:20999`) → **Session Notes** editor (textarea seeded with the session's saved notes + footer **Close** / **Save Notes**). The past card's icon is `notepad-text` and the save button uses the `save` icon, matching the Figma component set.
 
 This page is the coach-wide (all-clients) counterpart of the per-client **Session Info.** tab (`coach-client-sessions-notes-api-plan.md`). It **reuses** the `CoachingSession` / `SessionNote` models and most endpoints from `coach-dashboard-api-plan.md` and `coach-client-sessions-notes-api-plan.md`; the only new surface is **session requests** (the "All Requests" tab) and a full **session detail** projection. Align with the existing NestJS + Prisma + Cognito + AWS (ECS Fargate / ALB / RDS Postgres) stack.
 
@@ -98,7 +101,8 @@ Session row / detail actions reuse existing endpoints (no duplication):
 - **Join** → `POST /coach-dashboard/sessions/:id/join`
 - **Quick Prep** → `GET /coach-dashboard/sessions/:id/quick-prep`
 - **Cancel Session** → `DELETE /coach-dashboard/sessions/:id`
-- **View Notes** → `GET /coach/sessions/:id/notes` (see client-sessions-notes plan)
+- **View Notes** (open past-session notes editor, node `4:20999`) → `GET /coach/sessions/:id/notes` (see client-sessions-notes plan)
+- **Save Notes** (past-session editor footer) → `PUT /coach/sessions/:id/notes` (upsert `SessionNote`, see `coach-client-sessions-notes-api-plan.md`) — no new endpoint; the Sessions page reuses the same notes upsert as the per-client Session Info. tab.
 - **Schedule Session** (page header) → `POST /coach-dashboard/sessions`
 
 ### Representative response shapes (match frontend `CoachScheduledSession`)

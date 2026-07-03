@@ -1,4 +1,4 @@
-// Figma layer: "Sessions - Upcoming" — node 4:21082
+// Figma layer: "Sessions - Upcoming" (node 4:21082) / "Sessions - Past" (node 4:20999)
 /*
  * SEMANTIC ANALYSIS
  * Route: /coach-sessions (rendered inside AppLayout — sidebar + header shell)
@@ -7,9 +7,12 @@
  * - "All Sessions": two-column master-detail
  *   · Left: collapsible Upcoming / Past session cards (client avatar + name),
  *     Reschedule / Join / more-actions (Quick Prep / Cancel Session) or View Notes
- *   · Selecting a card → highlights it and shows the Session Details panel
- *   · Right: Session Details (Title / Date / Time / Duration / Client / Description)
- *     + footer actions (Reschedule / Quick Prep / Cancel Session / Join)
+ *   · Selecting a card → highlights it; the right panel depends on the scope:
+ *     - Upcoming session → Session Details panel (node 4:21082):
+ *       Title / Date / Time / Duration / Client / Description + footer actions
+ *       (Reschedule / Quick Prep / Cancel Session / Join)
+ *     - Past session ("View Notes") → Session Notes editor (node 4:20999):
+ *       textarea seeded with saved notes + footer Close / Save Notes
  * - "All Requests" (Figma node 4:20887): "Session Requests" list with Status /
  *   Employee filters and per-request actions (Accept / Propose Slots / Edit
  *   Slots / Remind / Cancel Request / View Reason); proposed slots show a tooltip
@@ -22,11 +25,12 @@ import {
 	CalendarX2,
 	Check,
 	ChevronDown,
-	ClipboardPen,
 	EllipsisVertical,
 	Eye,
 	type LucideIcon,
+	NotepadText,
 	Plus,
+	Save,
 	Video,
 	X,
 	Zap,
@@ -54,6 +58,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
 	Tooltip,
 	TooltipContent,
@@ -207,7 +212,7 @@ function SessionCard({
 				<Button
 					variant="outline"
 					size="sm"
-					icon={ClipboardPen}
+					icon={NotepadText}
 					className="shrink-0"
 					onClick={(e) => {
 						e.stopPropagation();
@@ -343,6 +348,67 @@ function SessionDetailsPanel({
 			) : (
 				<div className="flex flex-1 items-center justify-center p-4">
 					<p className="text-small text-muted-foreground">{C.emptyDetails}</p>
+				</div>
+			)}
+		</Card>
+	);
+}
+
+function SessionNotesPanel({
+	session,
+	notes,
+	onNotesChange,
+	onClose,
+	onSave,
+	saving,
+}: {
+	session: CoachScheduledSession | null;
+	notes: string;
+	onNotesChange: (value: string) => void;
+	onClose: () => void;
+	onSave: () => void;
+	saving: boolean;
+}) {
+	return (
+		<Card className="flex min-w-0 flex-1 flex-col gap-0 rounded-[10px] border border-border bg-background p-0 shadow-none">
+			<header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border py-4 pr-2.5 pl-4">
+				<h3 className="flex-1 text-base font-medium text-text-secondary">
+					{C.notesTitle}
+				</h3>
+				{session ? (
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						icon={X}
+						aria-label={C.close}
+						className="bg-card hover:bg-card/70"
+						onClick={onClose}
+					/>
+				) : null}
+			</header>
+
+			{session ? (
+				<>
+					<div className="flex flex-1 flex-col p-4">
+						<Textarea
+							value={notes}
+							onChange={(event) => onNotesChange(event.target.value)}
+							placeholder={C.notesPlaceholder}
+							className="min-h-64 flex-1 resize-none rounded-lg border-border bg-background text-small text-text-foreground shadow-none"
+						/>
+					</div>
+					<footer className="flex shrink-0 items-center justify-end gap-2 border-t border-border p-4">
+						<Button variant="outline" onClick={onClose}>
+							{C.close}
+						</Button>
+						<Button icon={Save} isLoading={saving} onClick={onSave}>
+							{C.save}
+						</Button>
+					</footer>
+				</>
+			) : (
+				<div className="flex flex-1 items-center justify-center p-4">
+					<p className="text-small text-muted-foreground">{C.notesEmpty}</p>
 				</div>
 			)}
 		</Card>
@@ -521,6 +587,8 @@ export function CoachSessions() {
 	const [selectedId, setSelectedId] = useState<string | null>(
 		UPCOMING[0]?.id ?? null,
 	);
+	const [notes, setNotes] = useState("");
+	const [savingNotes, setSavingNotes] = useState(false);
 
 	const selectedSession = useMemo(
 		() => COACH_SCHEDULED_SESSIONS.find((s) => s.id === selectedId) ?? null,
@@ -531,6 +599,20 @@ export function CoachSessions() {
 		setScheduling(true);
 		// Placeholder async action until the scheduling flow API is wired up.
 		setTimeout(() => setScheduling(false), 1000);
+	}, []);
+
+	const handleSelectSession = useCallback((session: CoachScheduledSession) => {
+		setSelectedId(session.id);
+		// Past sessions open the notes editor; seed it with any saved notes.
+		setNotes(session.notes ?? "");
+	}, []);
+
+	const handleCloseDetail = useCallback(() => setSelectedId(null), []);
+
+	const handleSaveNotes = useCallback(() => {
+		setSavingNotes(true);
+		// Placeholder async action until the notes API is wired up.
+		setTimeout(() => setSavingNotes(false), 1000);
 	}, []);
 
 	const tabs: { id: SessionsTabId; label: string }[] = [
@@ -605,7 +687,7 @@ export function CoachSessions() {
 												key={session.id}
 												session={session}
 												selected={session.id === selectedId}
-												onSelect={(s) => setSelectedId(s.id)}
+												onSelect={handleSelectSession}
 											/>
 										))
 									)}
@@ -631,7 +713,7 @@ export function CoachSessions() {
 												key={session.id}
 												session={session}
 												selected={session.id === selectedId}
-												onSelect={(s) => setSelectedId(s.id)}
+												onSelect={handleSelectSession}
 											/>
 										))
 									)}
@@ -640,11 +722,24 @@ export function CoachSessions() {
 						</Collapsible>
 					</div>
 
-					{/* Session Details */}
-					<SessionDetailsPanel
-						session={selectedSession}
-						onClose={() => setSelectedId(null)}
-					/>
+					{/* Right panel: past sessions show the Session Notes editor
+					    (node 4:20999); upcoming sessions show Session Details
+					    (node 4:21082). */}
+					{selectedSession?.scope === "past" ? (
+						<SessionNotesPanel
+							session={selectedSession}
+							notes={notes}
+							onNotesChange={setNotes}
+							onClose={handleCloseDetail}
+							onSave={handleSaveNotes}
+							saving={savingNotes}
+						/>
+					) : (
+						<SessionDetailsPanel
+							session={selectedSession}
+							onClose={handleCloseDetail}
+						/>
+					)}
 				</div>
 			) : (
 				<SessionRequests />

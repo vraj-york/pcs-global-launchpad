@@ -257,6 +257,10 @@ export const COACH_DASHBOARD_CONTENT = {
 		cancelSession: "Cancel Session",
 		moreActionsLabel: "More session actions",
 		detailsTitle: "Session Details",
+		notesTitle: "Session Notes",
+		notesPlaceholder: "Add your session notes here…",
+		save: "Save Notes",
+		saving: "Saving…",
 		close: "Close",
 		fieldLabels: {
 			title: "Title",
@@ -267,6 +271,7 @@ export const COACH_DASHBOARD_CONTENT = {
 			description: "Description",
 		},
 		emptyDetails: "Select a session to view its details.",
+		notesEmpty: "Select a past session to view or add its notes.",
 		emptyUpcoming: "No upcoming sessions.",
 		emptyPast: "No past sessions.",
 		allRequestsEmpty: "No pending session requests.",
@@ -536,7 +541,7 @@ export const COACH_SCHEDULED_SESSIONS: CoachScheduledSession[] = [
 			"Reviewed decision-making frameworks and set action items for the next sprint.",
 		scope: "past",
 		notes:
-			"Strong session on prioritisation. Client committed to a weekly planning ritual and delegating one recurring task.",
+			"Great progress on delegation skills. Michael struggled with letting go of control but made breakthrough realizations about team empowerment. Action items: practice weekly reflection, delegate one major project.",
 	},
 ];
 
