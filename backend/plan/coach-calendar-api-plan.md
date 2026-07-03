@@ -49,6 +49,22 @@ Detail-panel / block actions reuse existing endpoints (no duplication):
 - **Cancel Session** → `DELETE /coach-dashboard/sessions/:id`
 - **Schedule Session** (page header) → `POST /coach-dashboard/sessions`
 
+### Reschedule Session modal (node `4:21733`)
+
+The **Reschedule** action (week detail panel + month day-card dropdown) opens the **Reschedule Session** modal (`frontend/src/components/dashboard/coach-dashboard/RescheduleSessionModal.tsx`, reused `ContentModal` + `DatePickerInput` + time-range `Popover` + `Switch` + `Textarea`). It collects a new date, a new start/end time (end defaults to start + 15 min per the tooltip), optional additional notes, and a "notify client" toggle, then calls the **already-planned** `PATCH /coach-dashboard/sessions/:id/reschedule` — **no new endpoint**. It reuses `RescheduleSessionDto` (see `coach-dashboard-api-plan.md`):
+
+```jsonc
+// PATCH /coach-dashboard/sessions/:id/reschedule
+{
+  "startsAt": "2026-05-14T10:00:00Z", // from New Date + New Time (start), client-composed in coach tz
+  "endsAt":   "2026-05-14T10:15:00Z", // from New Date + New Time (end)
+  "notes":    "Weekly one-on-one coaching session for stress management.", // optional (Additional Notes)
+  "notifyClient": true                 // "Notify client for updated date & time via email" switch
+}
+```
+
+Server behaviour (extends the existing reschedule handler): validate the new window against `CoachAvailability` (work window, `bufferMins`, no overlap) → `BadRequestException` on conflict; persist `startsAt`/`endsAt`/`notes`; write a `CoachClientActivity` row + audit event; when `notifyClient` is true, enqueue the reschedule email via the existing **SES** email service (reuse `EmailModule`, same pattern as the verification-code template). Returns the updated session projection so the calendar/detail panel refetches.
+
 ### Representative response shape (match frontend `CoachCalendarEvent`)
 
 ```jsonc
@@ -90,6 +106,7 @@ DTOs via `class-validator` (`CalendarQueryDto { view: 'week'|'month'; start: str
 - Add `getCoachCalendar(view, start)` to `src/api/coach-dashboard.api.ts` (Axios, same pattern as other `src/api/*`).
 - Replace the static week data (`COACH_CALENDAR_EVENTS` / `COACH_CALENDAR_DAYS`) and month data (`COACH_CALENDAR_MONTH_WEEKS`) with fetched data (React Query), keeping the `CoachCalendarEvent` / `CoachCalendarMonthDay` shapes so `CoachCalendar.tsx` needs minimal change. Compute the selected-day weekday label from the returned ISO date instead of the current `firstWeekdayIndex` constant.
 - Wire prev/next month + range controls to refetch with a new `start`; wire the Week/Month toggle to `view`; wire block/detail/day-card actions (Join / Reschedule / Quick Prep / Cancel Session) to the existing session endpoints.
+- **Reschedule** is already wired to open the implemented `RescheduleSessionModal` (week detail panel + month day-card dropdown, prefilling Additional Notes from the session description). Its `onConfirm` currently runs a placeholder timeout; wire it to `rescheduleSession(id, payload)` (Axios) with the payload above, then invalidate the calendar/detail queries on success.
 
 ---
 

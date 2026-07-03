@@ -52,6 +52,7 @@ import {
 	type CoachCalendarMonthEvent,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { RescheduleSessionModal } from "./RescheduleSessionModal";
 
 const C = COACH_DASHBOARD_CONTENT.calendarPage;
 const M = C.monthView;
@@ -198,7 +199,13 @@ function WeekGrid({
 	);
 }
 
-function SessionDetailsPanel({ event }: { event: CoachCalendarEvent | null }) {
+function SessionDetailsPanel({
+	event,
+	onReschedule,
+}: {
+	event: CoachCalendarEvent | null;
+	onReschedule?: () => void;
+}) {
 	if (!event) {
 		return (
 			<div className="flex min-w-0 flex-1 items-center justify-center border-l border-border p-6">
@@ -249,7 +256,12 @@ function SessionDetailsPanel({ event }: { event: CoachCalendarEvent | null }) {
 				<Button icon={Video} className="w-full">
 					{C.join}
 				</Button>
-				<Button variant="outline" icon={CalendarSync} className="w-full">
+				<Button
+					variant="outline"
+					icon={CalendarSync}
+					className="w-full"
+					onClick={onReschedule}
+				>
 					{C.reschedule}
 				</Button>
 				<Button variant="outline" icon={Zap} className="w-full">
@@ -344,7 +356,7 @@ function MonthGrid({
 	);
 }
 
-function MonthEventActions() {
+function MonthEventActions({ onReschedule }: { onReschedule?: () => void }) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -359,7 +371,10 @@ function MonthEventActions() {
 				align="end"
 				className="min-w-40 rounded-lg border border-border bg-background p-0.5 shadow-xl"
 			>
-				<DropdownMenuItem className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground">
+				<DropdownMenuItem
+					onSelect={onReschedule}
+					className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground"
+				>
 					<CalendarSync className="size-5" aria-hidden />
 					<span>{C.reschedule}</span>
 				</DropdownMenuItem>
@@ -380,7 +395,13 @@ function MonthEventActions() {
 	);
 }
 
-function DayEventCard({ event }: { event: CoachCalendarMonthEvent }) {
+function DayEventCard({
+	event,
+	onReschedule,
+}: {
+	event: CoachCalendarMonthEvent;
+	onReschedule?: () => void;
+}) {
 	return (
 		<Card className="flex flex-col gap-6 rounded-xl border border-border bg-background p-4 shadow-none">
 			<div className="flex flex-col gap-2">
@@ -411,7 +432,7 @@ function DayEventCard({ event }: { event: CoachCalendarMonthEvent }) {
 				<Button icon={Video} size="sm" className="flex-1">
 					{C.join}
 				</Button>
-				<MonthEventActions />
+				<MonthEventActions onReschedule={onReschedule} />
 			</div>
 		</Card>
 	);
@@ -420,9 +441,11 @@ function DayEventCard({ event }: { event: CoachCalendarMonthEvent }) {
 function DayEventsPanel({
 	dateLabel,
 	events,
+	onReschedule,
 }: {
 	dateLabel: string;
 	events: CoachCalendarMonthEvent[];
+	onReschedule?: (event: CoachCalendarMonthEvent) => void;
 }) {
 	const count = events.length;
 	const countLabel =
@@ -443,7 +466,13 @@ function DayEventsPanel({
 						<p className="text-small text-muted-foreground">{M.noEvents}</p>
 					</div>
 				) : (
-					events.map((event) => <DayEventCard key={event.id} event={event} />)
+					events.map((event) => (
+						<DayEventCard
+							key={event.id}
+							event={event}
+							onReschedule={() => onReschedule?.(event)}
+						/>
+					))
 				)}
 			</div>
 		</div>
@@ -458,6 +487,9 @@ export function CoachCalendar() {
 	);
 	const [selectedDate, setSelectedDate] = useState<number>(
 		COACH_CALENDAR_MONTH_SELECTED_DATE,
+	);
+	const [reschedule, setReschedule] = useState<{ notes?: string } | null>(
+		null,
 	);
 
 	const selectedEvent = useMemo(
@@ -583,7 +615,12 @@ export function CoachCalendar() {
 							selectedId={selectedId}
 							onSelect={(event) => setSelectedId(event.id)}
 						/>
-						<SessionDetailsPanel event={selectedEvent} />
+						<SessionDetailsPanel
+							event={selectedEvent}
+							onReschedule={() =>
+								setReschedule({ notes: selectedEvent?.description })
+							}
+						/>
 					</div>
 				) : (
 					<div className="flex flex-col lg:flex-row lg:items-stretch">
@@ -594,10 +631,19 @@ export function CoachCalendar() {
 						<DayEventsPanel
 							dateLabel={selectedDayLabel}
 							events={selectedDay?.events ?? []}
+							onReschedule={() => setReschedule({})}
 						/>
 					</div>
 				)}
 			</div>
+
+			<RescheduleSessionModal
+				open={reschedule !== null}
+				onOpenChange={(open) => {
+					if (!open) setReschedule(null);
+				}}
+				defaultNotes={reschedule?.notes}
+			/>
 		</div>
 	);
 }
