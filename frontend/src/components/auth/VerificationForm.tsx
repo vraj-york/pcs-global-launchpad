@@ -114,21 +114,31 @@ export function VerificationForm({ email, password }: VerificationFormProps) {
 									{formatTime(timer)}
 								</span>
 							</div>
-							<Controller
-								name="code"
-								control={control}
-								render={({ field }) => (
-									<OTPInput
-										length={VERIFICATION_CONFIG.codeLength}
-										value={field.value}
-										onChange={(value) => {
-											if (error) clearError();
-											field.onChange(value);
-										}}
-										error={!!error}
-									/>
-								)}
-							/>
+							<div className="flex flex-col gap-2">
+								<Controller
+									name="code"
+									control={control}
+									render={({ field }) => (
+										<OTPInput
+											length={VERIFICATION_CONFIG.codeLength}
+											value={field.value}
+											onChange={(value) => {
+												if (error) clearError();
+												field.onChange(value);
+											}}
+											error={!!error}
+										/>
+									)}
+								/>
+								{error ? (
+									<p
+										className="text-small leading-small text-destructive"
+										role="alert"
+									>
+										{error}
+									</p>
+								) : null}
+							</div>
 						</div>
 					</div>
 

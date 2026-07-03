@@ -28,6 +28,21 @@ design; no new components, assets, or backend endpoints are needed.
     (`text-text-foreground`, `text-text-secondary`, `text-link`, `text-destructive`, `bg-card`, brand
     gradient tokens). No new assets — brand art (`BehavioralNodes`, `BSPSymbol`, `BSPLogo`) already exists.
 
+## Error state (node `4:23856`)
+
+The "2FA / Code - Error State" is the same page with an invalid code: the OTP inputs render with a red
+(error) border and an inline red message appears below them ("The verification code is invalid.").
+
+- **Changed:** `components/auth/VerificationForm.tsx` — renders the store's `error` inline below the
+  `OTPInput` (`text-small text-destructive`, `role="alert"`) inside an 8px-gap column, matching the Figma
+  error layout. The red input border was already wired via `OTPInput`'s `error` prop; the message clears as
+  soon as the user edits the code (`clearError`).
+- The message text is the auth store's mapped error
+  (`AUTH_ERROR_MESSAGES.invalidVerificationCode`), set by `confirmSignIn` on a Cognito
+  `CodeMismatch`/expiry. (The error-state Figma still labels the CTA "Verify Account"; the default-state
+  node `4:24045` updates it to "Verify & Proceed", which is used as the single source of truth.)
+- No new component, asset, token, or backend change for the error state.
+
 ## Backend / auth
 
 - 2FA verification is performed **client-side against AWS Cognito** via Amplify `confirmSignIn`
