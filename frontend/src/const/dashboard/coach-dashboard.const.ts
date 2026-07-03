@@ -38,6 +38,126 @@ export interface CoachAvailabilityRow {
 	value: string;
 }
 
+export type CalendarEventAccent = "blue" | "warning" | "success";
+
+export interface CoachCalendarDay {
+	id: string;
+	/** Weekday label, e.g. "Mon". */
+	label: string;
+	/** Day of month, e.g. "11". */
+	date: string;
+	/** Highlighted (currently selected) day column. */
+	highlighted?: boolean;
+}
+
+export interface CoachCalendarEvent {
+	id: string;
+	title: string;
+	/** 0-based column index into the visible week (Mon = 0). */
+	dayIndex: number;
+	/** Minutes from midnight for start/end, used to position the block. */
+	startMinutes: number;
+	endMinutes: number;
+	accent: CalendarEventAccent;
+	// Session Details (side panel)
+	dateLabel: string;
+	timeRange: string;
+	duration: string;
+	clientName: string;
+	clientEmail: string;
+	clientAvatar?: string;
+	clientInitials?: string;
+	description: string;
+}
+
+export type CoachResourceAccent = "green" | "blue" | "red";
+
+export interface CoachWelcomeHighlight {
+	id: string;
+	label: string;
+	icon: "sparkles" | "trending-up" | "calendar-clock";
+	accent: "blue" | "green" | "yellow";
+}
+
+export interface CoachLaunchUpdate {
+	id: string;
+	label: string;
+	href: string;
+}
+
+export interface CoachClientSession {
+	id: string;
+	/** Session title, e.g. "Leadership Coaching". */
+	title: string;
+	/** Formatted date + time range, e.g. "2 May, 2026 • 9:30 AM - 9:45 AM". */
+	dateTime: string;
+	/** Coach notes captured for the session (past sessions). */
+	notes?: string;
+}
+
+export type CoachSessionScope = "upcoming" | "past";
+
+export type CoachRequestStatus = "new" | "proposed" | "cancelled";
+
+export type CoachRequestActionId =
+	| "cancelRequest"
+	| "proposeSlots"
+	| "accept"
+	| "editSlots"
+	| "remind"
+	| "viewReason";
+
+export interface CoachSessionRequest {
+	id: string;
+	title: string;
+	status: CoachRequestStatus;
+	/** Badge copy, e.g. "New Request". */
+	statusLabel: string;
+	clientName?: string;
+	clientAvatar?: string;
+	clientInitials?: string;
+	/** Sentence after the client name (or the whole sentence when no client). */
+	metaText: string;
+	/** Inline underlined link label (e.g. "new time slots"). */
+	linkLabel?: string;
+	/** Tooltip lines shown on hovering the link. */
+	tooltipLines?: string[];
+	actions: CoachRequestActionId[];
+}
+
+export interface CoachScheduledSession {
+	id: string;
+	/** Session title, e.g. "Leadership Coaching". */
+	title: string;
+	clientName: string;
+	clientEmail: string;
+	clientAvatar?: string;
+	clientInitials?: string;
+	/** Formatted date, e.g. "May 2, 2026". */
+	date: string;
+	/** Time range, e.g. "9:30 AM - 9:45 AM". */
+	timeRange: string;
+	/** Duration label, e.g. "15 min". */
+	duration: string;
+	description: string;
+	scope: CoachSessionScope;
+	/** Coach notes for the session (past sessions). */
+	notes?: string;
+}
+
+export interface CoachResource {
+	id: string;
+	/** Bold lead-in of the label (Figma node 4:19379 heading, weight 700). */
+	lead: string;
+	/** Regular connector word between the lead and the link ("on" / "in"). */
+	connector: string;
+	/** Underlined link text. */
+	linkLabel: string;
+	href: string;
+	icon: "book-open" | "sparkles" | "life-buoy";
+	accent: CoachResourceAccent;
+}
+
 export const COACH_DASHBOARD_CONTENT = {
 	breadcrumbLabel: "Dashboard",
 	welcomeTitle: "Welcome, Coach!",
@@ -65,11 +185,206 @@ export const COACH_DASHBOARD_CONTENT = {
 		subtitle: "Manage coaching hours & availability windows.",
 		manage: "Manage Availability",
 	},
+	resources: {
+		title: "Resources",
+		subtitle: "Guides and updates to help you coach with confidence.",
+		emptyState: "No resources available right now.",
+	},
+	welcome: {
+		title: "Your coaching toolkit",
+		description:
+			"Get up to speed on everything you need to guide your clients with confidence.",
+	},
+	whatLaunched: {
+		title: "Explore every update",
+		intro: "Each release brings new tools to your coaching workspace:",
+		footnotePrefix: "Check out the",
+		footnoteLink: "help center",
+		footnoteHref: "/support",
+		footnoteSuffix: "for the latest platform updates.",
+		panelTitle: "Coaching Updates",
+		panelSectionLabel: "Updates",
+		panelActiveItem: "Overview",
+		searchLabel: "Search updates",
+		addLabel: "New update",
+	},
+	comingSoon: {
+		title: "Be the first to try new updates",
+		description:
+			"We’re rolling several new coaching tools into closed beta in the coming days. Join the wait list to request early access to these features as they roll out:",
+		features: [
+			"AI-assisted session summaries",
+			"Client progress insights",
+			"Smart scheduling & reminders",
+		],
+		cta: "Request early access",
+		ctaHref: "/support",
+	},
+	sessionInfo: {
+		upcomingTitle: "Upcoming Sessions",
+		pastTitle: "Past Sessions",
+		reschedule: "Reschedule",
+		join: "Join",
+		viewNotes: "View Notes",
+		moreActionsLabel: "More session actions",
+		quickPrep: "Quick Prep",
+		cancelSession: "Cancel Session",
+		notesTitle: "Session Notes",
+		notesPlaceholder: "Add your session notes here…",
+		close: "Close",
+		save: "Save Notes",
+		saving: "Saving…",
+		emptyUpcoming: "No upcoming sessions.",
+		emptyPast: "No past sessions.",
+		notesEmpty: "Select a past session to view or add its notes.",
+	},
+	sessionsPage: {
+		breadcrumbLabel: "Sessions",
+		title: "Sessions",
+		subtitle:
+			"Manage all requests, upcoming sessions, past notes, and follow-ups.",
+		scheduleSession: "Schedule Session",
+		tabs: {
+			allRequests: "All Requests",
+			allSessions: "All Sessions",
+		},
+		upcomingTitle: "Upcoming Sessions",
+		pastTitle: "Past Sessions",
+		reschedule: "Reschedule",
+		join: "Join",
+		viewNotes: "View Notes",
+		quickPrep: "Quick Prep",
+		cancelSession: "Cancel Session",
+		moreActionsLabel: "More session actions",
+		detailsTitle: "Session Details",
+		close: "Close",
+		fieldLabels: {
+			title: "Title",
+			date: "Date",
+			time: "Time",
+			duration: "Duration",
+			client: "Client",
+			description: "Description",
+		},
+		emptyDetails: "Select a session to view its details.",
+		emptyUpcoming: "No upcoming sessions.",
+		emptyPast: "No past sessions.",
+		allRequestsEmpty: "No pending session requests.",
+		requests: {
+			title: "Session Requests",
+			statusFilterLabel: "All Status",
+			employeeFilterLabel: "All Employees",
+			statusOptions: [
+				{ value: "new", label: "New Request" },
+				{ value: "proposed", label: "Proposed" },
+				{ value: "cancelled", label: "Cancelled" },
+			],
+			actions: {
+				cancelRequest: "Cancel Request",
+				proposeSlots: "Propose Slots",
+				accept: "Accept",
+				editSlots: "Edit Slots",
+				remind: "Remind",
+				viewReason: "View Reason",
+			},
+		},
+	},
+	calendarPage: {
+		breadcrumbLabel: "Calendar",
+		title: "Calendar",
+		subtitle: "All your sessions & events at a glance",
+		scheduleSession: "Schedule Session",
+		monthLabel: "May 2026",
+		rangeLabel: "May 11 - May 15",
+		views: {
+			week: "Week",
+			month: "Month",
+		},
+		monthViewPlaceholder: "Month view is coming soon.",
+		detailsTitle: "Session Details",
+		fieldLabels: {
+			title: "Title",
+			time: "Time",
+			sessionTime: "Session Time",
+			client: "Client",
+			description: "Description",
+		},
+		join: "Join",
+		reschedule: "Reschedule",
+		quickPrep: "Quick Prep",
+		cancelSession: "Cancel Session",
+		emptyDetails: "Select an event to see its details.",
+		prevMonthAria: "Previous month",
+		nextMonthAria: "Next month",
+		prevRangeAria: "Previous week",
+		nextRangeAria: "Next week",
+	},
 	emptyStates: {
 		sessions: "No sessions scheduled for today.",
 		activity: "No recent client activity.",
 	},
 } as const;
+
+/** Week grid spans 8:00 AM – 6:00 PM. */
+export const COACH_CALENDAR_GRID_START_MINUTES = 8 * 60;
+export const COACH_CALENDAR_GRID_END_MINUTES = 18 * 60;
+
+export const COACH_CALENDAR_DAYS: CoachCalendarDay[] = [
+	{ id: "mon", label: "Mon", date: "11" },
+	{ id: "tue", label: "Tue", date: "12", highlighted: true },
+	{ id: "wed", label: "Wed", date: "13" },
+	{ id: "thu", label: "Thu", date: "14" },
+	{ id: "fri", label: "Fri", date: "15" },
+];
+
+export const COACH_CALENDAR_EVENTS: CoachCalendarEvent[] = [
+	{
+		id: "cal-one-on-one",
+		title: "1:1 Coaching",
+		dayIndex: 1,
+		startMinutes: 10 * 60,
+		endMinutes: 10 * 60 + 15,
+		accent: "blue",
+		dateLabel: "Tuesday, May 12, 2026",
+		timeRange: "10:00 AM - 10:15 AM",
+		duration: "15 min",
+		clientName: "Nicolas Hamilton",
+		clientEmail: "nicolas.hamilton@email.com",
+		clientInitials: "NH",
+		description: "Weekly one-on-one coaching session for stress management.",
+	},
+	{
+		id: "cal-communication-conflict",
+		title: "Communication Conflict",
+		dayIndex: 3,
+		startMinutes: 12 * 60,
+		endMinutes: 12 * 60 + 15,
+		accent: "warning",
+		dateLabel: "Thursday, May 14, 2026",
+		timeRange: "12:00 PM - 12:15 PM",
+		duration: "15 min",
+		clientName: "Emma Thompson",
+		clientEmail: "emma.thompson@email.com",
+		clientInitials: "ET",
+		description:
+			"Session focused on resolving a recurring team communication conflict.",
+	},
+	{
+		id: "cal-goal-review",
+		title: "Goal Review",
+		dayIndex: 2,
+		startMinutes: 16 * 60 + 30,
+		endMinutes: 16 * 60 + 45,
+		accent: "success",
+		dateLabel: "Wednesday, May 13, 2026",
+		timeRange: "4:30 PM - 4:45 PM",
+		duration: "15 min",
+		clientName: "Clara Nevada",
+		clientEmail: "clara.nevada@email.com",
+		clientInitials: "CN",
+		description: "Quarterly goal review and progress check-in.",
+	},
+];
 
 export const COACH_SESSIONS: CoachSession[] = [
 	{
@@ -155,5 +470,174 @@ export const COACH_AVAILABILITY: CoachAvailabilityRow[] = [
 		id: "buffer-time",
 		label: "Buffer Time (In-between Sessions)",
 		value: "15 min",
+	},
+];
+
+export const COACH_UPCOMING_SESSIONS: CoachClientSession[] = [
+	{
+		id: "upcoming-leadership-coaching",
+		title: "Leadership Coaching",
+		dateTime: "2 May, 2026 • 9:30 AM - 9:45 AM",
+	},
+	{
+		id: "upcoming-strategic-thinking",
+		title: "Strategic Thinking",
+		dateTime: "18 Apr, 2026 • 1:00 PM - 1:15 PM",
+	},
+];
+
+export const COACH_PAST_SESSIONS: CoachClientSession[] = [
+	{
+		id: "past-strategic-thinking",
+		title: "Strategic Thinking",
+		dateTime: "18 Apr, 2026 • 2:30 PM - 2:45 PM",
+		notes:
+			"Great progress on delegation skills. Michael struggled with letting go of control but made breakthrough realizations about team empowerment. Action items: practice weekly reflection, delegate one major project.",
+	},
+];
+
+export const COACH_SCHEDULED_SESSIONS: CoachScheduledSession[] = [
+	{
+		id: "scheduled-leadership-coaching",
+		title: "Leadership Coaching",
+		clientName: "Alex Rivera",
+		clientEmail: "matt_henry@email.com",
+		clientAvatar: coachAlexRivera,
+		date: "May 2, 2026",
+		timeRange: "9:30 AM - 9:45 AM",
+		duration: "15 min",
+		description:
+			"Weekly one-on-one coaching session for leadership skill enhancement.",
+		scope: "upcoming",
+	},
+	{
+		id: "scheduled-strategic-thinking-upcoming",
+		title: "Strategic Thinking",
+		clientName: "Jaydon Aminoff",
+		clientEmail: "jaydon_aminoff@email.com",
+		clientInitials: "JA",
+		date: "Apr 18, 2026",
+		timeRange: "1:00 PM - 1:15 PM",
+		duration: "15 min",
+		description:
+			"Follow-up on strategic planning goals and quarterly priorities.",
+		scope: "upcoming",
+	},
+	{
+		id: "scheduled-strategic-thinking-past",
+		title: "Strategic Thinking",
+		clientName: "Lydia Kenter",
+		clientEmail: "lydia_kenter@email.com",
+		clientInitials: "LK",
+		date: "Apr 10, 2026",
+		timeRange: "2:30 PM - 2:45 PM",
+		duration: "15 min",
+		description:
+			"Reviewed decision-making frameworks and set action items for the next sprint.",
+		scope: "past",
+		notes:
+			"Strong session on prioritisation. Client committed to a weekly planning ritual and delegating one recurring task.",
+	},
+];
+
+export const COACH_SESSION_REQUESTS: CoachSessionRequest[] = [
+	{
+		id: "request-strategic-thinking",
+		title: "Strategic Thinking",
+		status: "new",
+		statusLabel: "New Request",
+		clientName: "Alex Rivera",
+		clientAvatar: coachAlexRivera,
+		metaText: "has requested a session on 22 May, 2026 at 2:30 PM",
+		actions: ["cancelRequest", "proposeSlots", "accept"],
+	},
+	{
+		id: "request-leadership-coaching",
+		title: "Leadership Coaching",
+		status: "proposed",
+		statusLabel: "Proposed",
+		clientName: "Nicolas Hamilton",
+		clientInitials: "NH",
+		metaText: "has proposed ",
+		linkLabel: "new time slots",
+		tooltipLines: [
+			"Mon 25 May, 10:00 AM - 10:15 AM",
+			"Wed 27 May, 2:30 PM - 2:45 PM",
+		],
+		actions: ["cancelRequest", "editSlots", "remind"],
+	},
+	{
+		id: "request-stress-management",
+		title: "Stress Management",
+		status: "cancelled",
+		statusLabel: "Cancelled",
+		metaText: "You've cancelled the session request of 18 May, 2026 at 11:30 AM",
+		actions: ["viewReason"],
+	},
+	{
+		id: "request-communication-skills",
+		title: "Communication Skills",
+		status: "cancelled",
+		statusLabel: "Cancelled",
+		clientName: "Kianna Dokidis",
+		clientInitials: "KD",
+		metaText: "has cancelled a session request of 30 Apr, 2026 at 5:15 PM",
+		actions: ["viewReason"],
+	},
+];
+
+export const COACH_LAUNCH_UPDATES: CoachLaunchUpdate[] = [
+	{ id: "session-insights", label: "Session insights", href: "/support" },
+	{
+		id: "progress-reports",
+		label: "Client progress reports",
+		href: "/support",
+	},
+	{ id: "smart-scheduling", label: "Smart scheduling", href: "/support" },
+];
+
+export const COACH_WELCOME_HIGHLIGHTS: CoachWelcomeHighlight[] = [
+	{ id: "session-summaries", label: "AI session summaries", icon: "sparkles", accent: "blue" },
+	{
+		id: "progress-insights",
+		label: "Client progress insights",
+		icon: "trending-up",
+		accent: "green",
+	},
+	{
+		id: "smart-scheduling",
+		label: "Smart scheduling",
+		icon: "calendar-clock",
+		accent: "yellow",
+	},
+];
+
+export const COACH_RESOURCES: CoachResource[] = [
+	{
+		id: "coach-playbook",
+		lead: "Master your coaching workflow",
+		connector: "in",
+		linkLabel: "the Coach Playbook",
+		href: "/support",
+		icon: "book-open",
+		accent: "green",
+	},
+	{
+		id: "platform-updates",
+		lead: "Recap the latest platform updates",
+		connector: "on",
+		linkLabel: "Release notes",
+		href: "/support",
+		icon: "sparkles",
+		accent: "blue",
+	},
+	{
+		id: "best-practices",
+		lead: "Learn coaching best practices",
+		connector: "in",
+		linkLabel: "the Help center",
+		href: "/support",
+		icon: "life-buoy",
+		accent: "red",
 	},
 ];

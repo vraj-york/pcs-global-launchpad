@@ -47,6 +47,11 @@ import {
 	type CoachSession,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { ComingSoon } from "./ComingSoon";
+import { Resources } from "./Resources";
+import { SessionsAndNotes } from "./SessionsAndNotes";
+import { WelcomeBanner } from "./WelcomeBanner";
+import { WhatLaunched } from "./WhatLaunched";
 
 const C = COACH_DASHBOARD_CONTENT;
 
@@ -117,7 +122,7 @@ function SessionRow({
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
 						align="end"
-						className="min-w-40 rounded-lg border border-border bg-background p-0.5 shadow-xl"
+						className="min-w-48 rounded-lg border border-border bg-background p-0.5 shadow-xl"
 					>
 						<DropdownMenuItem
 							onClick={() => onQuickPrep(session)}
@@ -369,6 +374,21 @@ export function CoachDashboard() {
 					</section>
 				</div>
 			</div>
+
+			{/* Welcome / coaching toolkit — Figma node 4:19414 */}
+			<WelcomeBanner />
+
+			{/* What's coming soon — Figma node 4:19398 */}
+			<ComingSoon />
+
+			{/* What launched — Figma node 4:19407 */}
+			<WhatLaunched />
+
+			{/* Resources — Figma node 4:19379 */}
+			<Resources />
+
+			{/* Client sessions & notes ("Session Info." tab) — Figma node 4:20808 */}
+			<SessionsAndNotes />
 		</div>
 	);
 }

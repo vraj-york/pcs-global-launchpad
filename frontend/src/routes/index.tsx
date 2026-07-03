@@ -29,7 +29,9 @@ import {
 	BillingDetailPage,
 	ChatbotPage,
 	ChooseSetupPage,
+	CoachCalendarPage,
 	CoachDashboardPage,
+	CoachSessionsPage,
 	CompanyDirectoryPage,
 	CompanyOverviewPage,
 	CorporateDirectoryPage,
@@ -123,6 +125,22 @@ export const routes: RouteConfig[] = [
 		element: (
 			<ProtectedRoute>
 				<CoachDashboardPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: ROUTES.coachSessions.root,
+		element: (
+			<ProtectedRoute>
+				<CoachSessionsPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: ROUTES.coachCalendar.root,
+		element: (
+			<ProtectedRoute>
+				<CoachCalendarPage />
 			</ProtectedRoute>
 		),
 	},
