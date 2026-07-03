@@ -121,7 +121,7 @@ function SessionRow({
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
 						align="end"
-						className="min-w-40 rounded-lg border border-border bg-background p-0.5 shadow-xl"
+						className="min-w-48 rounded-lg border border-border bg-background p-0.5 shadow-xl"
 					>
 						<DropdownMenuItem
 							onClick={() => onQuickPrep(session)}
