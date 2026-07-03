@@ -32,14 +32,18 @@ Both were updated in this change to match node `4:20113`.
 Card = light shell (`#F8F7FB` page, white card, 20px radius) + header image row +
 centered content. Content body updated to the Figma spec:
 
-| Element | Figma | Applied |
+| Element | Figma | Applied (exact Figma values) |
 |---|---|---|
-| Title "Verification Code" | Inter SemiBold, 20.9/25, `#2F414A` | `font-weight:600;font-size:21px;line-height:25px;color:#2F414A` |
-| Subtitle | Inter 400, 14.6/22, `#385966` | `font-size:15px;line-height:22px;color:#385966` (minutes from `VERIFICATION_CODE_VALID_MINUTES`) |
-| Code `121-012` | Inter Bold, 50/60.6, `-0.0083em`, `#2F414A` | `font-weight:700;font-size:50px;line-height:60px;letter-spacing:-0.42px;color:#2F414A` |
+| Title "Verification Code" | Inter SemiBold, 20.9/25.09, `#2F414A` | `font-weight:600;font-size:20.9px;line-height:25.09px;color:#2F414A` |
+| Subtitle | Inter 400, 14.63/21.95, `#385966` | `font-size:14.63px;line-height:21.95px;color:#385966` (minutes from `VERIFICATION_CODE_VALID_MINUTES`) |
+| Code `121-012` | Inter Bold, 50.17/60.63, `-0.0083em`, `#2F414A` | `font-weight:700;font-size:50.17px;line-height:60.63px;letter-spacing:-0.42px;color:#2F414A` |
 | Divider | 1px `#DDD9EB` | `border-top:1px solid #DDD9EB` |
-| Footer + link | 14.6px `#385966`; link `#3A6FD8` | `font-size:15px;color:#385966`; `<a style="color:#3A6FD8">Support Team</a>` |
-| Section gaps | 40px | `margin:40px 0 0` between code / divider / footer; 8px title→subtitle; row padding `40px 24px` |
+| Footer + link | 14.63px `#385966`; link `#3A6FD8` | `font-size:14.63px;line-height:21.95px;color:#385966`; `<a style="color:#3A6FD8">Support Team</a>` |
+| Section gaps | 40px children gap; 8.36px title→subtitle; 41.81px container padding | `margin:40px 0 0` between code / divider / footer; `margin:0 0 8.36px` title→subtitle; row padding `41.81px 24px` |
+
+Figma type/spacing values carry a ~1.045 scale factor (e.g. 20.9 = 20×1.045); the
+exact decimals are used verbatim rather than rounded so the render matches the
+mockup pixel-for-pixel. `-0.0083em` on the 50.17px code resolves to `-0.42px`.
 
 Grammar kept correct ("didn't trigger this, please contact our") rather than
 reproducing the mockup typo; code value stays dynamic (`formatVerificationCode`).
