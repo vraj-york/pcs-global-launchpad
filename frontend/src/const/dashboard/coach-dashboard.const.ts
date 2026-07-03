@@ -576,7 +576,7 @@ export const COACH_SESSION_REQUESTS: CoachSessionRequest[] = [
 		title: "Stress Management",
 		status: "cancelled",
 		statusLabel: "Cancelled",
-		metaText: "You've cancelled the session request of 18 May, 2026 at 11:30 AM",
+		metaText: "You’ve cancelled the session request of 18 May, 2026 at 11:30 AM",
 		actions: ["viewReason"],
 	},
 	{
