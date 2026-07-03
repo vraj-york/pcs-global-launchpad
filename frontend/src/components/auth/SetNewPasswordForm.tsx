@@ -100,7 +100,7 @@ export function SetNewPasswordForm({ onSuccess }: SetNewPasswordFormProps) {
 					<CardTitle className="w-full text-balance text-heading-2 font-semibold leading-heading-2 tracking-heading-2 text-text-foreground">
 						{SET_NEW_PASSWORD_PAGE_CONTENT.title}
 					</CardTitle>
-					<CardDescription className="w-full text-regular font-normal leading-regular tracking-normal text-muted-foreground">
+					<CardDescription className="w-full text-regular font-normal leading-regular tracking-normal text-text-secondary">
 						{SET_NEW_PASSWORD_PAGE_CONTENT.subtitle}
 					</CardDescription>
 				</div>

@@ -46,43 +46,42 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
 					<CardTitle className="w-full text-balance text-heading-2 font-semibold leading-heading-2 tracking-heading-2 text-text-foreground">
 						{FORGOT_PASSWORD_PAGE_CONTENT.title}
 					</CardTitle>
-					<CardDescription className="w-full text-regular font-normal leading-regular tracking-normal text-muted-foreground">
+					<CardDescription className="w-full text-regular font-normal leading-regular tracking-normal text-text-secondary">
 						{FORGOT_PASSWORD_PAGE_CONTENT.subtitle}
 					</CardDescription>
 				</div>
 
-				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-					<div className="flex flex-col gap-6">
-						<FormInput
-							id="forgot-password-email"
-							label={FORGOT_PASSWORD_PAGE_CONTENT.emailLabel}
-							type="email"
-							placeholder={FORM_PLACEHOLDERS.enterEmailExtended}
-							autoComplete="email"
-							className={AUTH_TEXT_INPUT_CLASSNAME}
-							error={errors.email?.message}
-							{...register("email")}
-						/>
-					</div>
+				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
+					<FormInput
+						id="forgot-password-email"
+						label={FORGOT_PASSWORD_PAGE_CONTENT.emailLabel}
+						type="email"
+						placeholder={FORM_PLACEHOLDERS.enterEmailExtended}
+						autoComplete="email"
+						className={AUTH_TEXT_INPUT_CLASSNAME}
+						error={errors.email?.message}
+						{...register("email")}
+					/>
 
-					<Button
-						type="submit"
-						disabled={!isValid}
-						isLoading={isLoading}
-						size="lg"
-						className="h-10 min-h-10 w-full rounded-lg text-small font-semibold text-light-same mt-2"
-					>
-						{isLoading
-							? "Sending..."
-							: FORGOT_PASSWORD_PAGE_CONTENT.submitButton}
-					</Button>
+					<div className="flex flex-col gap-3">
+						<Button
+							type="submit"
+							disabled={!isValid}
+							isLoading={isLoading}
+							size="lg"
+							className="h-10 min-h-10 w-full rounded-lg text-small font-semibold text-light-same"
+						>
+							{isLoading
+								? "Sending..."
+								: FORGOT_PASSWORD_PAGE_CONTENT.submitButton}
+						</Button>
 
-					<div className="flex justify-center text-center">
 						<Button
 							type="button"
 							variant="ghost"
 							onClick={handleBackToLogin}
-							className="h-auto min-h-8 cursor-pointer px-1.5 py-1.5 text-small font-medium text-foreground no-underline hover:bg-transparent hover:text-link-hover hover:no-underline"
+							size="lg"
+							className="h-10 min-h-10 w-full cursor-pointer rounded-lg text-small font-semibold text-text-foreground hover:bg-transparent hover:text-link-hover"
 						>
 							{FORGOT_PASSWORD_PAGE_CONTENT.backToLogin}
 						</Button>

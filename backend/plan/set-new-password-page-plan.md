@@ -15,9 +15,11 @@ design; no new components, assets, or backend endpoints are required.
 
 - **Changed:** `components/auth/SetNewPasswordForm.tsx` — form restructured to the Figma layout: three
   groups with 32px gaps (`gap-8`) — New Password / (Confirm Password + strength, `gap-2` = 8px) / buttons
-  (`gap-3` = 12px). "Back to Login" is now a full-width ghost button (`h-10`, semibold `text-text-foreground`,
+  (`gap-3` = 12px).   "Back to Login" is now a full-width ghost button (`h-10`, semibold `text-text-foreground`,
   transparent hover) matching Figma frame `#4:24307`'s stacked full-width buttons, replacing the previous
   compact centered text button. Removed the ad-hoc `mt-2`/`pt-1` spacing hacks now handled by the group gaps.
+  Subtitle color also fixed from `text-muted-foreground` (#498291) to `text-text-secondary` (#385966) to
+  match the Figma subtitle fill.
 - **Existing (reused, no change):**
   - Layout: `layout/AuthLayout.tsx` — the split-screen shell (gradient + `BehavioralNodes` + `BSPSymbol`,
     `AUTH_LAYOUT_CONTENT`, "Need help? Contact Us", copyright + Privacy / Terms footer).
