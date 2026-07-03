@@ -17,6 +17,9 @@ export const ROUTES: AppRoutes = {
 	coachDashboard: {
 		root: "/coach-dashboard",
 	},
+	coachSessions: {
+		root: "/coach-sessions",
+	},
 	corporationOverview: {
 		root: "/corporation-overview",
 	},

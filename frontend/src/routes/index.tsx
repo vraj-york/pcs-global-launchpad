@@ -30,6 +30,7 @@ import {
 	ChatbotPage,
 	ChooseSetupPage,
 	CoachDashboardPage,
+	CoachSessionsPage,
 	CompanyDirectoryPage,
 	CompanyOverviewPage,
 	CorporateDirectoryPage,
@@ -123,6 +124,14 @@ export const routes: RouteConfig[] = [
 		element: (
 			<ProtectedRoute>
 				<CoachDashboardPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: ROUTES.coachSessions.root,
+		element: (
+			<ProtectedRoute>
+				<CoachSessionsPage />
 			</ProtectedRoute>
 		),
 	},

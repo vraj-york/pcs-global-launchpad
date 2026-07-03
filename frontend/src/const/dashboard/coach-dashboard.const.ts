@@ -63,6 +63,28 @@ export interface CoachClientSession {
 	notes?: string;
 }
 
+export type CoachSessionScope = "upcoming" | "past";
+
+export interface CoachScheduledSession {
+	id: string;
+	/** Session title, e.g. "Leadership Coaching". */
+	title: string;
+	clientName: string;
+	clientEmail: string;
+	clientAvatar?: string;
+	clientInitials?: string;
+	/** Formatted date, e.g. "May 2, 2026". */
+	date: string;
+	/** Time range, e.g. "9:30 AM - 9:45 AM". */
+	timeRange: string;
+	/** Duration label, e.g. "15 min". */
+	duration: string;
+	description: string;
+	scope: CoachSessionScope;
+	/** Coach notes for the session (past sessions). */
+	notes?: string;
+}
+
 export interface CoachResource {
 	id: string;
 	/** Bold lead-in of the label (Figma node 4:19379 heading, weight 700). */
@@ -155,6 +177,39 @@ export const COACH_DASHBOARD_CONTENT = {
 		emptyUpcoming: "No upcoming sessions.",
 		emptyPast: "No past sessions.",
 		notesEmpty: "Select a past session to view or add its notes.",
+	},
+	sessionsPage: {
+		breadcrumbLabel: "Sessions",
+		title: "Sessions",
+		subtitle:
+			"Manage all requests, upcoming sessions, past notes, and follow-ups.",
+		scheduleSession: "Schedule Session",
+		tabs: {
+			allRequests: "All Requests",
+			allSessions: "All Sessions",
+		},
+		upcomingTitle: "Upcoming Sessions",
+		pastTitle: "Past Sessions",
+		reschedule: "Reschedule",
+		join: "Join",
+		viewNotes: "View Notes",
+		quickPrep: "Quick Prep",
+		cancelSession: "Cancel Session",
+		moreActionsLabel: "More session actions",
+		detailsTitle: "Session Details",
+		close: "Close",
+		fieldLabels: {
+			title: "Title",
+			date: "Date",
+			time: "Time",
+			duration: "Duration",
+			client: "Client",
+			description: "Description",
+		},
+		emptyDetails: "Select a session to view its details.",
+		emptyUpcoming: "No upcoming sessions.",
+		emptyPast: "No past sessions.",
+		allRequestsEmpty: "No pending session requests.",
 	},
 	emptyStates: {
 		sessions: "No sessions scheduled for today.",
@@ -269,6 +324,50 @@ export const COACH_PAST_SESSIONS: CoachClientSession[] = [
 		dateTime: "18 Apr, 2026 • 2:30 PM - 2:45 PM",
 		notes:
 			"Great progress on delegation skills. Michael struggled with letting go of control but made breakthrough realizations about team empowerment. Action items: practice weekly reflection, delegate one major project.",
+	},
+];
+
+export const COACH_SCHEDULED_SESSIONS: CoachScheduledSession[] = [
+	{
+		id: "scheduled-leadership-coaching",
+		title: "Leadership Coaching",
+		clientName: "Alex Rivera",
+		clientEmail: "matt_henry@email.com",
+		clientAvatar: coachAlexRivera,
+		date: "May 2, 2026",
+		timeRange: "9:30 AM - 9:45 AM",
+		duration: "15 min",
+		description:
+			"Weekly one-on-one coaching session for leadership skill enhancement.",
+		scope: "upcoming",
+	},
+	{
+		id: "scheduled-strategic-thinking-upcoming",
+		title: "Strategic Thinking",
+		clientName: "Jaydon Aminoff",
+		clientEmail: "jaydon_aminoff@email.com",
+		clientInitials: "JA",
+		date: "Apr 18, 2026",
+		timeRange: "1:00 PM - 1:15 PM",
+		duration: "15 min",
+		description:
+			"Follow-up on strategic planning goals and quarterly priorities.",
+		scope: "upcoming",
+	},
+	{
+		id: "scheduled-strategic-thinking-past",
+		title: "Strategic Thinking",
+		clientName: "Lydia Kenter",
+		clientEmail: "lydia_kenter@email.com",
+		clientInitials: "LK",
+		date: "Apr 10, 2026",
+		timeRange: "2:30 PM - 2:45 PM",
+		duration: "15 min",
+		description:
+			"Reviewed decision-making frameworks and set action items for the next sprint.",
+		scope: "past",
+		notes:
+			"Strong session on prioritisation. Client committed to a weekly planning ritual and delegating one recurring task.",
 	},
 ];
 

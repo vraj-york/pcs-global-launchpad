@@ -26,6 +26,10 @@ export interface CoachDashboardRoutes {
 	root: string;
 }
 
+export interface CoachSessionsRoutes {
+	root: string;
+}
+
 export interface CorporationOverviewRoutes {
 	root: string;
 }
@@ -131,6 +135,7 @@ export interface AppRoutes {
 	auth: AuthRoutes;
 	dashboard: DashboardRoutes;
 	coachDashboard: CoachDashboardRoutes;
+	coachSessions: CoachSessionsRoutes;
 	corporationOverview: CorporationOverviewRoutes;
 	companyOverview: CompanyOverviewRoutes;
 	corporateDirectory: CorporateDirectoryRoutes;
