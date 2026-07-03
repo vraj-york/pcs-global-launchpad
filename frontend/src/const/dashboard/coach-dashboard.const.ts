@@ -97,6 +97,34 @@ export interface CoachClientSession {
 
 export type CoachSessionScope = "upcoming" | "past";
 
+export type CoachRequestStatus = "new" | "proposed" | "cancelled";
+
+export type CoachRequestActionId =
+	| "cancelRequest"
+	| "proposeSlots"
+	| "accept"
+	| "editSlots"
+	| "remind"
+	| "viewReason";
+
+export interface CoachSessionRequest {
+	id: string;
+	title: string;
+	status: CoachRequestStatus;
+	/** Badge copy, e.g. "New Request". */
+	statusLabel: string;
+	clientName?: string;
+	clientAvatar?: string;
+	clientInitials?: string;
+	/** Sentence after the client name (or the whole sentence when no client). */
+	metaText: string;
+	/** Inline underlined link label (e.g. "new time slots"). */
+	linkLabel?: string;
+	/** Tooltip lines shown on hovering the link. */
+	tooltipLines?: string[];
+	actions: CoachRequestActionId[];
+}
+
 export interface CoachScheduledSession {
 	id: string;
 	/** Session title, e.g. "Leadership Coaching". */
@@ -242,6 +270,24 @@ export const COACH_DASHBOARD_CONTENT = {
 		emptyUpcoming: "No upcoming sessions.",
 		emptyPast: "No past sessions.",
 		allRequestsEmpty: "No pending session requests.",
+		requests: {
+			title: "Session Requests",
+			statusFilterLabel: "All Status",
+			employeeFilterLabel: "All Employees",
+			statusOptions: [
+				{ value: "new", label: "New Request" },
+				{ value: "proposed", label: "Proposed" },
+				{ value: "cancelled", label: "Cancelled" },
+			],
+			actions: {
+				cancelRequest: "Cancel Request",
+				proposeSlots: "Propose Slots",
+				accept: "Accept",
+				editSlots: "Edit Slots",
+				remind: "Remind",
+				viewReason: "View Reason",
+			},
+		},
 	},
 	calendarPage: {
 		breadcrumbLabel: "Calendar",
@@ -491,6 +537,52 @@ export const COACH_SCHEDULED_SESSIONS: CoachScheduledSession[] = [
 		scope: "past",
 		notes:
 			"Strong session on prioritisation. Client committed to a weekly planning ritual and delegating one recurring task.",
+	},
+];
+
+export const COACH_SESSION_REQUESTS: CoachSessionRequest[] = [
+	{
+		id: "request-strategic-thinking",
+		title: "Strategic Thinking",
+		status: "new",
+		statusLabel: "New Request",
+		clientName: "Alex Rivera",
+		clientAvatar: coachAlexRivera,
+		metaText: "has requested a session on 22 May, 2026 at 2:30 PM",
+		actions: ["cancelRequest", "proposeSlots", "accept"],
+	},
+	{
+		id: "request-leadership-coaching",
+		title: "Leadership Coaching",
+		status: "proposed",
+		statusLabel: "Proposed",
+		clientName: "Nicolas Hamilton",
+		clientInitials: "NH",
+		metaText: "has proposed ",
+		linkLabel: "new time slots",
+		tooltipLines: [
+			"Mon 25 May, 10:00 AM - 10:15 AM",
+			"Wed 27 May, 2:30 PM - 2:45 PM",
+		],
+		actions: ["cancelRequest", "editSlots", "remind"],
+	},
+	{
+		id: "request-stress-management",
+		title: "Stress Management",
+		status: "cancelled",
+		statusLabel: "Cancelled",
+		metaText: "You've cancelled the session request of 18 May, 2026 at 11:30 AM",
+		actions: ["viewReason"],
+	},
+	{
+		id: "request-communication-skills",
+		title: "Communication Skills",
+		status: "cancelled",
+		statusLabel: "Cancelled",
+		clientName: "Kianna Dokidis",
+		clientInitials: "KD",
+		metaText: "has cancelled a session request of 30 Apr, 2026 at 5:15 PM",
+		actions: ["viewReason"],
 	},
 ];
 

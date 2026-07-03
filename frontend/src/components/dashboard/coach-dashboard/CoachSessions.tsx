@@ -10,14 +10,22 @@
  *   · Selecting a card → highlights it and shows the Session Details panel
  *   · Right: Session Details (Title / Date / Time / Duration / Client / Description)
  *     + footer actions (Reschedule / Quick Prep / Cancel Session / Join)
- * - "All Requests": empty state (no requests designed yet)
+ * - "All Requests" (Figma node 4:20887): "Session Requests" list with Status /
+ *   Employee filters and per-request actions (Accept / Propose Slots / Edit
+ *   Slots / Remind / Cancel Request / View Reason); proposed slots show a tooltip
  */
 import {
+	Bell,
+	CalendarClock,
+	CalendarCog,
 	CalendarSync,
 	CalendarX2,
+	Check,
 	ChevronDown,
 	ClipboardPen,
 	EllipsisVertical,
+	Eye,
+	type LucideIcon,
 	Plus,
 	Video,
 	X,
@@ -25,6 +33,7 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -39,15 +48,64 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
 	COACH_DASHBOARD_CONTENT,
 	COACH_SCHEDULED_SESSIONS,
+	COACH_SESSION_REQUESTS,
+	type CoachRequestActionId,
+	type CoachRequestStatus,
 	type CoachScheduledSession,
+	type CoachSessionRequest,
 } from "@/const";
 import { cn } from "@/lib/utils";
 
 const C = COACH_DASHBOARD_CONTENT.sessionsPage;
+const R = C.requests;
 
 type SessionsTabId = "allRequests" | "allSessions";
+
+const REQUEST_BADGE_VARIANT: Record<
+	CoachRequestStatus,
+	"blue" | "yellow" | "destructive"
+> = {
+	new: "blue",
+	proposed: "yellow",
+	cancelled: "destructive",
+};
+
+const REQUEST_ACTIONS: Record<
+	CoachRequestActionId,
+	{
+		label: string;
+		icon: LucideIcon;
+		variant: "default" | "outline" | "ghost";
+		className?: string;
+	}
+> = {
+	cancelRequest: {
+		label: R.actions.cancelRequest,
+		icon: CalendarX2,
+		variant: "ghost",
+		className:
+			"bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive",
+	},
+	proposeSlots: { label: R.actions.proposeSlots, icon: CalendarClock, variant: "outline" },
+	accept: { label: R.actions.accept, icon: Check, variant: "default" },
+	editSlots: { label: R.actions.editSlots, icon: CalendarCog, variant: "outline" },
+	remind: { label: R.actions.remind, icon: Bell, variant: "outline" },
+	viewReason: { label: R.actions.viewReason, icon: Eye, variant: "outline" },
+};
 
 const UPCOMING = COACH_SCHEDULED_SESSIONS.filter((s) => s.scope === "upcoming");
 const PAST = COACH_SCHEDULED_SESSIONS.filter((s) => s.scope === "past");
@@ -291,6 +349,170 @@ function SessionDetailsPanel({
 	);
 }
 
+function RequestActions({ request }: { request: CoachSessionRequest }) {
+	return (
+		<div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+			{request.actions.map((actionId) => {
+				const action = REQUEST_ACTIONS[actionId];
+				return (
+					<Button
+						key={actionId}
+						variant={action.variant}
+						size="sm"
+						icon={action.icon}
+						className={action.className}
+					>
+						{action.label}
+					</Button>
+				);
+			})}
+		</div>
+	);
+}
+
+function RequestMeta({ request }: { request: CoachSessionRequest }) {
+	return (
+		<div className="flex flex-wrap items-center gap-2">
+			{request.clientName ? (
+				<Avatar size="sm" className="size-5">
+					{request.clientAvatar ? (
+						<AvatarImage src={request.clientAvatar} alt={request.clientName} />
+					) : null}
+					<AvatarFallback className="bg-muted text-mini font-semibold text-text-foreground">
+						{request.clientInitials}
+					</AvatarFallback>
+				</Avatar>
+			) : null}
+			<p className="text-mini text-muted-foreground">
+				{request.clientName ? (
+					<span className="font-medium text-text-secondary">
+						{request.clientName}{" "}
+					</span>
+				) : null}
+				{request.metaText}
+				{request.linkLabel ? (
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<button
+								type="button"
+								className="cursor-pointer font-medium text-info underline underline-offset-2"
+							>
+								{request.linkLabel}
+							</button>
+						</TooltipTrigger>
+						<TooltipContent className="flex flex-col gap-1">
+							{request.tooltipLines?.map((line) => (
+								<span key={line}>{line}</span>
+							))}
+						</TooltipContent>
+					</Tooltip>
+				) : null}
+			</p>
+		</div>
+	);
+}
+
+function RequestCard({ request }: { request: CoachSessionRequest }) {
+	return (
+		<Card className="flex w-full flex-row items-center gap-4 rounded-[10px] border border-border bg-background p-4 shadow-none">
+			<div className="flex min-w-0 flex-1 flex-col gap-1.5">
+				<div className="flex flex-wrap items-center gap-2">
+					<span className="text-small font-semibold text-text-foreground">
+						{request.title}
+					</span>
+					<Badge
+						variant={REQUEST_BADGE_VARIANT[request.status]}
+						className="rounded-lg font-semibold"
+					>
+						{request.statusLabel}
+					</Badge>
+				</div>
+				<RequestMeta request={request} />
+			</div>
+			<RequestActions request={request} />
+		</Card>
+	);
+}
+
+function SessionRequests() {
+	const [status, setStatus] = useState("all");
+	const [employee, setEmployee] = useState("all");
+
+	const employeeOptions = useMemo(
+		() =>
+			Array.from(
+				new Set(
+					COACH_SESSION_REQUESTS.map((r) => r.clientName).filter(
+						(name): name is string => Boolean(name),
+					),
+				),
+			),
+		[],
+	);
+
+	const filtered = useMemo(
+		() =>
+			COACH_SESSION_REQUESTS.filter(
+				(request) =>
+					(status === "all" || request.status === status) &&
+					(employee === "all" || request.clientName === employee),
+			),
+		[status, employee],
+	);
+
+	return (
+		<div className="flex flex-col gap-4">
+			<div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+				<h2 className="flex-1 text-base font-semibold text-muted-foreground">
+					{R.title}
+				</h2>
+				<div className="flex flex-wrap items-center gap-3">
+					<Select value={status} onValueChange={setStatus}>
+						<SelectTrigger className="h-9 w-[180px]">
+							<SelectValue placeholder={R.statusFilterLabel} />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="all">{R.statusFilterLabel}</SelectItem>
+							{R.statusOptions.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+					<Select value={employee} onValueChange={setEmployee}>
+						<SelectTrigger className="h-9 w-[300px]">
+							<SelectValue placeholder={R.employeeFilterLabel} />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="all">{R.employeeFilterLabel}</SelectItem>
+							{employeeOptions.map((name) => (
+								<SelectItem key={name} value={name}>
+									{name}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
+
+			{filtered.length === 0 ? (
+				<Card className="flex items-center justify-center rounded-[10px] border border-border bg-background p-16 shadow-none">
+					<p className="text-small text-muted-foreground">
+						{C.allRequestsEmpty}
+					</p>
+				</Card>
+			) : (
+				<div className="flex flex-col gap-4">
+					{filtered.map((request) => (
+						<RequestCard key={request.id} request={request} />
+					))}
+				</div>
+			)}
+		</div>
+	);
+}
+
 export function CoachSessions() {
 	const [activeTab, setActiveTab] = useState<SessionsTabId>("allSessions");
 	const [upcomingOpen, setUpcomingOpen] = useState(true);
@@ -425,11 +647,7 @@ export function CoachSessions() {
 					/>
 				</div>
 			) : (
-				<Card className="flex flex-1 items-center justify-center rounded-[10px] border border-border bg-background p-16 shadow-none">
-					<p className="text-small text-muted-foreground">
-						{C.allRequestsEmpty}
-					</p>
-				</Card>
+				<SessionRequests />
 			)}
 		</div>
 	);

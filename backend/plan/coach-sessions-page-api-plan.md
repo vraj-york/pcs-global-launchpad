@@ -36,6 +36,47 @@ model SessionRequest {
 
 Add enum `RequestStatus`. Accepting a request creates a `CoachingSession`. Generate a migration (`prisma migrate dev`) and commit under `prisma/migrations/`.
 
+### 2a. "All Requests" tab (Figma node `4:20887`) — extended model
+
+The fully-designed **All Requests** tab (`frontend/src/components/dashboard/coach-dashboard/CoachSessions.tsx` → `SessionRequests`, data `COACH_SESSION_REQUESTS`) needs a richer status set + proposed slots + cancellation reason. Extend `SessionRequest`:
+
+```prisma
+model SessionRequest {
+  id            String        @id @default(uuid())
+  coachId       String
+  clientId      String
+  topic         String        // e.g. "Strategic Thinking"
+  message       String?       @db.Text
+  preferredAt   DateTime?
+  proposedSlots Json?         // [{ startsAt, endsAt }] — coach/client proposed times (tooltip)
+  status        RequestStatus @default(PENDING) // PENDING | PROPOSED | ACCEPTED | DECLINED | CANCELLED
+  cancelReason  String?       @db.Text          // shown by "View Reason"
+  cancelledBy   String?       // AppUser id (coach or client)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([coachId, status, createdAt])
+}
+```
+
+Status → UI badge: `PENDING` → "New Request" (blue), `PROPOSED` → "Proposed" (yellow), `CANCELLED` → "Cancelled" (destructive).
+
+### 2b. "All Requests" endpoints & filters
+
+| Method | Path | Purpose | Maps to UI |
+|---|---|---|---|
+| `GET` | `/coach/session-requests?status=&employeeId=` | List requests; `status` + `employeeId` map to the **All Status** / **All Employees** filters (omit or `all` = no filter). | Requests list + filters |
+| `POST` | `/coach/session-requests/:id/propose-slots` | Coach proposes alternative slots (`proposedSlots`), sets `PROPOSED`. | "Propose Slots" |
+| `PATCH` | `/coach/session-requests/:id/slots` | Edit already-proposed slots. | "Edit Slots" |
+| `POST` | `/coach/session-requests/:id/remind` | Send a reminder (SES email) to the client about pending proposed slots. | "Remind" |
+| `POST` | `/coach/session-requests/:id/cancel` | Cancel the request with a reason. | "Cancel Request" |
+| `GET` | `/coach/session-requests/:id/reason` | Return `cancelReason` for a cancelled request. | "View Reason" |
+| `POST` | `/coach/session-requests/:id/accept` | Accept → creates a `CoachingSession` (existing). | "Accept" |
+
+- `GET` returns the projected shape the frontend `CoachSessionRequest` expects: `title`, `status`, `statusLabel`, `client {name, avatarUrl, initials}`, `metaText` pieces (or raw fields for the client to compose), `proposedSlots` (→ tooltip lines), and the allowed `actions[]` for the current status.
+- The **employee filter** options come from the distinct clients that have requests for this coach (`GET /coach/session-requests/employees` or derived client-side, as the frontend currently does).
+- "Remind" uses the existing **SES** integration (see `coach-early-access-waitlist-api-plan.md` for the SES pattern).
+
 ---
 
 ## 3. Endpoints (extend module `src/coach-dashboard` / `src/coach-sessions`)
