@@ -1,6 +1,7 @@
 import coachAlexRivera from "@/assets/coach-dashboard/coach-alex-rivera.png";
 import coachClaraNevada from "@/assets/coach-dashboard/coach-clara-nevada.png";
 import coachEmmaThompson from "@/assets/coach-dashboard/coach-emma-thompson.png";
+import coachMattHenry from "@/assets/coach-dashboard/coach-matt-henry.png";
 
 export type CoachSessionBadgeVariant = "blue" | "green";
 
@@ -180,6 +181,68 @@ export interface CoachResource {
 	icon: "book-open" | "sparkles" | "life-buoy";
 	accent: CoachResourceAccent;
 }
+
+export type CoachSettingsTabId =
+	| "profile-overview"
+	| "availability"
+	| "calendar-sync"
+	| "security"
+	| "privacy-data";
+
+export const COACH_SETTINGS_CONTENT = {
+	breadcrumbLabel: "Settings",
+	title: "Settings",
+	subtitle:
+		"Configure your profile details & manage the coaching hours preferences",
+	tabs: [
+		{ id: "profile-overview", label: "Profile Overview" },
+		{ id: "availability", label: "Availability" },
+		{ id: "calendar-sync", label: "Calendar Sync" },
+		{ id: "security", label: "Security" },
+		{ id: "privacy-data", label: "Privacy & Data" },
+	] as ReadonlyArray<{ id: CoachSettingsTabId; label: string }>,
+	comingSoon:
+		"This section is part of the coach preview and will be available soon.",
+	managedByOrgTooltip: "Managed by your organization",
+	cancel: "Cancel",
+	save: "Save & Update",
+	saving: "Saving…",
+	requiredError: "This field is required.",
+	personalDetails: {
+		title: "Personal Details",
+		firstName: "First Name",
+		lastName: "Last Name",
+		nickname: "Nickname",
+		nicknamePlaceholder: "Enter nickname",
+		email: "Email",
+		workPhone: "Work Phone No.",
+		cellPhone: "Cell Phone No.",
+		timezone: "Time Zone",
+		timezonePlaceholder: "Select time zone",
+	},
+	coachingDetails: {
+		title: "Coaching Details",
+		professionalTitle: "Professional Title",
+		professionalTitlePlaceholder: "Enter professional title",
+		yearsOfExperience: "Years of Experience",
+		yearsOfExperiencePlaceholder: "Enter years of experience",
+		bio: "Bio",
+		bioPlaceholder: "Type the bio here...",
+	},
+	profile: {
+		avatarUrl: coachMattHenry,
+		firstName: "Matt",
+		lastName: "Henry",
+		nickname: "",
+		email: "matt_henry@email.com",
+		workPhone: "+1 (323) 344-0987",
+		cellPhone: "+1 (333) 998-7865",
+		timezone: "EST (Eastern Time)",
+		professionalTitle: "Executive & Leadership Coach",
+		yearsOfExperience: "12",
+		bio: "Helping leaders unlock their behavioral potential through evidence-based coaching.",
+	},
+} as const;
 
 export const COACH_DASHBOARD_CONTENT = {
 	breadcrumbLabel: "Dashboard",

@@ -1,6 +1,7 @@
 export * from "./CoachCalendar";
 export * from "./CoachDashboard";
 export * from "./CoachSessions";
+export * from "./CoachSettings";
 export * from "./ComingSoon";
 export * from "./CancelSessionModal";
 export * from "./QuickPrepModal";
