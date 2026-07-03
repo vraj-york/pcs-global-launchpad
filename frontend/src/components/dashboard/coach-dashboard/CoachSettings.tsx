@@ -15,7 +15,10 @@ import { Lock } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { FormInput } from "@/components/common";
-import { SettingsProfileAvatar } from "@/components/settings";
+import {
+	SettingsPrivacyDataTab,
+	SettingsProfileAvatar,
+} from "@/components/settings";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
@@ -332,9 +335,7 @@ export function CoachSettings() {
 			) : activeTab === "security" ? (
 				<CoachSecurityTab />
 			) : (
-				<div className="flex min-h-40 items-center justify-center rounded-xl border border-border bg-background p-8">
-					<p className="text-small text-text-secondary">{C.comingSoon}</p>
-				</div>
+				<SettingsPrivacyDataTab />
 			)}
 		</div>
 	);

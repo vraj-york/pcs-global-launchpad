@@ -201,8 +201,6 @@ export const COACH_SETTINGS_CONTENT = {
 		{ id: "security", label: "Security" },
 		{ id: "privacy-data", label: "Privacy & Data" },
 	] as ReadonlyArray<{ id: CoachSettingsTabId; label: string }>,
-	comingSoon:
-		"This section is part of the coach preview and will be available soon.",
 	managedByOrgTooltip: "Managed by your organization",
 	cancel: "Cancel",
 	save: "Save & Update",
