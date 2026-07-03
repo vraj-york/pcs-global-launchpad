@@ -16,3 +16,9 @@ Thumbs.db
 node_modules/
 
 graphify-out
+# Launchpad local credentials (do not commit)
+**/.env
+!**/.env.example
+**/parameters.json
+**/terraform.tfvars
+**/credentials.json
