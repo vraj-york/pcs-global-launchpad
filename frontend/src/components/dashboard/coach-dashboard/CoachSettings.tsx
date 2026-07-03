@@ -29,6 +29,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { COACH_SETTINGS_CONTENT, MORE_FILTERS_TIMEZONE_OPTIONS } from "@/const";
 import { cn } from "@/lib/utils";
+import { CoachAvailabilityTab } from "./CoachAvailabilityTab";
 
 const C = COACH_SETTINGS_CONTENT;
 const PD = C.personalDetails;
@@ -322,6 +323,8 @@ export function CoachSettings() {
 
 			{activeTab === "profile-overview" ? (
 				<ProfileOverviewTab />
+			) : activeTab === "availability" ? (
+				<CoachAvailabilityTab />
 			) : (
 				<div className="flex min-h-40 items-center justify-center rounded-xl border border-border bg-background p-8">
 					<p className="text-small text-text-secondary">{C.comingSoon}</p>

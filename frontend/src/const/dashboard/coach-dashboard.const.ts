@@ -244,6 +244,78 @@ export const COACH_SETTINGS_CONTENT = {
 	},
 } as const;
 
+export interface CoachAvailabilityTimeRange {
+	start: string;
+	end: string;
+}
+
+export interface CoachAvailabilitySettingsDay {
+	id: string;
+	label: string;
+	enabled: boolean;
+	ranges: CoachAvailabilityTimeRange[];
+}
+
+export const COACH_AVAILABILITY_DEFAULT_RANGE: CoachAvailabilityTimeRange = {
+	start: "9:00 AM",
+	end: "5:00 PM",
+};
+
+export const COACH_AVAILABILITY_SETTINGS = {
+	timezoneCard: {
+		title: "EST (Eastern Time)",
+		subtitle: "Time zone preference",
+	},
+	sessionCard: {
+		title: "15 min",
+		subtitle: "Default session length",
+	},
+	add: "Add",
+	unavailable: "Unavailable",
+	removeRangeLabel: "Remove time range",
+	toggleDayLabel: "Toggle availability for",
+	cancel: "Cancel",
+	save: "Save & Update",
+	saving: "Saving…",
+	days: [
+		{
+			id: "mon",
+			label: "Mon",
+			enabled: true,
+			ranges: [{ start: "9:00 AM", end: "5:00 PM" }],
+		},
+		{
+			id: "tue",
+			label: "Tue",
+			enabled: true,
+			ranges: [
+				{ start: "9:00 AM", end: "5:00 PM" },
+				{ start: "1:00 PM", end: "4:00 AM" },
+			],
+		},
+		{
+			id: "wed",
+			label: "Wed",
+			enabled: true,
+			ranges: [{ start: "9:00 AM", end: "5:00 PM" }],
+		},
+		{
+			id: "thu",
+			label: "Thu",
+			enabled: true,
+			ranges: [{ start: "9:00 AM", end: "5:00 PM" }],
+		},
+		{
+			id: "fri",
+			label: "Fri",
+			enabled: true,
+			ranges: [{ start: "9:00 AM", end: "5:00 PM" }],
+		},
+		{ id: "sat", label: "Sat", enabled: false, ranges: [] },
+		{ id: "sun", label: "Sun", enabled: false, ranges: [] },
+	] as ReadonlyArray<CoachAvailabilitySettingsDay>,
+} as const;
+
 export const COACH_DASHBOARD_CONTENT = {
 	breadcrumbLabel: "Dashboard",
 	welcomeTitle: "Welcome, Coach!",
