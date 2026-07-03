@@ -1,20 +1,21 @@
-# Login 2FA — "Enter Verification Code" page (node `4:24045`)
+# Login 2FA — "Enter Verification Code" page (nodes `4:24045`, `4:23763`, `4:23856`)
 
-Figma node `4:24045` ("2FA - Code") is the split-screen login **Enter Verification Code** page: left brand
-panel (gradient + behavioral-nodes art + BSP symbol + "Map your behavioral intelligence." headline +
-subtitle) and a right card with BSP logo, "Enter Verification Code" heading, "We've sent a 6-digit code to
-your email <masked>", a 6-digit OTP input with a countdown, a **Verify & Proceed** button, "Didn't receive
-the code? Resend Code", "Need help? Contact Us", and the "© 2026 BSPBlueprint · Privacy Policy · Terms of
-Use" footer.
+Figma nodes `4:24045` ("2FA - Code"), `4:23763` ("2FA - Enter Code"), and `4:23856` ("2FA / Code - Error
+State") are the split-screen login **Enter Verification Code** page: left brand panel (gradient +
+behavioral-nodes art + BSP symbol + "Map your behavioral intelligence." headline + subtitle) and a right
+card with BSP logo, "Enter Verification Code" heading, "We've sent a 6-digit code to your email <masked>",
+a 6-digit OTP input with a countdown, a **Verify Account** button, "Didn't receive the code? Resend Code",
+"Need help? Contact Us", and the "© 2026 BSPBlueprint · Privacy Policy · Terms of Use" footer.
 
-This page already exists and is fully wired. The **only** change required was a copy update to match the
-design; no new components, assets, or backend endpoints are needed.
+This page already exists and is fully wired. No new components, assets, or backend endpoints are needed;
+the only frontend change was adding the inline error message for the error state (below).
 
 ## Frontend
 
-- **Changed:** `const/common/auth.const.ts` — `VERIFICATION_PAGE_CONTENT.submitButton` "Verify Account" →
-  **"Verify & Proceed"** (matches the Figma CTA; consistent with the password-reset verification CTA that
-  already reads "Verify & Proceed").
+- **CTA label:** kept as **"Verify Account"** (`VERIFICATION_PAGE_CONTENT.submitButton`). The 2FA nodes are
+  inconsistent — `4:23763` and `4:23856` label the CTA "Verify Account" (matching the existing app value),
+  while `4:24045` shows "Verify & Proceed"; the two-node majority + original value is treated as the source
+  of truth, so no copy change was made.
 - **Existing (reused, no change):**
   - Layout: `layout/AuthLayout.tsx` — the exact split-screen shell (gradient + `BehavioralNodes` +
     `BSPSymbol`, `AUTH_LAYOUT_CONTENT` headline/subtitle, "Need help? Contact Us", copyright + Privacy /
@@ -39,8 +40,7 @@ The "2FA / Code - Error State" is the same page with an invalid code: the OTP in
   soon as the user edits the code (`clearError`).
 - The message text is the auth store's mapped error
   (`AUTH_ERROR_MESSAGES.invalidVerificationCode`), set by `confirmSignIn` on a Cognito
-  `CodeMismatch`/expiry. (The error-state Figma still labels the CTA "Verify Account"; the default-state
-  node `4:24045` updates it to "Verify & Proceed", which is used as the single source of truth.)
+  `CodeMismatch`/expiry.
 - No new component, asset, token, or backend change for the error state.
 
 ## Backend / auth

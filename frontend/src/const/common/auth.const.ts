@@ -90,7 +90,7 @@ export const VERIFICATION_PAGE_CONTENT = {
 	title: "Enter Verification Code",
 	subtitle: "We've sent a 6-digit code to your email",
 	codeLabel: "Enter code",
-	submitButton: "Verify & Proceed",
+	submitButton: "Verify Account",
 	resendText: "Didn’t receive the code?",
 	resendLink: "Resend Code",
 	loadingText: "Verifying...",
