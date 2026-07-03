@@ -316,6 +316,19 @@ export const COACH_AVAILABILITY_SETTINGS = {
 	] as ReadonlyArray<CoachAvailabilitySettingsDay>,
 } as const;
 
+export const COACH_CALENDAR_SYNC_SETTINGS = {
+	outlook: {
+		title: "Outlook Calendar",
+		description: "Connect your Outlook calendar for easy managing the sessions.",
+		connect: "Connect Outlook",
+	},
+	zoom: {
+		title: "Zoom Workplace",
+		description: "Connect your Zoom account for your video meetings.",
+		connect: "Connect Zoom",
+	},
+} as const;
+
 export const COACH_DASHBOARD_CONTENT = {
 	breadcrumbLabel: "Dashboard",
 	welcomeTitle: "Welcome, Coach!",
