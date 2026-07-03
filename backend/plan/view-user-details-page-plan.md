@@ -57,9 +57,13 @@ previews until the group is provisioned). No new endpoints needed.
 
 1. **Header action** — coach sees a single primary **"Schedule Session"** button (opens the existing
    session scheduling flow) instead of the admin actions (Edit / Remove / Block / Resend / Cancel).
-2. **Third tab "Session Info."** — content already exists as
-   `src/components/dashboard/coach-dashboard/SessionsAndNotes.tsx` (node `4:20808`); wire it as a third
-   `VIEW_USER_TABS` entry rendered only for the coach persona.
+2. **Third tab "Session Info."** — content already exists as coach components; wire it as a third
+   `VIEW_USER_TABS` entry rendered only for the coach persona. The tab has two designed right-panel
+   variants (same Upcoming/Past master list): **Session Notes** (node `4:20808`,
+   `src/components/dashboard/coach-dashboard/SessionsAndNotes.tsx`) and **Session Details** (node
+   `4:21189`, the `SessionDetailsPanel` in
+   `src/components/dashboard/coach-dashboard/CoachSessions.tsx`). Backend for both is documented in
+   `coach-client-sessions-notes-api-plan.md` and `coach-sessions-page-api-plan.md`.
 3. **Basic Info. rows** — coach view omits the `Status` row (status shown as the header badge) and
    `Created On`, and omits the `Role Info.` card; drive via the existing `showOrgRoleSections` /
    persona flag rather than duplicating the component.

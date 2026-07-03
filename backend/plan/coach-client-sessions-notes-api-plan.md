@@ -1,6 +1,10 @@
 # Coach — Client Sessions & Notes ("Session Info." tab) — Backend Implementation Plan
 
-Backend support for the **Session Info.** tab of a coach's client-detail view (Figma `PCS_Global_Coach_Persona_Launchpad_Test`, node `4:20808`). The frontend (`frontend/src/components/dashboard/coach-dashboard/SessionsAndNotes.tsx`) renders **Upcoming Sessions** / **Past Sessions** lists plus a **Session Notes** editor, currently backed by static placeholder data in `frontend/src/const/dashboard/coach-dashboard.const.ts` (`COACH_UPCOMING_SESSIONS`, `COACH_PAST_SESSIONS`, `sessionInfo`).
+Backend support for the **Session Info.** tab of a coach's client-detail view (Figma `PCS_Global_Coach_Persona_Launchpad_Test`, nodes `4:20808` and `4:21189`). The frontend (`frontend/src/components/dashboard/coach-dashboard/SessionsAndNotes.tsx`) renders **Upcoming Sessions** / **Past Sessions** lists plus a **Session Notes** editor, currently backed by static placeholder data in `frontend/src/const/dashboard/coach-dashboard.const.ts` (`COACH_UPCOMING_SESSIONS`, `COACH_PAST_SESSIONS`, `sessionInfo`).
+
+> **The tab has two designed right-panel variants (same left master list):**
+> - **`4:20808` — Session Notes** panel (textarea editor) → `SessionsAndNotes.tsx` (notes upsert, below).
+> - **`4:21189` — Session Details** panel (read-only Title / Date / Time / Duration / Client / Description + footer actions Reschedule / Quick Prep / Cancel Session / Join). This is already implemented pixel-perfect by `SessionDetailsPanel` in `frontend/src/components/dashboard/coach-dashboard/CoachSessions.tsx` and is backed by `GET /coach/sessions/:id` (full session projection) documented in `coach-sessions-page-api-plan.md` §3. When the coach persona is provisioned, the client-detail **Session Info.** tab reuses the per-client list endpoints below plus that detail endpoint — **no new backend surface** for the details variant.
 
 This view is a per-client slice of the coach's sessions. It **reuses the `CoachingSession` model and endpoints** proposed in `coach-dashboard-api-plan.md`; the only genuinely new persistence is **session notes**. Align with the existing NestJS + Prisma + Cognito + AWS (ECS Fargate / ALB / RDS Postgres) stack.
 
