@@ -65,6 +65,26 @@ The **Reschedule** action (week detail panel + month day-card dropdown) opens th
 
 Server behaviour (extends the existing reschedule handler): validate the new window against `CoachAvailability` (work window, `bufferMins`, no overlap) → `BadRequestException` on conflict; persist `startsAt`/`endsAt`/`notes`; write a `CoachClientActivity` row + audit event; when `notifyClient` is true, enqueue the reschedule email via the existing **SES** email service (reuse `EmailModule`, same pattern as the verification-code template). Returns the updated session projection so the calendar/detail panel refetches.
 
+### Schedule Session modal (node `4:21751`)
+
+The page-header **Schedule Session** button opens the **Schedule Session** modal (`frontend/src/components/dashboard/coach-dashboard/ScheduleSessionModal.tsx`, reused `ContentModal` + `Input` + `DatePickerInput` + `TimeRangeField` + `Select` + `Textarea` + `Switch`). It collects a session title, date, start/end time (end defaults to start + 15 min per the tooltip), a client, an optional description, and a "notify client" toggle, then calls the **already-planned** `POST /coach-dashboard/sessions` — **no new endpoint**. It reuses `ScheduleSessionDto` (see `coach-dashboard-api-plan.md`):
+
+```jsonc
+// POST /coach-dashboard/sessions
+{
+  "title":    "1:1 Coaching",
+  "clientId": "…",                    // from the Client select (coach's assigned clients)
+  "startsAt": "2026-05-14T10:00:00Z", // Date + Time (start), client-composed in coach tz
+  "endsAt":   "2026-05-14T10:15:00Z", // Date + Time (end)
+  "description": "…",                  // optional
+  "notifyClient": true                 // "On scheduling, client will be notified via email" switch
+}
+```
+
+Server behaviour (extends the existing create handler): validate the window against `CoachAvailability` (work window, `bufferMins`, no overlap) → `BadRequestException` on conflict; create the `CoachingSession` (default 15-min duration); write a `CoachClientActivity` row + audit event; when `notifyClient` is true, enqueue the invite email via the existing **SES** `EmailModule`. Returns the created session so the calendar refetches.
+
+- **Client select options** come from the coach's assigned clients — `GET /coach-dashboard/clients` (or the existing client-directory list filtered to the coach). The frontend currently uses a static `scheduleModal.clients` list in `coach-dashboard.const.ts` as placeholder until that endpoint is wired.
+
 ### Representative response shape (match frontend `CoachCalendarEvent`)
 
 ```jsonc
@@ -107,6 +127,7 @@ DTOs via `class-validator` (`CalendarQueryDto { view: 'week'|'month'; start: str
 - Replace the static week data (`COACH_CALENDAR_EVENTS` / `COACH_CALENDAR_DAYS`) and month data (`COACH_CALENDAR_MONTH_WEEKS`) with fetched data (React Query), keeping the `CoachCalendarEvent` / `CoachCalendarMonthDay` shapes so `CoachCalendar.tsx` needs minimal change. Compute the selected-day weekday label from the returned ISO date instead of the current `firstWeekdayIndex` constant.
 - Wire prev/next month + range controls to refetch with a new `start`; wire the Week/Month toggle to `view`; wire block/detail/day-card actions (Join / Reschedule / Quick Prep / Cancel Session) to the existing session endpoints.
 - **Reschedule** is already wired to open the implemented `RescheduleSessionModal` (week detail panel + month day-card dropdown, prefilling Additional Notes from the session description). Its `onConfirm` currently runs a placeholder timeout; wire it to `rescheduleSession(id, payload)` (Axios) with the payload above, then invalidate the calendar/detail queries on success.
+- **Schedule Session** (page header) is already wired to open the implemented `ScheduleSessionModal`. Its `onConfirm` currently runs a placeholder timeout; wire it to `scheduleSession(payload)` and replace the static `scheduleModal.clients` list with `getCoachClients()`, invalidating the calendar query on success.
 
 ---
 

@@ -4,6 +4,8 @@ export * from "./CoachSessions";
 export * from "./ComingSoon";
 export * from "./RescheduleSessionModal";
 export * from "./Resources";
+export * from "./ScheduleSessionModal";
 export * from "./SessionsAndNotes";
+export * from "./TimeRangeField";
 export * from "./WelcomeBanner";
 export * from "./WhatLaunched";

@@ -10,28 +10,16 @@
  * - "Notify client…" → Switch (default on)
  * - Footer: Cancel (outline) + Confirm Reschedule (primary) with validation
  */
-import { Clock, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ContentModal } from "@/components/common/ContentModal";
 import { DatePickerInput } from "@/components/common/DatePickerInput";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { COACH_DASHBOARD_CONTENT } from "@/const";
-import { cn } from "@/lib/utils";
+import { TimeRangeField } from "./TimeRangeField";
 
 const M = COACH_DASHBOARD_CONTENT.rescheduleModal;
 
@@ -49,132 +37,6 @@ export interface RescheduleSessionModalProps {
 	/** Prefills the Additional Notes textarea (e.g. the session's description). */
 	defaultNotes?: string;
 	onConfirm?: (values: RescheduleValues) => void;
-}
-
-/** "HH:mm" (24h) → "h:mm AM/PM". */
-function to12h(value: string): string {
-	const [hStr, mStr] = value.split(":");
-	const h = Number(hStr);
-	const m = Number(mStr);
-	if (Number.isNaN(h) || Number.isNaN(m)) return value;
-	const period = h >= 12 ? "PM" : "AM";
-	const hh = h % 12 === 0 ? 12 : h % 12;
-	return `${hh}:${String(m).padStart(2, "0")} ${period}`;
-}
-
-/** Add `mins` to an "HH:mm" time, wrapping within a day. */
-function addMinutes(value: string, mins: number): string {
-	const [hStr, mStr] = value.split(":");
-	const total = (Number(hStr) * 60 + Number(mStr) + mins) % (24 * 60);
-	const nh = Math.floor(total / 60);
-	const nm = total % 60;
-	return `${String(nh).padStart(2, "0")}:${String(nm).padStart(2, "0")}`;
-}
-
-function TimeRangeField({
-	start,
-	end,
-	onChange,
-	error,
-}: {
-	start: string;
-	end: string;
-	onChange: (start: string, end: string) => void;
-	error?: string;
-}) {
-	const [open, setOpen] = useState(false);
-	const hasValue = Boolean(start && end);
-
-	return (
-		<div className="flex flex-col gap-1">
-			<Label className="gap-1 text-small font-medium text-text-foreground">
-				<span className="text-destructive" aria-hidden>
-					*
-				</span>
-				{M.newTimeLabel}
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<button
-							type="button"
-							className="inline-flex text-info"
-							aria-label={M.newTimeTooltip}
-						>
-							<Info className="size-3.5" aria-hidden />
-						</button>
-					</TooltipTrigger>
-					<TooltipContent>{M.newTimeTooltip}</TooltipContent>
-				</Tooltip>
-			</Label>
-			<Popover open={open} onOpenChange={setOpen}>
-				<PopoverTrigger asChild>
-					<Button
-						type="button"
-						variant="outline"
-						data-empty={!hasValue}
-						aria-invalid={!!error}
-						className={cn(
-							"h-10 w-full justify-between rounded-lg font-normal data-[empty=true]:text-muted-foreground",
-							error && "border-destructive",
-						)}
-					>
-						{hasValue ? (
-							`${to12h(start)} - ${to12h(end)}`
-						) : (
-							<span>{M.newTimePlaceholder}</span>
-						)}
-						<Clock className="size-4 shrink-0 opacity-50" aria-hidden />
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent
-					align="start"
-					className="w-[var(--radix-popover-trigger-width)] p-3"
-				>
-					<div className="flex items-end gap-2">
-						<div className="flex flex-1 flex-col gap-1">
-							<Label
-								htmlFor="reschedule-start"
-								className="text-mini font-medium text-text-secondary"
-							>
-								{M.startTimeLabel}
-							</Label>
-							<Input
-								id="reschedule-start"
-								type="time"
-								value={start}
-								onChange={(event) => {
-									const nextStart = event.target.value;
-									onChange(
-										nextStart,
-										end || (nextStart ? addMinutes(nextStart, 15) : ""),
-									);
-								}}
-							/>
-						</div>
-						<span className="pb-2 text-muted-foreground">-</span>
-						<div className="flex flex-1 flex-col gap-1">
-							<Label
-								htmlFor="reschedule-end"
-								className="text-mini font-medium text-text-secondary"
-							>
-								{M.endTimeLabel}
-							</Label>
-							<Input
-								id="reschedule-end"
-								type="time"
-								value={end}
-								onChange={(event) => onChange(start, event.target.value)}
-							/>
-						</div>
-					</div>
-				</PopoverContent>
-			</Popover>
-			{error ? (
-				<p className="text-mini text-destructive" role="alert">
-					{error}
-				</p>
-			) : null}
-		</div>
-	);
 }
 
 export function RescheduleSessionModal({
@@ -260,6 +122,11 @@ export function RescheduleSessionModal({
 						setStartTime(nextStart);
 						setEndTime(nextEnd);
 					}}
+					label={M.newTimeLabel}
+					tooltip={M.newTimeTooltip}
+					placeholder={M.newTimePlaceholder}
+					startLabel={M.startTimeLabel}
+					endLabel={M.endTimeLabel}
 					error={errors.time}
 				/>
 

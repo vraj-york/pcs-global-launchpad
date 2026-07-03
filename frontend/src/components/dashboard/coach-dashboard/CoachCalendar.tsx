@@ -26,7 +26,7 @@ import {
 	Video,
 	Zap,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -53,6 +53,7 @@ import {
 } from "@/const";
 import { cn } from "@/lib/utils";
 import { RescheduleSessionModal } from "./RescheduleSessionModal";
+import { ScheduleSessionModal } from "./ScheduleSessionModal";
 
 const C = COACH_DASHBOARD_CONTENT.calendarPage;
 const M = C.monthView;
@@ -481,7 +482,7 @@ function DayEventsPanel({
 
 export function CoachCalendar() {
 	const [view, setView] = useState<CalendarViewId>("week");
-	const [scheduling, setScheduling] = useState(false);
+	const [scheduleOpen, setScheduleOpen] = useState(false);
 	const [selectedId, setSelectedId] = useState<string | null>(
 		COACH_CALENDAR_EVENTS[0]?.id ?? null,
 	);
@@ -508,12 +509,6 @@ export function CoachCalendar() {
 		return `${M.fullWeekdays[weekdayIndex]}, ${M.monthName} ${selectedDate}, ${M.year}`;
 	}, [selectedDate]);
 
-	const handleScheduleSession = useCallback(() => {
-		setScheduling(true);
-		// Placeholder async action until the scheduling flow API is wired up.
-		setTimeout(() => setScheduling(false), 1000);
-	}, []);
-
 	const views: { id: CalendarViewId; label: string }[] = [
 		{ id: "week", label: C.views.week },
 		{ id: "month", label: C.views.month },
@@ -531,8 +526,7 @@ export function CoachCalendar() {
 				</div>
 				<Button
 					icon={Plus}
-					isLoading={scheduling}
-					onClick={handleScheduleSession}
+					onClick={() => setScheduleOpen(true)}
 					className="shrink-0"
 				>
 					{C.scheduleSession}
@@ -636,6 +630,11 @@ export function CoachCalendar() {
 					</div>
 				)}
 			</div>
+
+			<ScheduleSessionModal
+				open={scheduleOpen}
+				onOpenChange={setScheduleOpen}
+			/>
 
 			<RescheduleSessionModal
 				open={reschedule !== null}
