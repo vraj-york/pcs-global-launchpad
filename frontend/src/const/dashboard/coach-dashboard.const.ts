@@ -416,6 +416,15 @@ export const COACH_DASHBOARD_CONTENT = {
 			{ id: "david-chen", name: "David Chen" },
 		],
 	},
+	cancelSessionModal: {
+		title: "Cancel Session",
+		reasonLabel: "Reason",
+		reasonPlaceholder: "Type the reason here...",
+		notifyLabel: "On cancelling, client will be notified via email",
+		requiredError: "This field is required.",
+		cancel: "Cancel",
+		confirm: "Cancel Session",
+	},
 	quickPrepModal: {
 		title: "Session Quick Prep",
 		description: "A quick & helpful info. to prepare you for upcoming session",

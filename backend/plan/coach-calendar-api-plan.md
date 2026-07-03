@@ -101,6 +101,20 @@ Server behaviour (extends the existing create handler): validate the window agai
 
 - **Client select options** come from the coach's assigned clients — `GET /coach-dashboard/clients` (or the existing client-directory list filtered to the coach). The frontend currently uses a static `scheduleModal.clients` list in `coach-dashboard.const.ts` as placeholder until that endpoint is wired.
 
+### Cancel Session modal (node `4:21822`)
+
+The **Cancel Session** action (week detail panel destructive button + month day-card dropdown item) opens the **Cancel Session** modal (`frontend/src/components/dashboard/coach-dashboard/CancelSessionModal.tsx`, reused `ContentModal` + `Textarea` + `Switch` + destructive `Button`; 500px, footer Cancel + destructive **Cancel Session**). It collects a **required** cancellation reason and a "notify client" toggle (default on), then calls the **already-planned** `DELETE /coach-dashboard/sessions/:id` — **no new endpoint**. Because the reason + notify flag are needed, send them as a body/DTO:
+
+```jsonc
+// DELETE /coach-dashboard/sessions/:id   (CancelSessionDto)
+{
+  "reason":       "Client requested to reschedule to next month.", // required (Reason textarea)
+  "notifyClient": true                                             // "On cancelling, client will be notified via email" switch
+}
+```
+
+Server behaviour (extends the existing cancel handler): mark the `CoachingSession` cancelled (soft-cancel with `status = CANCELLED` + `cancelReason`, preserving history rather than a hard delete); write a `CoachClientActivity` row + audit event; when `notifyClient` is true, enqueue the cancellation email via the existing **SES** `EmailModule`. The stored `cancelReason` is what the Sessions page **View Reason** modal (node `4:21775`) surfaces. Returns success so the calendar/detail panel refetches (cancelled sessions drop out of upcoming views).
+
 ### Representative response shape (match frontend `CoachCalendarEvent`)
 
 ```jsonc
@@ -145,6 +159,7 @@ DTOs via `class-validator` (`CalendarQueryDto { view: 'week'|'month'; start: str
 - **Reschedule** is already wired to open the implemented `RescheduleSessionModal` (week detail panel + month day-card dropdown, prefilling Additional Notes from the session description). Its `onConfirm` currently runs a placeholder timeout; wire it to `rescheduleSession(id, payload)` (Axios) with the payload above, then invalidate the calendar/detail queries on success.
 - **Schedule Session** (page header) is already wired to open the implemented `ScheduleSessionModal`. Its `onConfirm` currently runs a placeholder timeout; wire it to `scheduleSession(payload)` and replace the static `scheduleModal.clients` list with `getCoachClients()`, invalidating the calendar query on success.
 - **Quick Prep** is already wired to open the implemented `QuickPrepModal` (week detail panel + month day-card dropdown, passing the selected event's client + type). Wire it to `getSessionQuickPrep(id)` to replace the static `quickPrepModal.sample` (`lastSessionOn` / `lastSessionNotes`); the modal's **Join Session** button should call `joinSession(id)`.
+- **Cancel Session** is already wired to open the implemented `CancelSessionModal` (week detail panel destructive button + month day-card dropdown). Its `onConfirm` currently runs a placeholder timeout; wire it to `cancelSession(id, { reason, notifyClient })` (Axios) with the payload above, then invalidate the calendar/detail queries on success.
 
 ---
 

@@ -52,6 +52,7 @@ import {
 	type CoachCalendarMonthEvent,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { CancelSessionModal } from "./CancelSessionModal";
 import { type QuickPrepData, QuickPrepModal } from "./QuickPrepModal";
 import { RescheduleSessionModal } from "./RescheduleSessionModal";
 import { ScheduleSessionModal } from "./ScheduleSessionModal";
@@ -205,10 +206,12 @@ function SessionDetailsPanel({
 	event,
 	onReschedule,
 	onQuickPrep,
+	onCancelSession,
 }: {
 	event: CoachCalendarEvent | null;
 	onReschedule?: () => void;
 	onQuickPrep?: () => void;
+	onCancelSession?: () => void;
 }) {
 	if (!event) {
 		return (
@@ -280,6 +283,7 @@ function SessionDetailsPanel({
 					variant="outline"
 					icon={CalendarX2}
 					className="w-full border-border text-destructive hover:bg-destructive/10 hover:text-destructive"
+					onClick={onCancelSession}
 				>
 					{C.cancelSession}
 				</Button>
@@ -368,9 +372,11 @@ function MonthGrid({
 function MonthEventActions({
 	onReschedule,
 	onQuickPrep,
+	onCancelSession,
 }: {
 	onReschedule?: () => void;
 	onQuickPrep?: () => void;
+	onCancelSession?: () => void;
 }) {
 	return (
 		<DropdownMenu>
@@ -403,6 +409,7 @@ function MonthEventActions({
 				<DropdownMenuSeparator className="bg-border" />
 				<DropdownMenuItem
 					variant="destructive"
+					onSelect={onCancelSession}
 					className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small"
 				>
 					<CalendarX2 className="size-5" aria-hidden />
@@ -417,10 +424,12 @@ function DayEventCard({
 	event,
 	onReschedule,
 	onQuickPrep,
+	onCancelSession,
 }: {
 	event: CoachCalendarMonthEvent;
 	onReschedule?: () => void;
 	onQuickPrep?: () => void;
+	onCancelSession?: () => void;
 }) {
 	return (
 		<Card className="flex flex-col gap-6 rounded-xl border border-border bg-background p-4 shadow-none">
@@ -455,6 +464,7 @@ function DayEventCard({
 				<MonthEventActions
 					onReschedule={onReschedule}
 					onQuickPrep={onQuickPrep}
+					onCancelSession={onCancelSession}
 				/>
 			</div>
 		</Card>
@@ -471,6 +481,7 @@ function DayEventsPanel({
 	events: CoachCalendarMonthEvent[];
 	onReschedule?: (event: CoachCalendarMonthEvent) => void;
 	onQuickPrep?: (event: CoachCalendarMonthEvent) => void;
+	onCancelSession?: (event: CoachCalendarMonthEvent) => void;
 }) {
 	const count = events.length;
 	const countLabel =
@@ -497,6 +508,7 @@ function DayEventsPanel({
 							event={event}
 							onReschedule={() => onReschedule?.(event)}
 							onQuickPrep={() => onQuickPrep?.(event)}
+							onCancelSession={() => onCancelSession?.(event)}
 						/>
 					))
 				)}
@@ -520,6 +532,7 @@ export function CoachCalendar() {
 	const [quickPrep, setQuickPrep] = useState<Partial<QuickPrepData> | null>(
 		null,
 	);
+	const [cancelOpen, setCancelOpen] = useState(false);
 
 	const selectedEvent = useMemo(
 		() => COACH_CALENDAR_EVENTS.find((e) => e.id === selectedId) ?? null,
@@ -655,6 +668,7 @@ export function CoachCalendar() {
 										: {},
 								)
 							}
+							onCancelSession={() => setCancelOpen(true)}
 						/>
 					</div>
 				) : (
@@ -675,6 +689,7 @@ export function CoachCalendar() {
 									clientAvatar: event.clientAvatar,
 								})
 							}
+							onCancelSession={() => setCancelOpen(true)}
 						/>
 					</div>
 				)}
@@ -700,6 +715,8 @@ export function CoachCalendar() {
 				}}
 				data={quickPrep ?? undefined}
 			/>
+
+			<CancelSessionModal open={cancelOpen} onOpenChange={setCancelOpen} />
 		</div>
 	);
 }
