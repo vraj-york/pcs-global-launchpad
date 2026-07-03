@@ -38,6 +38,38 @@ export interface CoachAvailabilityRow {
 	value: string;
 }
 
+export type CalendarEventAccent = "blue" | "warning" | "success";
+
+export interface CoachCalendarDay {
+	id: string;
+	/** Weekday label, e.g. "Mon". */
+	label: string;
+	/** Day of month, e.g. "11". */
+	date: string;
+	/** Highlighted (currently selected) day column. */
+	highlighted?: boolean;
+}
+
+export interface CoachCalendarEvent {
+	id: string;
+	title: string;
+	/** 0-based column index into the visible week (Mon = 0). */
+	dayIndex: number;
+	/** Minutes from midnight for start/end, used to position the block. */
+	startMinutes: number;
+	endMinutes: number;
+	accent: CalendarEventAccent;
+	// Session Details (side panel)
+	dateLabel: string;
+	timeRange: string;
+	duration: string;
+	clientName: string;
+	clientEmail: string;
+	clientAvatar?: string;
+	clientInitials?: string;
+	description: string;
+}
+
 export type CoachResourceAccent = "green" | "blue" | "red";
 
 export interface CoachWelcomeHighlight {
@@ -211,11 +243,102 @@ export const COACH_DASHBOARD_CONTENT = {
 		emptyPast: "No past sessions.",
 		allRequestsEmpty: "No pending session requests.",
 	},
+	calendarPage: {
+		breadcrumbLabel: "Calendar",
+		title: "Calendar",
+		subtitle: "All your sessions & events at a glance",
+		scheduleSession: "Schedule Session",
+		monthLabel: "May 2026",
+		rangeLabel: "May 11 - May 15",
+		views: {
+			week: "Week",
+			month: "Month",
+		},
+		monthViewPlaceholder: "Month view is coming soon.",
+		detailsTitle: "Session Details",
+		fieldLabels: {
+			title: "Title",
+			time: "Time",
+			sessionTime: "Session Time",
+			client: "Client",
+			description: "Description",
+		},
+		join: "Join",
+		reschedule: "Reschedule",
+		quickPrep: "Quick Prep",
+		cancelSession: "Cancel Session",
+		emptyDetails: "Select an event to see its details.",
+		prevMonthAria: "Previous month",
+		nextMonthAria: "Next month",
+		prevRangeAria: "Previous week",
+		nextRangeAria: "Next week",
+	},
 	emptyStates: {
 		sessions: "No sessions scheduled for today.",
 		activity: "No recent client activity.",
 	},
 } as const;
+
+/** Week grid spans 8:00 AM – 6:00 PM. */
+export const COACH_CALENDAR_GRID_START_MINUTES = 8 * 60;
+export const COACH_CALENDAR_GRID_END_MINUTES = 18 * 60;
+
+export const COACH_CALENDAR_DAYS: CoachCalendarDay[] = [
+	{ id: "mon", label: "Mon", date: "11" },
+	{ id: "tue", label: "Tue", date: "12", highlighted: true },
+	{ id: "wed", label: "Wed", date: "13" },
+	{ id: "thu", label: "Thu", date: "14" },
+	{ id: "fri", label: "Fri", date: "15" },
+];
+
+export const COACH_CALENDAR_EVENTS: CoachCalendarEvent[] = [
+	{
+		id: "cal-one-on-one",
+		title: "1:1 Coaching",
+		dayIndex: 1,
+		startMinutes: 10 * 60,
+		endMinutes: 10 * 60 + 15,
+		accent: "blue",
+		dateLabel: "Tuesday, May 12, 2026",
+		timeRange: "10:00 AM - 10:15 AM",
+		duration: "15 min",
+		clientName: "Nicolas Hamilton",
+		clientEmail: "nicolas.hamilton@email.com",
+		clientInitials: "NH",
+		description: "Weekly one-on-one coaching session for stress management.",
+	},
+	{
+		id: "cal-communication-conflict",
+		title: "Communication Conflict",
+		dayIndex: 3,
+		startMinutes: 12 * 60,
+		endMinutes: 12 * 60 + 15,
+		accent: "warning",
+		dateLabel: "Thursday, May 14, 2026",
+		timeRange: "12:00 PM - 12:15 PM",
+		duration: "15 min",
+		clientName: "Emma Thompson",
+		clientEmail: "emma.thompson@email.com",
+		clientInitials: "ET",
+		description:
+			"Session focused on resolving a recurring team communication conflict.",
+	},
+	{
+		id: "cal-goal-review",
+		title: "Goal Review",
+		dayIndex: 2,
+		startMinutes: 16 * 60 + 30,
+		endMinutes: 16 * 60 + 45,
+		accent: "success",
+		dateLabel: "Wednesday, May 13, 2026",
+		timeRange: "4:30 PM - 4:45 PM",
+		duration: "15 min",
+		clientName: "Clara Nevada",
+		clientEmail: "clara.nevada@email.com",
+		clientInitials: "CN",
+		description: "Quarterly goal review and progress check-in.",
+	},
+];
 
 export const COACH_SESSIONS: CoachSession[] = [
 	{

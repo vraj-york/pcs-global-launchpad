@@ -1,3 +1,4 @@
+export * from "./CoachCalendar";
 export * from "./CoachDashboard";
 export * from "./CoachSessions";
 export * from "./ComingSoon";
