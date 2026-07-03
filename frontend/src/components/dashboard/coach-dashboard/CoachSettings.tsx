@@ -31,6 +31,7 @@ import { COACH_SETTINGS_CONTENT, MORE_FILTERS_TIMEZONE_OPTIONS } from "@/const";
 import { cn } from "@/lib/utils";
 import { CoachAvailabilityTab } from "./CoachAvailabilityTab";
 import { CoachCalendarSyncTab } from "./CoachCalendarSyncTab";
+import { CoachSecurityTab } from "./CoachSecurityTab";
 
 const C = COACH_SETTINGS_CONTENT;
 const PD = C.personalDetails;
@@ -328,6 +329,8 @@ export function CoachSettings() {
 				<CoachAvailabilityTab />
 			) : activeTab === "calendar-sync" ? (
 				<CoachCalendarSyncTab />
+			) : activeTab === "security" ? (
+				<CoachSecurityTab />
 			) : (
 				<div className="flex min-h-40 items-center justify-center rounded-xl border border-border bg-background p-8">
 					<p className="text-small text-text-secondary">{C.comingSoon}</p>
