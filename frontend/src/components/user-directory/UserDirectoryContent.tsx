@@ -24,6 +24,7 @@ import {
 	DataTable,
 	MoreFiltersDialog,
 	PermissionGate,
+	ScheduleSessionModal,
 	SendInviteContactDialog,
 	TableSkeleton,
 	WhiteBox,
@@ -113,6 +114,8 @@ export function UserDirectoryContent() {
 	const [userToRemove, setUserToRemove] =
 		useState<UserDirectoryListItem | null>(null);
 	const [userToCancelInvite, setUserToCancelInvite] =
+		useState<UserDirectoryListItem | null>(null);
+	const [scheduleSessionUser, setScheduleSessionUser] =
 		useState<UserDirectoryListItem | null>(null);
 	const [userToResendInvite, setUserToResendInvite] =
 		useState<UserDirectoryListItem | null>(null);
@@ -208,6 +211,7 @@ export function UserDirectoryContent() {
 		() => ({
 			canView: can(SUBMODULE_KEYS.USER_DIRECTORY_VIEW),
 			canEdit: can(SUBMODULE_KEYS.USER_DIRECTORY_EDIT),
+			canScheduleSession: can(SUBMODULE_KEYS.USER_DIRECTORY_SCHEDULE_SESSION),
 			canBlock: can(SUBMODULE_KEYS.USER_DIRECTORY_BLOCK),
 			canRemove: can(SUBMODULE_KEYS.USER_DIRECTORY_REMOVE),
 			canResendInvite: can(SUBMODULE_KEYS.USER_DIRECTORY_RESEND_INVITE),
@@ -572,6 +576,12 @@ export function UserDirectoryContent() {
 		},
 		[navigate],
 	);
+	const handleScheduleSessionClick = useCallback(
+		(row: UserDirectoryListItem) => {
+			setScheduleSessionUser(row);
+		},
+		[],
+	);
 
 	const refetchUsersList = useCallback(() => {
 		return fetchUsers(listPage, PAGE_SIZE, {
@@ -712,6 +722,7 @@ export function UserDirectoryContent() {
 			getUserDirectoryColumns({
 				onViewClick: handleViewClick,
 				onEditClick: handleEditClick,
+				onScheduleSessionClick: handleScheduleSessionClick,
 				onBlockClick: handleBlockClick,
 				onUnblockClick: handleUnblockClick,
 				onResendInviteClick: handleResendInviteClick,
@@ -722,6 +733,7 @@ export function UserDirectoryContent() {
 		[
 			handleViewClick,
 			handleEditClick,
+			handleScheduleSessionClick,
 			handleBlockClick,
 			handleUnblockClick,
 			handleResendInviteClick,
@@ -1460,6 +1472,13 @@ export function UserDirectoryContent() {
 				onClearContactBulkImportFailures={() =>
 					setContactBulkImportFailures(null)
 				}
+			/>
+
+			<ScheduleSessionModal
+				open={scheduleSessionUser != null}
+				onOpenChange={(open) => {
+					if (!open) setScheduleSessionUser(null);
+				}}
 			/>
 		</>
 	);

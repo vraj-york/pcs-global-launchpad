@@ -320,6 +320,7 @@ export function contactRemoveConfirmDescription(contactType: string): string {
 
 export const USER_ACTION_LABELS = {
 	edit: "Edit",
+	scheduleSession: "Schedule Session",
 	blockUser: "Block User",
 	unblockUser: "Unblock User",
 	resendInvite: "Resend Invite",
