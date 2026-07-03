@@ -73,6 +73,17 @@ export type AssessmentReportResultsShellProps = {
 	children: ReactNode;
 };
 
+export type AssessmentResultModalProps = {
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+	/** Assessment id used to resolve the user's scored style breakdown. */
+	assessmentId: string;
+	/** Display name for the report "Welcome, …" greeting. */
+	welcomeDisplayName: string;
+	/** Report object key for the PDF download; download is disabled when absent. */
+	reportKey?: string | null;
+};
+
 export type AssessmentReportScaledLayoutFrameProps = {
 	designWidth: number;
 	designHeight: number;

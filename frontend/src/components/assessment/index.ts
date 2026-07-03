@@ -16,6 +16,7 @@ export * from "./AssessmentReportResultsNav";
 export * from "./AssessmentReportResultsShell";
 export * from "./AssessmentReportScaledLayoutFrame";
 export * from "./AssessmentReportStatusFlow";
+export * from "./AssessmentResultModal";
 export * from "./AssessmentSessionContent";
 export * from "./pages";
 export * from "./print";

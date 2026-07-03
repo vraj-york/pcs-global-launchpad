@@ -100,31 +100,57 @@ export function SetNewPasswordForm({ onSuccess }: SetNewPasswordFormProps) {
 					<CardTitle className="w-full text-balance text-heading-2 font-semibold leading-heading-2 tracking-heading-2 text-text-foreground">
 						{SET_NEW_PASSWORD_PAGE_CONTENT.title}
 					</CardTitle>
-					<CardDescription className="w-full text-regular font-normal leading-regular tracking-normal text-muted-foreground">
+					<CardDescription className="w-full text-regular font-normal leading-regular tracking-normal text-text-secondary">
 						{SET_NEW_PASSWORD_PAGE_CONTENT.subtitle}
 					</CardDescription>
 				</div>
 
-				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-					<div className="flex flex-col gap-8">
+				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
+					<FormInput
+						id="set-new-password"
+						label={SET_NEW_PASSWORD_PAGE_CONTENT.passwordLabel}
+						type={showPassword ? "text" : "password"}
+						placeholder={FORM_PLACEHOLDERS.newPassword}
+						autoComplete="new-password"
+						className={AUTH_TEXT_INPUT_CLASSNAME}
+						error={errors.password?.message}
+						{...register("password")}
+						rightElement={
+							<Button
+								type="button"
+								variant="ghost"
+								onClick={() => setShowPassword((prev) => !prev)}
+								className="absolute right-3 top-1/2 h-auto -translate-y-1/2 cursor-pointer p-0 text-text-secondary transition-colors hover:bg-transparent hover:text-icon-primary"
+								aria-label={passwordAriaLabel}
+							>
+								{showPassword ? (
+									<EyeOff className="size-4 text-icon-secondary" />
+								) : (
+									<Eye className="size-4 text-icon-secondary" />
+								)}
+							</Button>
+						}
+					/>
+
+					<div className="flex flex-col gap-2">
 						<FormInput
-							id="set-new-password"
-							label={SET_NEW_PASSWORD_PAGE_CONTENT.passwordLabel}
-							type={showPassword ? "text" : "password"}
-							placeholder={FORM_PLACEHOLDERS.newPassword}
+							id="set-new-password-confirm"
+							label={SET_NEW_PASSWORD_PAGE_CONTENT.confirmPasswordLabel}
+							type={showConfirmPassword ? "text" : "password"}
+							placeholder={FORM_PLACEHOLDERS.confirmPassword}
 							autoComplete="new-password"
 							className={AUTH_TEXT_INPUT_CLASSNAME}
-							error={errors.password?.message}
-							{...register("password")}
+							error={errors.confirmPassword?.message}
+							{...register("confirmPassword")}
 							rightElement={
 								<Button
 									type="button"
 									variant="ghost"
-									onClick={() => setShowPassword((prev) => !prev)}
+									onClick={() => setShowConfirmPassword((prev) => !prev)}
 									className="absolute right-3 top-1/2 h-auto -translate-y-1/2 cursor-pointer p-0 text-text-secondary transition-colors hover:bg-transparent hover:text-icon-primary"
-									aria-label={passwordAriaLabel}
+									aria-label={confirmPasswordAriaLabel}
 								>
-									{showPassword ? (
+									{showConfirmPassword ? (
 										<EyeOff className="size-4 text-icon-secondary" />
 									) : (
 										<Eye className="size-4 text-icon-secondary" />
@@ -133,55 +159,28 @@ export function SetNewPasswordForm({ onSuccess }: SetNewPasswordFormProps) {
 							}
 						/>
 
-						<div className="flex flex-col gap-1">
-							<FormInput
-								id="set-new-password-confirm"
-								label={SET_NEW_PASSWORD_PAGE_CONTENT.confirmPasswordLabel}
-								type={showConfirmPassword ? "text" : "password"}
-								placeholder={FORM_PLACEHOLDERS.confirmPassword}
-								autoComplete="new-password"
-								className={AUTH_TEXT_INPUT_CLASSNAME}
-								error={errors.confirmPassword?.message}
-								{...register("confirmPassword")}
-								rightElement={
-									<Button
-										type="button"
-										variant="ghost"
-										onClick={() => setShowConfirmPassword((prev) => !prev)}
-										className="absolute right-3 top-1/2 h-auto -translate-y-1/2 cursor-pointer p-0 text-text-secondary transition-colors hover:bg-transparent hover:text-icon-primary"
-										aria-label={confirmPasswordAriaLabel}
-									>
-										{showConfirmPassword ? (
-											<EyeOff className="size-4 text-icon-secondary" />
-										) : (
-											<Eye className="size-4 text-icon-secondary" />
-										)}
-									</Button>
-								}
-							/>
-
-							<PasswordStrengthIndicator password={password} className="pt-1" />
-						</div>
+						<PasswordStrengthIndicator password={password} />
 					</div>
 
-					<Button
-						type="submit"
-						disabled={!isFormValid}
-						isLoading={isLoading}
-						size="lg"
-						className="h-10 min-h-10 w-full cursor-pointer rounded-lg text-small font-semibold text-light-same mt-2"
-					>
-						{isLoading
-							? SET_NEW_PASSWORD_PAGE_CONTENT.resetting
-							: SET_NEW_PASSWORD_PAGE_CONTENT.submitButton}
-					</Button>
+					<div className="flex flex-col gap-3">
+						<Button
+							type="submit"
+							disabled={!isFormValid}
+							isLoading={isLoading}
+							size="lg"
+							className="h-10 min-h-10 w-full cursor-pointer rounded-lg text-small font-semibold text-light-same"
+						>
+							{isLoading
+								? SET_NEW_PASSWORD_PAGE_CONTENT.resetting
+								: SET_NEW_PASSWORD_PAGE_CONTENT.submitButton}
+						</Button>
 
-					<div className="flex justify-center text-center">
 						<Button
 							type="button"
 							variant="ghost"
 							onClick={handleBackToLogin}
-							className="h-auto min-h-8 cursor-pointer px-1.5 py-1.5 text-small font-medium text-foreground no-underline hover:bg-transparent hover:text-link-hover hover:no-underline"
+							size="lg"
+							className="h-10 min-h-10 w-full cursor-pointer rounded-lg text-small font-semibold text-text-foreground hover:bg-transparent hover:text-link-hover"
 						>
 							{SET_NEW_PASSWORD_PAGE_CONTENT.backToLogin}
 						</Button>

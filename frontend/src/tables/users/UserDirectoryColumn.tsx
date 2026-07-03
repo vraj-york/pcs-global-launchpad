@@ -1,5 +1,6 @@
 import {
 	Ban,
+	CalendarDays,
 	CheckCircle,
 	Eye,
 	MoreVertical,
@@ -38,6 +39,7 @@ function categoryBadgeType(categoryName: string | null): string {
 export type UserDirectoryColumnOptions = {
 	onViewClick?: (row: UserDirectoryListItem) => void;
 	onEditClick?: (row: UserDirectoryListItem) => void;
+	onScheduleSessionClick?: (row: UserDirectoryListItem) => void;
 	onBlockClick?: (row: UserDirectoryListItem) => void;
 	onUnblockClick?: (row: UserDirectoryListItem) => void;
 	onResendInviteClick?: (row: UserDirectoryListItem) => void;
@@ -46,6 +48,7 @@ export type UserDirectoryColumnOptions = {
 	permissions?: {
 		canView: boolean;
 		canEdit: boolean;
+		canScheduleSession: boolean;
 		canBlock: boolean;
 		canRemove: boolean;
 		canResendInvite: boolean;
@@ -59,6 +62,7 @@ export function getUserDirectoryColumns(
 	const {
 		onViewClick,
 		onEditClick,
+		onScheduleSessionClick,
 		onBlockClick,
 		onUnblockClick,
 		onResendInviteClick,
@@ -68,6 +72,7 @@ export function getUserDirectoryColumns(
 	} = options ?? {};
 	const canView = permissions?.canView ?? true;
 	const canEdit = permissions?.canEdit ?? true;
+	const canScheduleSession = permissions?.canScheduleSession ?? false;
 	const canBlock = permissions?.canBlock ?? true;
 	const canRemove = permissions?.canRemove ?? true;
 	const canResendInvite = permissions?.canResendInvite ?? true;
@@ -207,6 +212,8 @@ export function getUserDirectoryColumns(
 				const isBlocked = s === "blocked";
 				const isExpired = s === "expired";
 				const isCancelled = s === "cancelled";
+				const isActive = !isPending && !isBlocked && !isExpired && !isCancelled;
+				const canShowScheduleSession = isActive && canScheduleSession;
 
 				const renderStatusActions = () => {
 					if (isPending) {
@@ -270,6 +277,7 @@ export function getUserDirectoryColumns(
 
 				const hasMenuActions =
 					canEdit ||
+					canShowScheduleSession ||
 					canRemove ||
 					canBlock ||
 					canResendInvite ||
@@ -303,6 +311,17 @@ export function getUserDirectoryColumns(
 												aria-hidden
 											/>
 											{USER_ACTION_LABELS.edit}
+										</DropdownMenuItem>
+									) : null}
+									{canShowScheduleSession ? (
+										<DropdownMenuItem
+											onSelect={() => onScheduleSessionClick?.(row)}
+										>
+											<CalendarDays
+												className="size-4 text-icon-primary"
+												aria-hidden
+											/>
+											{USER_ACTION_LABELS.scheduleSession}
 										</DropdownMenuItem>
 									) : null}
 									{renderStatusActions()}

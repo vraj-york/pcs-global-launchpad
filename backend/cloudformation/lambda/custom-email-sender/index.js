@@ -83,12 +83,12 @@ function getLoginVerificationHtml(code) {
                     <td style="padding:0;Margin:0">
                       <table cellspacing="0" cellpadding="0" width="600" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-spacing:0px;width:600px">
                         <tr>
-                          <td align="center" style="padding:40px 24px;Margin:0;text-align:center">
-                            <h1 style="margin:0 0 8px;padding:0;font-weight:600;font-size:21px;line-height:25px;color:#2F414A;">Verification Code</h1>
-                            <p style="margin:0;padding:0;font-weight:400;font-size:15px;line-height:22px;color:#385966;">This code is valid for the next 3 minutes.</p>
-                            <div style="margin:40px 0 0;padding:0;font-weight:700;font-size:50px;line-height:60px;letter-spacing:-0.42px;color:#2F414A;">${code}</div>
+                          <td align="center" style="padding:41.81px 24px;Margin:0;text-align:center">
+                            <h1 style="margin:0 0 8.36px;padding:0;font-weight:600;font-size:20.9px;line-height:25.09px;color:#2F414A;">Verification Code</h1>
+                            <p style="margin:0;padding:0;font-weight:400;font-size:14.63px;line-height:21.95px;color:#385966;">This code is valid for the next 3 minutes.</p>
+                            <div style="margin:40px 0 0;padding:0;font-weight:700;font-size:50.17px;line-height:60.63px;letter-spacing:-0.42px;color:#2F414A;">${code}</div>
                             <hr style="border:none;border-top:1px solid #DDD9EB;margin:40px 0 0;" />
-                            <p style="margin:40px 0 0;padding:0;font-weight:400;font-size:15px;line-height:22px;color:#385966;text-align:center;">
+                            <p style="margin:40px 0 0;padding:0;font-weight:400;font-size:14.63px;line-height:21.95px;color:#385966;text-align:center;">
                               In case you didn't trigger this, please contact our
                               <a href="mailto:support@bspblueprint.com" style="color:#3A6FD8;text-decoration:none;">Support Team</a>
                             </p>

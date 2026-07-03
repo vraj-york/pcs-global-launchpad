@@ -1,42 +1,77 @@
-// Figma layer: "Calendar - Week View" — node 4:21292
+// Figma layer: "Calendar - Week View" (node 4:21292) / "Calendar - Month View" (node 4:21562)
 /*
  * SEMANTIC ANALYSIS
  * Route: /coach-calendar (rendered inside AppLayout — sidebar + header shell)
  * - Page title + "Schedule Session" primary button → action button
  * - Calendar card header: month nav (prev/next + "May 2026"), a week-range
- *   pill (prev/next + "May 11 - May 15"), and a Week/Month segmented toggle
- * - Week grid: time gutter (8 AM–6 PM) + 5 weekday columns with an event
- *   overlay; each event block is positioned by its start time and is clickable
- * - Selecting an event → drives the "Session Details" side panel
- *   (Title / Time / Session Time / Client / Description + Join / Reschedule /
- *   Quick Prep / Cancel Session)
+ *   pill (week view only), and a Week/Month segmented toggle → useState(view)
+ * - Week view (node 4:21292): time gutter (8 AM–6 PM) + 5 weekday columns with
+ *   an event overlay; each event block is positioned by its start time and is
+ *   clickable → drives the "Session Details" side panel (Title / Time / Session
+ *   Time / Client / Description + Join / Reschedule / Quick Prep / Cancel Session)
+ * - Month view (node 4:21562): 7-column month grid (Mon-first) with per-day
+ *   event chips; selecting a day → useState(selectedDate) drives a side panel
+ *   ("<Weekday>, May D, 2026" + "N event(s) scheduled") listing that day's
+ *   event cards (title / client / time + Join + more-actions dropdown:
+ *   Reschedule / Quick Prep / Cancel Session)
  */
 import {
 	CalendarSync,
 	CalendarX2,
 	ChevronLeft,
 	ChevronRight,
+	Clock,
+	EllipsisVertical,
 	Plus,
 	Video,
 	Zap,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
 	COACH_CALENDAR_DAYS,
 	COACH_CALENDAR_EVENTS,
 	COACH_CALENDAR_GRID_END_MINUTES,
 	COACH_CALENDAR_GRID_START_MINUTES,
+	COACH_CALENDAR_MONTH_SELECTED_DATE,
+	COACH_CALENDAR_MONTH_WEEKS,
 	COACH_DASHBOARD_CONTENT,
 	type CalendarEventAccent,
 	type CoachCalendarEvent,
+	type CoachCalendarMonthAccent,
+	type CoachCalendarMonthDay,
+	type CoachCalendarMonthEvent,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { CancelSessionModal } from "./CancelSessionModal";
+import { type QuickPrepData, QuickPrepModal } from "./QuickPrepModal";
+import { RescheduleSessionModal } from "./RescheduleSessionModal";
+import { ScheduleSessionModal } from "./ScheduleSessionModal";
 
 const C = COACH_DASHBOARD_CONTENT.calendarPage;
+const M = C.monthView;
 
 type CalendarViewId = "week" | "month";
+
+const MONTH_EVENT_ACCENT: Record<
+	CoachCalendarMonthAccent,
+	{ border: string; text: string }
+> = {
+	error: { border: "border-destructive", text: "text-destructive" },
+	success: { border: "border-success", text: "text-success" },
+	warning: { border: "border-warning", text: "text-warning" },
+};
+
+const MONTH_DAYS = COACH_CALENDAR_MONTH_WEEKS.flat();
 
 const HOUR_HEIGHT = 56;
 const GRID_COLUMNS = "3.5rem repeat(5, minmax(0, 1fr))";
@@ -167,7 +202,17 @@ function WeekGrid({
 	);
 }
 
-function SessionDetailsPanel({ event }: { event: CoachCalendarEvent | null }) {
+function SessionDetailsPanel({
+	event,
+	onReschedule,
+	onQuickPrep,
+	onCancelSession,
+}: {
+	event: CoachCalendarEvent | null;
+	onReschedule?: () => void;
+	onQuickPrep?: () => void;
+	onCancelSession?: () => void;
+}) {
 	if (!event) {
 		return (
 			<div className="flex min-w-0 flex-1 items-center justify-center border-l border-border p-6">
@@ -218,16 +263,27 @@ function SessionDetailsPanel({ event }: { event: CoachCalendarEvent | null }) {
 				<Button icon={Video} className="w-full">
 					{C.join}
 				</Button>
-				<Button variant="outline" icon={CalendarSync} className="w-full">
+				<Button
+					variant="outline"
+					icon={CalendarSync}
+					className="w-full"
+					onClick={onReschedule}
+				>
 					{C.reschedule}
 				</Button>
-				<Button variant="outline" icon={Zap} className="w-full">
+				<Button
+					variant="outline"
+					icon={Zap}
+					className="w-full"
+					onClick={onQuickPrep}
+				>
 					{C.quickPrep}
 				</Button>
 				<Button
 					variant="outline"
 					icon={CalendarX2}
 					className="w-full border-border text-destructive hover:bg-destructive/10 hover:text-destructive"
+					onClick={onCancelSession}
 				>
 					{C.cancelSession}
 				</Button>
@@ -236,23 +292,263 @@ function SessionDetailsPanel({ event }: { event: CoachCalendarEvent | null }) {
 	);
 }
 
+function MonthGrid({
+	selectedDate,
+	onSelectDate,
+}: {
+	selectedDate: number | null;
+	onSelectDate: (date: number) => void;
+}) {
+	return (
+		<div className="min-w-0 flex-1 px-4 pt-4 pb-6">
+			{/* Weekday headers */}
+			<div className="grid grid-cols-7">
+				{M.weekdayLabels.map((label) => (
+					<div
+						key={label}
+						className="flex h-12 items-center justify-center text-small font-semibold text-text-foreground"
+					>
+						{label}
+					</div>
+				))}
+			</div>
+
+			{/* Day cells */}
+			<div className="grid grid-cols-7 overflow-hidden rounded-lg border border-border">
+				{MONTH_DAYS.map((day, index) => {
+					const isSelected = day.inMonth && day.date === selectedDate;
+					const isLastRow = index >= MONTH_DAYS.length - 7;
+					const isLastCol = (index + 1) % 7 === 0;
+					return (
+						<button
+							key={`${day.date}-${index}`}
+							type="button"
+							disabled={!day.inMonth}
+							onClick={() => onSelectDate(day.date)}
+							className={cn(
+								"flex min-h-[120px] flex-col items-stretch gap-1 border-border p-3 text-left outline-none",
+								!isLastCol && "border-r",
+								!isLastRow && "border-b",
+								isSelected ? "bg-info-bg" : "bg-background",
+								day.inMonth ? "cursor-pointer" : "cursor-default",
+							)}
+						>
+							<span
+								className={cn(
+									"text-small",
+									isSelected
+										? "font-semibold text-brand-primary"
+										: day.inMonth
+											? "font-semibold text-text-foreground"
+											: "font-normal text-muted-foreground",
+								)}
+							>
+								{day.date}
+							</span>
+							{day.events?.map((event) => {
+								const accent = MONTH_EVENT_ACCENT[event.accent];
+								return (
+									<span
+										key={event.id}
+										className={cn(
+											"truncate rounded border-l-[3px] py-1 pr-1.5 pl-2 text-mini font-semibold shadow-sm",
+											accent.border,
+											accent.text,
+											isSelected ? "bg-background" : "bg-secondary",
+										)}
+									>
+										{event.title}
+									</span>
+								);
+							})}
+						</button>
+					);
+				})}
+			</div>
+		</div>
+	);
+}
+
+function MonthEventActions({
+	onReschedule,
+	onQuickPrep,
+	onCancelSession,
+}: {
+	onReschedule?: () => void;
+	onQuickPrep?: () => void;
+	onCancelSession?: () => void;
+}) {
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button
+					variant="outline"
+					size="icon-sm"
+					icon={EllipsisVertical}
+					aria-label={M.moreActionsLabel}
+				/>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent
+				align="end"
+				className="min-w-40 rounded-lg border border-border bg-background p-0.5 shadow-xl"
+			>
+				<DropdownMenuItem
+					onSelect={onReschedule}
+					className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground"
+				>
+					<CalendarSync className="size-5" aria-hidden />
+					<span>{C.reschedule}</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onSelect={onQuickPrep}
+					className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground"
+				>
+					<Zap className="size-5" aria-hidden />
+					<span>{C.quickPrep}</span>
+				</DropdownMenuItem>
+				<DropdownMenuSeparator className="bg-border" />
+				<DropdownMenuItem
+					variant="destructive"
+					onSelect={onCancelSession}
+					className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small"
+				>
+					<CalendarX2 className="size-5" aria-hidden />
+					<span>{C.cancelSession}</span>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}
+
+function DayEventCard({
+	event,
+	onReschedule,
+	onQuickPrep,
+	onCancelSession,
+}: {
+	event: CoachCalendarMonthEvent;
+	onReschedule?: () => void;
+	onQuickPrep?: () => void;
+	onCancelSession?: () => void;
+}) {
+	return (
+		<Card className="flex flex-col gap-6 rounded-xl border border-border bg-background p-4 shadow-none">
+			<div className="flex flex-col gap-2">
+				<h4 className="text-base font-semibold text-text-foreground">
+					{event.title}
+				</h4>
+				<div className="flex items-center gap-1.5">
+					<Avatar size="sm" className="size-5">
+						{event.clientAvatar ? (
+							<AvatarImage src={event.clientAvatar} alt={event.clientName} />
+						) : null}
+						<AvatarFallback className="bg-muted text-[8px] font-semibold text-text-foreground">
+							{event.clientInitials}
+						</AvatarFallback>
+					</Avatar>
+					<span className="text-mini text-text-secondary">
+						{event.clientName}
+					</span>
+				</div>
+				<div className="flex items-center gap-1.5">
+					<Clock className="size-3.5 text-muted-foreground" aria-hidden />
+					<span className="text-mini text-text-secondary">
+						{event.timeRange}
+					</span>
+				</div>
+			</div>
+			<div className="flex items-center gap-1.5">
+				<Button icon={Video} size="sm" className="flex-1">
+					{C.join}
+				</Button>
+				<MonthEventActions
+					onReschedule={onReschedule}
+					onQuickPrep={onQuickPrep}
+					onCancelSession={onCancelSession}
+				/>
+			</div>
+		</Card>
+	);
+}
+
+function DayEventsPanel({
+	dateLabel,
+	events,
+	onReschedule,
+	onQuickPrep,
+}: {
+	dateLabel: string;
+	events: CoachCalendarMonthEvent[];
+	onReschedule?: (event: CoachCalendarMonthEvent) => void;
+	onQuickPrep?: (event: CoachCalendarMonthEvent) => void;
+	onCancelSession?: (event: CoachCalendarMonthEvent) => void;
+}) {
+	const count = events.length;
+	const countLabel =
+		count === 0
+			? M.noEvents
+			: `${count} ${count === 1 ? M.eventScheduledSingular : M.eventScheduledPlural}`;
+	return (
+		<div className="flex w-full flex-col border-t border-border lg:w-[272px] lg:shrink-0 lg:border-t-0 lg:border-l">
+			<div className="flex flex-col gap-1.5 px-6 pt-6 pb-4">
+				<h3 className="text-base font-semibold text-text-foreground">
+					{dateLabel}
+				</h3>
+				<p className="text-small text-muted-foreground">{countLabel}</p>
+			</div>
+			<div className="flex flex-1 flex-col gap-2.5 bg-secondary p-4">
+				{count === 0 ? (
+					<div className="flex flex-1 items-center justify-center">
+						<p className="text-small text-muted-foreground">{M.noEvents}</p>
+					</div>
+				) : (
+					events.map((event) => (
+						<DayEventCard
+							key={event.id}
+							event={event}
+							onReschedule={() => onReschedule?.(event)}
+							onQuickPrep={() => onQuickPrep?.(event)}
+							onCancelSession={() => onCancelSession?.(event)}
+						/>
+					))
+				)}
+			</div>
+		</div>
+	);
+}
+
 export function CoachCalendar() {
 	const [view, setView] = useState<CalendarViewId>("week");
-	const [scheduling, setScheduling] = useState(false);
+	const [scheduleOpen, setScheduleOpen] = useState(false);
 	const [selectedId, setSelectedId] = useState<string | null>(
 		COACH_CALENDAR_EVENTS[0]?.id ?? null,
 	);
+	const [selectedDate, setSelectedDate] = useState<number>(
+		COACH_CALENDAR_MONTH_SELECTED_DATE,
+	);
+	const [reschedule, setReschedule] = useState<{ notes?: string } | null>(
+		null,
+	);
+	const [quickPrep, setQuickPrep] = useState<Partial<QuickPrepData> | null>(
+		null,
+	);
+	const [cancelOpen, setCancelOpen] = useState(false);
 
 	const selectedEvent = useMemo(
 		() => COACH_CALENDAR_EVENTS.find((e) => e.id === selectedId) ?? null,
 		[selectedId],
 	);
 
-	const handleScheduleSession = useCallback(() => {
-		setScheduling(true);
-		// Placeholder async action until the scheduling flow API is wired up.
-		setTimeout(() => setScheduling(false), 1000);
-	}, []);
+	const selectedDay = useMemo<CoachCalendarMonthDay | null>(
+		() =>
+			MONTH_DAYS.find((d) => d.inMonth && d.date === selectedDate) ?? null,
+		[selectedDate],
+	);
+
+	const selectedDayLabel = useMemo(() => {
+		const weekdayIndex = (M.firstWeekdayIndex + (selectedDate - 1)) % 7;
+		return `${M.fullWeekdays[weekdayIndex]}, ${M.monthName} ${selectedDate}, ${M.year}`;
+	}, [selectedDate]);
 
 	const views: { id: CalendarViewId; label: string }[] = [
 		{ id: "week", label: C.views.week },
@@ -271,8 +567,7 @@ export function CoachCalendar() {
 				</div>
 				<Button
 					icon={Plus}
-					isLoading={scheduling}
-					onClick={handleScheduleSession}
+					onClick={() => setScheduleOpen(true)}
 					className="shrink-0"
 				>
 					{C.scheduleSession}
@@ -306,25 +601,27 @@ export function CoachCalendar() {
 
 					{/* Range + view toggle */}
 					<div className="flex flex-wrap items-center gap-2.5">
-						<div className="flex h-10 w-[250px] items-center justify-between rounded-xl bg-secondary p-1">
-							<Button
-								variant="ghost"
-								size="icon-sm"
-								icon={ChevronLeft}
-								aria-label={C.prevRangeAria}
-								className="bg-background hover:bg-background/70"
-							/>
-							<span className="text-small font-semibold text-text-foreground">
-								{C.rangeLabel}
-							</span>
-							<Button
-								variant="ghost"
-								size="icon-sm"
-								icon={ChevronRight}
-								aria-label={C.nextRangeAria}
-								className="bg-background hover:bg-background/70"
-							/>
-						</div>
+						{view === "week" ? (
+							<div className="flex h-10 w-[250px] items-center justify-between rounded-xl bg-secondary p-1">
+								<Button
+									variant="ghost"
+									size="icon-sm"
+									icon={ChevronLeft}
+									aria-label={C.prevRangeAria}
+									className="bg-background hover:bg-background/70"
+								/>
+								<span className="text-small font-semibold text-text-foreground">
+									{C.rangeLabel}
+								</span>
+								<Button
+									variant="ghost"
+									size="icon-sm"
+									icon={ChevronRight}
+									aria-label={C.nextRangeAria}
+									className="bg-background hover:bg-background/70"
+								/>
+							</div>
+						) : null}
 
 						<div className="flex h-10 items-center gap-2 rounded-xl bg-secondary p-1">
 							{views.map((v) => (
@@ -353,16 +650,73 @@ export function CoachCalendar() {
 							selectedId={selectedId}
 							onSelect={(event) => setSelectedId(event.id)}
 						/>
-						<SessionDetailsPanel event={selectedEvent} />
+						<SessionDetailsPanel
+							event={selectedEvent}
+							onReschedule={() =>
+								setReschedule({ notes: selectedEvent?.description })
+							}
+							onQuickPrep={() =>
+								setQuickPrep(
+									selectedEvent
+										? {
+												sessionType: selectedEvent.title,
+												clientName: selectedEvent.clientName,
+												clientEmail: selectedEvent.clientEmail,
+												clientInitials: selectedEvent.clientInitials,
+												clientAvatar: selectedEvent.clientAvatar,
+											}
+										: {},
+								)
+							}
+							onCancelSession={() => setCancelOpen(true)}
+						/>
 					</div>
 				) : (
-					<div className="flex items-center justify-center p-16">
-						<p className="text-small text-muted-foreground">
-							{C.monthViewPlaceholder}
-						</p>
+					<div className="flex flex-col lg:flex-row lg:items-stretch">
+						<MonthGrid
+							selectedDate={selectedDate}
+							onSelectDate={setSelectedDate}
+						/>
+						<DayEventsPanel
+							dateLabel={selectedDayLabel}
+							events={selectedDay?.events ?? []}
+							onReschedule={() => setReschedule({})}
+							onQuickPrep={(event) =>
+								setQuickPrep({
+									sessionType: event.title,
+									clientName: event.clientName,
+									clientInitials: event.clientInitials,
+									clientAvatar: event.clientAvatar,
+								})
+							}
+							onCancelSession={() => setCancelOpen(true)}
+						/>
 					</div>
 				)}
 			</div>
+
+			<ScheduleSessionModal
+				open={scheduleOpen}
+				onOpenChange={setScheduleOpen}
+			/>
+
+			<RescheduleSessionModal
+				open={reschedule !== null}
+				onOpenChange={(open) => {
+					if (!open) setReschedule(null);
+				}}
+				defaultNotes={reschedule?.notes}
+			/>
+
+			<QuickPrepModal
+				open={quickPrep !== null}
+				onOpenChange={(open) => {
+					if (!open) setQuickPrep(null);
+				}}
+				data={quickPrep ?? undefined}
+			/>
+
+			<CancelSessionModal open={cancelOpen} onOpenChange={setCancelOpen} />
 		</div>
 	);
 }

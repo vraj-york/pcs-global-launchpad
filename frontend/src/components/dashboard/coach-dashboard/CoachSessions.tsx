@@ -1,4 +1,4 @@
-// Figma layer: "Sessions - Upcoming" — node 4:21082
+// Figma layer: "Sessions - Upcoming" (node 4:21082) / "Sessions - Past" (node 4:20999)
 /*
  * SEMANTIC ANALYSIS
  * Route: /coach-sessions (rendered inside AppLayout — sidebar + header shell)
@@ -7,9 +7,12 @@
  * - "All Sessions": two-column master-detail
  *   · Left: collapsible Upcoming / Past session cards (client avatar + name),
  *     Reschedule / Join / more-actions (Quick Prep / Cancel Session) or View Notes
- *   · Selecting a card → highlights it and shows the Session Details panel
- *   · Right: Session Details (Title / Date / Time / Duration / Client / Description)
- *     + footer actions (Reschedule / Quick Prep / Cancel Session / Join)
+ *   · Selecting a card → highlights it; the right panel depends on the scope:
+ *     - Upcoming session → Session Details panel (node 4:21082):
+ *       Title / Date / Time / Duration / Client / Description + footer actions
+ *       (Reschedule / Quick Prep / Cancel Session / Join)
+ *     - Past session ("View Notes") → Session Notes editor (node 4:20999):
+ *       textarea seeded with saved notes + footer Close / Save Notes
  * - "All Requests" (Figma node 4:20887): "Session Requests" list with Status /
  *   Employee filters and per-request actions (Accept / Propose Slots / Edit
  *   Slots / Remind / Cancel Request / View Reason); proposed slots show a tooltip
@@ -22,11 +25,12 @@ import {
 	CalendarX2,
 	Check,
 	ChevronDown,
-	ClipboardPen,
 	EllipsisVertical,
 	Eye,
 	type LucideIcon,
+	NotepadText,
 	Plus,
+	Save,
 	Video,
 	X,
 	Zap,
@@ -54,6 +58,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
 	Tooltip,
 	TooltipContent,
@@ -69,6 +74,9 @@ import {
 	type CoachSessionRequest,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { CancelSessionModal } from "./CancelSessionModal";
+import { type QuickPrepData, QuickPrepModal } from "./QuickPrepModal";
+import { ViewReasonModal } from "./ViewReasonModal";
 
 const C = COACH_DASHBOARD_CONTENT.sessionsPage;
 const R = C.requests;
@@ -188,10 +196,14 @@ function SessionCard({
 	session,
 	selected,
 	onSelect,
+	onQuickPrep,
+	onCancelSession,
 }: {
 	session: CoachScheduledSession;
 	selected: boolean;
 	onSelect: (session: CoachScheduledSession) => void;
+	onQuickPrep: (session: CoachScheduledSession) => void;
+	onCancelSession: (session: CoachScheduledSession) => void;
 }) {
 	const isPast = session.scope === "past";
 	return (
@@ -207,7 +219,7 @@ function SessionCard({
 				<Button
 					variant="outline"
 					size="sm"
-					icon={ClipboardPen}
+					icon={NotepadText}
 					className="shrink-0"
 					onClick={(e) => {
 						e.stopPropagation();
@@ -238,13 +250,17 @@ function SessionCard({
 							align="end"
 							className="min-w-48 rounded-lg border border-border bg-background p-0.5 shadow-xl"
 						>
-							<DropdownMenuItem className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground">
+							<DropdownMenuItem
+								className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground"
+								onSelect={() => onQuickPrep(session)}
+							>
 								<Zap className="size-5" aria-hidden />
 								<span>{C.quickPrep}</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								variant="destructive"
 								className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small"
+								onSelect={() => onCancelSession(session)}
 							>
 								<CalendarX2 className="size-5" aria-hidden />
 								<span>{C.cancelSession}</span>
@@ -269,9 +285,13 @@ function DetailField({ label, value }: { label: string; value: string }) {
 function SessionDetailsPanel({
 	session,
 	onClose,
+	onQuickPrep,
+	onCancelSession,
 }: {
 	session: CoachScheduledSession | null;
 	onClose: () => void;
+	onQuickPrep: (session: CoachScheduledSession) => void;
+	onCancelSession: (session: CoachScheduledSession) => void;
 }) {
 	return (
 		<Card className="flex min-w-0 flex-1 flex-col gap-0 rounded-[10px] border border-border bg-background p-0 shadow-none">
@@ -327,13 +347,18 @@ function SessionDetailsPanel({
 						<Button variant="outline" icon={CalendarSync}>
 							{C.reschedule}
 						</Button>
-						<Button variant="outline" icon={Zap}>
+						<Button
+							variant="outline"
+							icon={Zap}
+							onClick={() => onQuickPrep(session)}
+						>
 							{C.quickPrep}
 						</Button>
 						<Button
 							variant="outline"
 							icon={CalendarX2}
 							className="border-border text-destructive hover:bg-destructive/10 hover:text-destructive"
+							onClick={() => onCancelSession(session)}
 						>
 							{C.cancelSession}
 						</Button>
@@ -349,7 +374,74 @@ function SessionDetailsPanel({
 	);
 }
 
-function RequestActions({ request }: { request: CoachSessionRequest }) {
+function SessionNotesPanel({
+	session,
+	notes,
+	onNotesChange,
+	onClose,
+	onSave,
+	saving,
+}: {
+	session: CoachScheduledSession | null;
+	notes: string;
+	onNotesChange: (value: string) => void;
+	onClose: () => void;
+	onSave: () => void;
+	saving: boolean;
+}) {
+	return (
+		<Card className="flex min-w-0 flex-1 flex-col gap-0 rounded-[10px] border border-border bg-background p-0 shadow-none">
+			<header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border py-4 pr-2.5 pl-4">
+				<h3 className="flex-1 text-base font-medium text-text-secondary">
+					{C.notesTitle}
+				</h3>
+				{session ? (
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						icon={X}
+						aria-label={C.close}
+						className="bg-card hover:bg-card/70"
+						onClick={onClose}
+					/>
+				) : null}
+			</header>
+
+			{session ? (
+				<>
+					<div className="flex flex-1 flex-col p-4">
+						<Textarea
+							value={notes}
+							onChange={(event) => onNotesChange(event.target.value)}
+							placeholder={C.notesPlaceholder}
+							className="min-h-64 flex-1 resize-none rounded-lg border-border bg-background text-small text-text-foreground shadow-none"
+						/>
+					</div>
+					<footer className="flex shrink-0 items-center justify-end gap-2 border-t border-border p-4">
+						<Button variant="outline" onClick={onClose}>
+							{C.close}
+						</Button>
+						<Button icon={Save} isLoading={saving} onClick={onSave}>
+							{C.save}
+						</Button>
+					</footer>
+				</>
+			) : (
+				<div className="flex flex-1 items-center justify-center p-4">
+					<p className="text-small text-muted-foreground">{C.notesEmpty}</p>
+				</div>
+			)}
+		</Card>
+	);
+}
+
+function RequestActions({
+	request,
+	onViewReason,
+}: {
+	request: CoachSessionRequest;
+	onViewReason?: () => void;
+}) {
 	return (
 		<div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
 			{request.actions.map((actionId) => {
@@ -361,6 +453,7 @@ function RequestActions({ request }: { request: CoachSessionRequest }) {
 						size="sm"
 						icon={action.icon}
 						className={action.className}
+						onClick={actionId === "viewReason" ? onViewReason : undefined}
 					>
 						{action.label}
 					</Button>
@@ -412,7 +505,13 @@ function RequestMeta({ request }: { request: CoachSessionRequest }) {
 	);
 }
 
-function RequestCard({ request }: { request: CoachSessionRequest }) {
+function RequestCard({
+	request,
+	onViewReason,
+}: {
+	request: CoachSessionRequest;
+	onViewReason?: () => void;
+}) {
 	return (
 		<Card className="flex w-full flex-row items-center gap-4 rounded-[10px] border border-border bg-background p-4 shadow-none">
 			<div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -429,7 +528,7 @@ function RequestCard({ request }: { request: CoachSessionRequest }) {
 				</div>
 				<RequestMeta request={request} />
 			</div>
-			<RequestActions request={request} />
+			<RequestActions request={request} onViewReason={onViewReason} />
 		</Card>
 	);
 }
@@ -437,6 +536,8 @@ function RequestCard({ request }: { request: CoachSessionRequest }) {
 function SessionRequests() {
 	const [status, setStatus] = useState("all");
 	const [employee, setEmployee] = useState("all");
+	const [reasonRequest, setReasonRequest] =
+		useState<CoachSessionRequest | null>(null);
 
 	const employeeOptions = useMemo(
 		() =>
@@ -505,10 +606,22 @@ function SessionRequests() {
 			) : (
 				<div className="flex flex-col gap-4">
 					{filtered.map((request) => (
-						<RequestCard key={request.id} request={request} />
+						<RequestCard
+							key={request.id}
+							request={request}
+							onViewReason={() => setReasonRequest(request)}
+						/>
 					))}
 				</div>
 			)}
+
+			<ViewReasonModal
+				open={reasonRequest !== null}
+				onOpenChange={(open) => {
+					if (!open) setReasonRequest(null);
+				}}
+				reason={reasonRequest?.reason ?? ""}
+			/>
 		</div>
 	);
 }
@@ -521,16 +634,48 @@ export function CoachSessions() {
 	const [selectedId, setSelectedId] = useState<string | null>(
 		UPCOMING[0]?.id ?? null,
 	);
+	const [notes, setNotes] = useState("");
+	const [savingNotes, setSavingNotes] = useState(false);
+	const [quickPrep, setQuickPrep] = useState<Partial<QuickPrepData> | null>(
+		null,
+	);
+	const [cancelOpen, setCancelOpen] = useState(false);
 
 	const selectedSession = useMemo(
 		() => COACH_SCHEDULED_SESSIONS.find((s) => s.id === selectedId) ?? null,
 		[selectedId],
 	);
 
+	const handleQuickPrep = useCallback((session: CoachScheduledSession) => {
+		setQuickPrep({
+			sessionType: session.title,
+			clientName: session.clientName,
+			clientEmail: session.clientEmail,
+			clientInitials: session.clientInitials,
+			clientAvatar: session.clientAvatar,
+		});
+	}, []);
+
+	const handleCancelSession = useCallback(() => setCancelOpen(true), []);
+
 	const handleScheduleSession = useCallback(() => {
 		setScheduling(true);
 		// Placeholder async action until the scheduling flow API is wired up.
 		setTimeout(() => setScheduling(false), 1000);
+	}, []);
+
+	const handleSelectSession = useCallback((session: CoachScheduledSession) => {
+		setSelectedId(session.id);
+		// Past sessions open the notes editor; seed it with any saved notes.
+		setNotes(session.notes ?? "");
+	}, []);
+
+	const handleCloseDetail = useCallback(() => setSelectedId(null), []);
+
+	const handleSaveNotes = useCallback(() => {
+		setSavingNotes(true);
+		// Placeholder async action until the notes API is wired up.
+		setTimeout(() => setSavingNotes(false), 1000);
 	}, []);
 
 	const tabs: { id: SessionsTabId; label: string }[] = [
@@ -605,7 +750,9 @@ export function CoachSessions() {
 												key={session.id}
 												session={session}
 												selected={session.id === selectedId}
-												onSelect={(s) => setSelectedId(s.id)}
+												onSelect={handleSelectSession}
+												onQuickPrep={handleQuickPrep}
+												onCancelSession={handleCancelSession}
 											/>
 										))
 									)}
@@ -631,7 +778,9 @@ export function CoachSessions() {
 												key={session.id}
 												session={session}
 												selected={session.id === selectedId}
-												onSelect={(s) => setSelectedId(s.id)}
+												onSelect={handleSelectSession}
+												onQuickPrep={handleQuickPrep}
+												onCancelSession={handleCancelSession}
 											/>
 										))
 									)}
@@ -640,15 +789,40 @@ export function CoachSessions() {
 						</Collapsible>
 					</div>
 
-					{/* Session Details */}
-					<SessionDetailsPanel
-						session={selectedSession}
-						onClose={() => setSelectedId(null)}
-					/>
+					{/* Right panel: past sessions show the Session Notes editor
+					    (node 4:20999); upcoming sessions show Session Details
+					    (node 4:21082). */}
+					{selectedSession?.scope === "past" ? (
+						<SessionNotesPanel
+							session={selectedSession}
+							notes={notes}
+							onNotesChange={setNotes}
+							onClose={handleCloseDetail}
+							onSave={handleSaveNotes}
+							saving={savingNotes}
+						/>
+					) : (
+						<SessionDetailsPanel
+							session={selectedSession}
+							onClose={handleCloseDetail}
+							onQuickPrep={handleQuickPrep}
+							onCancelSession={handleCancelSession}
+						/>
+					)}
 				</div>
 			) : (
 				<SessionRequests />
 			)}
+
+			<QuickPrepModal
+				open={quickPrep !== null}
+				onOpenChange={(open) => {
+					if (!open) setQuickPrep(null);
+				}}
+				data={quickPrep ?? undefined}
+			/>
+
+			<CancelSessionModal open={cancelOpen} onOpenChange={setCancelOpen} />
 		</div>
 	);
 }

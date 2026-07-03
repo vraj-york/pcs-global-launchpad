@@ -24,6 +24,7 @@ import {
 	DataTable,
 	MoreFiltersDialog,
 	PermissionGate,
+	ScheduleSessionModal,
 	SendInviteContactDialog,
 	TableSkeleton,
 	WhiteBox,
@@ -114,6 +115,8 @@ export function UserDirectoryContent() {
 		useState<UserDirectoryListItem | null>(null);
 	const [userToCancelInvite, setUserToCancelInvite] =
 		useState<UserDirectoryListItem | null>(null);
+	const [scheduleSessionUser, setScheduleSessionUser] =
+		useState<UserDirectoryListItem | null>(null);
 	const [userToResendInvite, setUserToResendInvite] =
 		useState<UserDirectoryListItem | null>(null);
 	const [roleCategories, setRoleCategories] = useState<RoleCategoryOption[]>(
@@ -133,6 +136,14 @@ export function UserDirectoryContent() {
 	>([]);
 	const [companiesForMoreFiltersLoading, setCompaniesForMoreFiltersLoading] =
 		useState(false);
+	// Top-level "All Corporations" quick filter (users tab). `undefined` = all corporations.
+	const [listCorporationFilter, setListCorporationFilter] = useState<
+		string | undefined
+	>(undefined);
+	// Top-level "All Companies" quick filter (users tab). `undefined` = all companies.
+	const [listCompanyFilter, setListCompanyFilter] = useState<
+		string | undefined
+	>(undefined);
 
 	const {
 		listItems,
@@ -200,6 +211,7 @@ export function UserDirectoryContent() {
 		() => ({
 			canView: can(SUBMODULE_KEYS.USER_DIRECTORY_VIEW),
 			canEdit: can(SUBMODULE_KEYS.USER_DIRECTORY_EDIT),
+			canScheduleSession: can(SUBMODULE_KEYS.USER_DIRECTORY_SCHEDULE_SESSION),
 			canBlock: can(SUBMODULE_KEYS.USER_DIRECTORY_BLOCK),
 			canRemove: can(SUBMODULE_KEYS.USER_DIRECTORY_REMOVE),
 			canResendInvite: can(SUBMODULE_KEYS.USER_DIRECTORY_RESEND_INVITE),
@@ -370,8 +382,18 @@ export function UserDirectoryContent() {
 
 	useEffect(() => {
 		if (isContactsTab) return;
-		const corpKey = [...appliedUserMoreFilters.corporationIds].sort().join(",");
-		const compKey = [...appliedUserMoreFilters.companyIds].sort().join(",");
+		// The top-level corporation/company quick filters take precedence over the
+		// multi-select filters from the "Filters" dialog when set.
+		const effectiveCorporationIds =
+			showMoreFiltersCorporation && listCorporationFilter
+				? [listCorporationFilter]
+				: appliedUserMoreFilters.corporationIds;
+		const effectiveCompanyIds =
+			showMoreFiltersCompany && listCompanyFilter
+				? [listCompanyFilter]
+				: appliedUserMoreFilters.companyIds;
+		const corpKey = [...effectiveCorporationIds].sort().join(",");
+		const compKey = [...effectiveCompanyIds].sort().join(",");
 		const tzKey = [...appliedUserMoreFilters.timeZones].sort().join(",");
 		const key = {
 			page: listPage,
@@ -407,13 +429,11 @@ export function UserDirectoryContent() {
 			status: listStatusFilter,
 			categoryId: listCategoryIdFilter,
 			corporationIds:
-				appliedUserMoreFilters.corporationIds.length > 0
-					? appliedUserMoreFilters.corporationIds
+				effectiveCorporationIds.length > 0
+					? effectiveCorporationIds
 					: undefined,
 			companyIds:
-				appliedUserMoreFilters.companyIds.length > 0
-					? appliedUserMoreFilters.companyIds
-					: undefined,
+				effectiveCompanyIds.length > 0 ? effectiveCompanyIds : undefined,
 			timezones:
 				appliedUserMoreFilters.timeZones.length > 0
 					? appliedUserMoreFilters.timeZones
@@ -426,6 +446,10 @@ export function UserDirectoryContent() {
 		listSortOrder,
 		listStatusFilter,
 		listCategoryIdFilter,
+		listCorporationFilter,
+		listCompanyFilter,
+		showMoreFiltersCorporation,
+		showMoreFiltersCompany,
 		appliedUserMoreFilters.corporationIds,
 		appliedUserMoreFilters.companyIds,
 		appliedUserMoreFilters.timeZones,
@@ -551,6 +575,12 @@ export function UserDirectoryContent() {
 			navigate(ROUTES.userDirectory.editWithIdPath(row.id));
 		},
 		[navigate],
+	);
+	const handleScheduleSessionClick = useCallback(
+		(row: UserDirectoryListItem) => {
+			setScheduleSessionUser(row);
+		},
+		[],
 	);
 
 	const refetchUsersList = useCallback(() => {
@@ -692,6 +722,7 @@ export function UserDirectoryContent() {
 			getUserDirectoryColumns({
 				onViewClick: handleViewClick,
 				onEditClick: handleEditClick,
+				onScheduleSessionClick: handleScheduleSessionClick,
 				onBlockClick: handleBlockClick,
 				onUnblockClick: handleUnblockClick,
 				onResendInviteClick: handleResendInviteClick,
@@ -702,6 +733,7 @@ export function UserDirectoryContent() {
 		[
 			handleViewClick,
 			handleEditClick,
+			handleScheduleSessionClick,
 			handleBlockClick,
 			handleUnblockClick,
 			handleResendInviteClick,
@@ -735,6 +767,8 @@ export function UserDirectoryContent() {
 			setListSearch("");
 			setListStatusFilter(undefined);
 			setListCategoryIdFilter(undefined);
+			setListCorporationFilter(undefined);
+			setListCompanyFilter(undefined);
 			setMoreFilters({ ...EMPTY_MORE_FILTERS });
 			setContactMoreFilters({ ...EMPTY_MORE_FILTERS });
 			setListPage(1);
@@ -794,6 +828,24 @@ export function UserDirectoryContent() {
 			lastFetched.current = null;
 		},
 		[setListStatusFilter, setListPage],
+	);
+
+	const handleCorporationFilterChange = useCallback(
+		(value: string) => {
+			setListCorporationFilter(value === "all" ? undefined : value);
+			setListPage(1);
+			lastFetched.current = null;
+		},
+		[setListPage],
+	);
+
+	const handleCompanyFilterChange = useCallback(
+		(value: string) => {
+			setListCompanyFilter(value === "all" ? undefined : value);
+			setListPage(1);
+			lastFetched.current = null;
+		},
+		[setListPage],
 	);
 
 	const handleCategoryFilterChange = useCallback(
@@ -1122,6 +1174,73 @@ export function UserDirectoryContent() {
 											))}
 										</SelectContent>
 									</Select>
+
+									{showMoreFiltersCorporation && (
+										<Select
+											value={listCorporationFilter ?? "all"}
+											onValueChange={handleCorporationFilterChange}
+											disabled={userFiltersBusy}
+										>
+											<SelectTrigger
+												className="h-9 w-full min-w-0 sm:w-44"
+												aria-label={
+													USER_DIRECTORY_PAGE_CONTENT.corporationsFilterAriaLabel
+												}
+											>
+												<SelectValue
+													placeholder={
+														USER_DIRECTORY_PAGE_CONTENT.corporationsFilterAllLabel
+													}
+												/>
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="all">
+													{
+														USER_DIRECTORY_PAGE_CONTENT.corporationsFilterAllLabel
+													}
+												</SelectItem>
+												{corporationOptionsForMoreFilters.map((corporation) => (
+													<SelectItem
+														key={corporation.id}
+														value={corporation.id}
+													>
+														{corporation.label}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									)}
+
+									{showMoreFiltersCompany && (
+										<Select
+											value={listCompanyFilter ?? "all"}
+											onValueChange={handleCompanyFilterChange}
+											disabled={userFiltersBusy}
+										>
+											<SelectTrigger
+												className="h-9 w-full min-w-0 sm:w-44"
+												aria-label={
+													USER_DIRECTORY_PAGE_CONTENT.companiesFilterAriaLabel
+												}
+											>
+												<SelectValue
+													placeholder={
+														USER_DIRECTORY_PAGE_CONTENT.companiesFilterAllLabel
+													}
+												/>
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="all">
+													{USER_DIRECTORY_PAGE_CONTENT.companiesFilterAllLabel}
+												</SelectItem>
+												{companiesForMoreFilters.map((company) => (
+													<SelectItem key={company.id} value={company.id}>
+														{company.label}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									)}
 								</>
 							)}
 
@@ -1353,6 +1472,13 @@ export function UserDirectoryContent() {
 				onClearContactBulkImportFailures={() =>
 					setContactBulkImportFailures(null)
 				}
+			/>
+
+			<ScheduleSessionModal
+				open={scheduleSessionUser != null}
+				onOpenChange={(open) => {
+					if (!open) setScheduleSessionUser(null);
+				}}
 			/>
 		</>
 	);

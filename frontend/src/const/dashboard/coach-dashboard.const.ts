@@ -1,6 +1,7 @@
 import coachAlexRivera from "@/assets/coach-dashboard/coach-alex-rivera.png";
 import coachClaraNevada from "@/assets/coach-dashboard/coach-clara-nevada.png";
 import coachEmmaThompson from "@/assets/coach-dashboard/coach-emma-thompson.png";
+import coachMattHenry from "@/assets/coach-dashboard/coach-matt-henry.png";
 
 export type CoachSessionBadgeVariant = "blue" | "green";
 
@@ -70,6 +71,27 @@ export interface CoachCalendarEvent {
 	description: string;
 }
 
+/** Month-view event accent (left border + label color). */
+export type CoachCalendarMonthAccent = "error" | "success" | "warning";
+
+export interface CoachCalendarMonthEvent {
+	id: string;
+	title: string;
+	accent: CoachCalendarMonthAccent;
+	clientName: string;
+	clientInitials?: string;
+	clientAvatar?: string;
+	timeRange: string;
+}
+
+export interface CoachCalendarMonthDay {
+	/** Day-of-month number rendered in the cell. */
+	date: number;
+	/** False for leading/trailing days that belong to the adjacent month. */
+	inMonth: boolean;
+	events?: CoachCalendarMonthEvent[];
+}
+
 export type CoachResourceAccent = "green" | "blue" | "red";
 
 export interface CoachWelcomeHighlight {
@@ -122,6 +144,8 @@ export interface CoachSessionRequest {
 	linkLabel?: string;
 	/** Tooltip lines shown on hovering the link. */
 	tooltipLines?: string[];
+	/** Cancellation reason shown in the "View Reason" modal. */
+	reason?: string;
 	actions: CoachRequestActionId[];
 }
 
@@ -157,6 +181,151 @@ export interface CoachResource {
 	icon: "book-open" | "sparkles" | "life-buoy";
 	accent: CoachResourceAccent;
 }
+
+export type CoachSettingsTabId =
+	| "profile-overview"
+	| "availability"
+	| "calendar-sync"
+	| "security"
+	| "privacy-data";
+
+export const COACH_SETTINGS_CONTENT = {
+	breadcrumbLabel: "Settings",
+	title: "Settings",
+	subtitle:
+		"Configure your profile details & manage the coaching hours preferences",
+	tabs: [
+		{ id: "profile-overview", label: "Profile Overview" },
+		{ id: "availability", label: "Availability" },
+		{ id: "calendar-sync", label: "Calendar Sync" },
+		{ id: "security", label: "Security" },
+		{ id: "privacy-data", label: "Privacy & Data" },
+	] as ReadonlyArray<{ id: CoachSettingsTabId; label: string }>,
+	managedByOrgTooltip: "Managed by your organization",
+	cancel: "Cancel",
+	save: "Save & Update",
+	saving: "Saving…",
+	requiredError: "This field is required.",
+	personalDetails: {
+		title: "Personal Details",
+		firstName: "First Name",
+		lastName: "Last Name",
+		nickname: "Nickname",
+		nicknamePlaceholder: "Enter nickname",
+		email: "Email",
+		workPhone: "Work Phone No.",
+		cellPhone: "Cell Phone No.",
+		timezone: "Time Zone",
+		timezonePlaceholder: "Select time zone",
+	},
+	coachingDetails: {
+		title: "Coaching Details",
+		professionalTitle: "Professional Title",
+		professionalTitlePlaceholder: "Enter professional title",
+		yearsOfExperience: "Years of Experience",
+		yearsOfExperiencePlaceholder: "Enter years of experience",
+		bio: "Bio",
+		bioPlaceholder: "Type the bio here...",
+	},
+	profile: {
+		avatarUrl: coachMattHenry,
+		firstName: "Matt",
+		lastName: "Henry",
+		nickname: "",
+		email: "matt_henry@email.com",
+		workPhone: "+1 (323) 344-0987",
+		cellPhone: "+1 (333) 998-7865",
+		timezone: "EST (Eastern Time)",
+		professionalTitle: "Executive & Leadership Coach",
+		yearsOfExperience: "12",
+		bio: "Helping leaders unlock their behavioral potential through evidence-based coaching.",
+	},
+} as const;
+
+export interface CoachAvailabilityTimeRange {
+	start: string;
+	end: string;
+}
+
+export interface CoachAvailabilitySettingsDay {
+	id: string;
+	label: string;
+	enabled: boolean;
+	ranges: CoachAvailabilityTimeRange[];
+}
+
+export const COACH_AVAILABILITY_DEFAULT_RANGE: CoachAvailabilityTimeRange = {
+	start: "9:00 AM",
+	end: "5:00 PM",
+};
+
+export const COACH_AVAILABILITY_SETTINGS = {
+	timezoneCard: {
+		title: "EST (Eastern Time)",
+		subtitle: "Time zone preference",
+	},
+	sessionCard: {
+		title: "15 min",
+		subtitle: "Default session length",
+	},
+	add: "Add",
+	unavailable: "Unavailable",
+	removeRangeLabel: "Remove time range",
+	toggleDayLabel: "Toggle availability for",
+	cancel: "Cancel",
+	save: "Save & Update",
+	saving: "Saving…",
+	days: [
+		{
+			id: "mon",
+			label: "Mon",
+			enabled: true,
+			ranges: [{ start: "9:00 AM", end: "5:00 PM" }],
+		},
+		{
+			id: "tue",
+			label: "Tue",
+			enabled: true,
+			ranges: [
+				{ start: "9:00 AM", end: "5:00 PM" },
+				{ start: "1:00 PM", end: "4:00 AM" },
+			],
+		},
+		{
+			id: "wed",
+			label: "Wed",
+			enabled: true,
+			ranges: [{ start: "9:00 AM", end: "5:00 PM" }],
+		},
+		{
+			id: "thu",
+			label: "Thu",
+			enabled: true,
+			ranges: [{ start: "9:00 AM", end: "5:00 PM" }],
+		},
+		{
+			id: "fri",
+			label: "Fri",
+			enabled: true,
+			ranges: [{ start: "9:00 AM", end: "5:00 PM" }],
+		},
+		{ id: "sat", label: "Sat", enabled: false, ranges: [] },
+		{ id: "sun", label: "Sun", enabled: false, ranges: [] },
+	] as ReadonlyArray<CoachAvailabilitySettingsDay>,
+} as const;
+
+export const COACH_CALENDAR_SYNC_SETTINGS = {
+	outlook: {
+		title: "Outlook Calendar",
+		description: "Connect your Outlook calendar for easy managing the sessions.",
+		connect: "Connect Outlook",
+	},
+	zoom: {
+		title: "Zoom Workplace",
+		description: "Connect your Zoom account for your video meetings.",
+		connect: "Connect Zoom",
+	},
+} as const;
 
 export const COACH_DASHBOARD_CONTENT = {
 	breadcrumbLabel: "Dashboard",
@@ -257,6 +426,10 @@ export const COACH_DASHBOARD_CONTENT = {
 		cancelSession: "Cancel Session",
 		moreActionsLabel: "More session actions",
 		detailsTitle: "Session Details",
+		notesTitle: "Session Notes",
+		notesPlaceholder: "Add your session notes here…",
+		save: "Save Notes",
+		saving: "Saving…",
 		close: "Close",
 		fieldLabels: {
 			title: "Title",
@@ -267,6 +440,7 @@ export const COACH_DASHBOARD_CONTENT = {
 			description: "Description",
 		},
 		emptyDetails: "Select a session to view its details.",
+		notesEmpty: "Select a past session to view or add its notes.",
 		emptyUpcoming: "No upcoming sessions.",
 		emptyPast: "No past sessions.",
 		allRequestsEmpty: "No pending session requests.",
@@ -287,6 +461,11 @@ export const COACH_DASHBOARD_CONTENT = {
 				remind: "Remind",
 				viewReason: "View Reason",
 			},
+			viewReasonModal: {
+				title: "View Reason",
+				cancel: "Cancel",
+				confirm: "Okay, Understood",
+			},
 		},
 	},
 	calendarPage: {
@@ -301,6 +480,26 @@ export const COACH_DASHBOARD_CONTENT = {
 			month: "Month",
 		},
 		monthViewPlaceholder: "Month view is coming soon.",
+		monthView: {
+			weekdayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+			fullWeekdays: [
+				"Monday",
+				"Tuesday",
+				"Wednesday",
+				"Thursday",
+				"Friday",
+				"Saturday",
+				"Sunday",
+			],
+			monthName: "May",
+			year: "2026",
+			// May 1, 2026 is a Friday → index 4 with Monday as the 0th weekday.
+			firstWeekdayIndex: 4,
+			eventScheduledSingular: "event scheduled",
+			eventScheduledPlural: "events scheduled",
+			noEvents: "No events scheduled",
+			moreActionsLabel: "More session actions",
+		},
 		detailsTitle: "Session Details",
 		fieldLabels: {
 			title: "Title",
@@ -318,6 +517,78 @@ export const COACH_DASHBOARD_CONTENT = {
 		nextMonthAria: "Next month",
 		prevRangeAria: "Previous week",
 		nextRangeAria: "Next week",
+	},
+	rescheduleModal: {
+		title: "Reschedule Session",
+		description: "Re-arrange date & time to schedule the session",
+		newDateLabel: "New Date",
+		newDatePlaceholder: "Select a date",
+		newTimeLabel: "New Time",
+		newTimeTooltip: "By default meeting duration will be 15 min.",
+		newTimePlaceholder: "Start time  -  End time",
+		startTimeLabel: "Start time",
+		endTimeLabel: "End time",
+		notesLabel: "Additional Notes",
+		notifyLabel: "Notify client for updated date & time via email",
+		requiredError: "This field is required.",
+		cancel: "Cancel",
+		confirm: "Confirm Reschedule",
+	},
+	scheduleModal: {
+		title: "Schedule Session",
+		description: "Set date & time to re-arrange the session",
+		sessionTitleLabel: "Session Title",
+		sessionTitlePlaceholder: "Enter session title",
+		dateLabel: "Date",
+		datePlaceholder: "Select a date",
+		timeLabel: "Time",
+		timeTooltip: "By default meeting duration will be 15 min.",
+		timePlaceholder: "Start time  -  End time",
+		startTimeLabel: "Start time",
+		endTimeLabel: "End time",
+		clientLabel: "Client",
+		clientPlaceholder: "Select a client",
+		descriptionLabel: "Description",
+		descriptionPlaceholder: "Type your description here...",
+		notifyLabel: "On scheduling, client will be notified via email",
+		requiredError: "This field is required.",
+		cancel: "Cancel",
+		confirm: "Schedule Session",
+		clients: [
+			{ id: "nicolas-hamilton", name: "Nicolas Hamilton" },
+			{ id: "emily-johnson", name: "Emily Johnson" },
+			{ id: "marcus-lee", name: "Marcus Lee" },
+			{ id: "sophia-martinez", name: "Sophia Martinez" },
+			{ id: "david-chen", name: "David Chen" },
+		],
+	},
+	cancelSessionModal: {
+		title: "Cancel Session",
+		reasonLabel: "Reason",
+		reasonPlaceholder: "Type the reason here...",
+		notifyLabel: "On cancelling, client will be notified via email",
+		requiredError: "This field is required.",
+		cancel: "Cancel",
+		confirm: "Cancel Session",
+	},
+	quickPrepModal: {
+		title: "Session Quick Prep",
+		description: "A quick & helpful info. to prepare you for upcoming session",
+		lastSessionOnLabel: "Last Session On",
+		sessionTypeLabel: "Session Type",
+		clientLabel: "Client",
+		lastSessionNotesLabel: "Last Session Notes",
+		cancel: "Cancel",
+		join: "Join Session",
+		sample: {
+			lastSessionOn: "Apr 28, 2026, 10:00 AM",
+			sessionType: "Leadership Coaching",
+			clientName: "Nicolas Hamilton",
+			clientEmail: "nicolas_hamilton@email.com",
+			clientInitials: "NH",
+			lastSessionNotes:
+				"Great progress on delegation skills. Michael struggled with letting go of control but made breakthrough realizations about team empowerment.",
+		},
 	},
 	emptyStates: {
 		sessions: "No sessions scheduled for today.",
@@ -385,6 +656,103 @@ export const COACH_CALENDAR_EVENTS: CoachCalendarEvent[] = [
 		description: "Quarterly goal review and progress check-in.",
 	},
 ];
+
+/**
+ * May 2026 month grid (Monday-first). May 1, 2026 falls on a Friday, so the
+ * first row leads with Apr 27–30. The final Sunday cell is May 31 (the Figma
+ * mock showed "1" there as a placeholder — corrected to the real date). Events
+ * land on the 12th (1:1 Coaching), 13th (Goal Review) and 15th (Communication
+ * Conflict), matching the design.
+ */
+export const COACH_CALENDAR_MONTH_WEEKS: CoachCalendarMonthDay[][] = [
+	[
+		{ date: 27, inMonth: false },
+		{ date: 28, inMonth: false },
+		{ date: 29, inMonth: false },
+		{ date: 30, inMonth: false },
+		{ date: 1, inMonth: true },
+		{ date: 2, inMonth: true },
+		{ date: 3, inMonth: true },
+	],
+	[
+		{ date: 4, inMonth: true },
+		{ date: 5, inMonth: true },
+		{ date: 6, inMonth: true },
+		{ date: 7, inMonth: true },
+		{ date: 8, inMonth: true },
+		{ date: 9, inMonth: true },
+		{ date: 10, inMonth: true },
+	],
+	[
+		{ date: 11, inMonth: true },
+		{
+			date: 12,
+			inMonth: true,
+			events: [
+				{
+					id: "month-one-on-one",
+					title: "1:1 Coaching",
+					accent: "error",
+					clientName: "Nicolas Hamilton",
+					clientInitials: "NH",
+					timeRange: "10:00 AM - 10:15 AM",
+				},
+			],
+		},
+		{
+			date: 13,
+			inMonth: true,
+			events: [
+				{
+					id: "month-goal-review",
+					title: "Goal Review",
+					accent: "success",
+					clientName: "Clara Nevada",
+					clientInitials: "CN",
+					timeRange: "4:30 PM - 4:45 PM",
+				},
+			],
+		},
+		{ date: 14, inMonth: true },
+		{
+			date: 15,
+			inMonth: true,
+			events: [
+				{
+					id: "month-communication-conflict",
+					title: "Communication Conflict",
+					accent: "warning",
+					clientName: "Emma Thompson",
+					clientInitials: "ET",
+					timeRange: "12:00 PM - 12:15 PM",
+				},
+			],
+		},
+		{ date: 16, inMonth: true },
+		{ date: 17, inMonth: true },
+	],
+	[
+		{ date: 18, inMonth: true },
+		{ date: 19, inMonth: true },
+		{ date: 20, inMonth: true },
+		{ date: 21, inMonth: true },
+		{ date: 22, inMonth: true },
+		{ date: 23, inMonth: true },
+		{ date: 24, inMonth: true },
+	],
+	[
+		{ date: 25, inMonth: true },
+		{ date: 26, inMonth: true },
+		{ date: 27, inMonth: true },
+		{ date: 28, inMonth: true },
+		{ date: 29, inMonth: true },
+		{ date: 30, inMonth: true },
+		{ date: 31, inMonth: true },
+	],
+];
+
+/** Default selected day for the month view (matches the Figma mock). */
+export const COACH_CALENDAR_MONTH_SELECTED_DATE = 12;
 
 export const COACH_SESSIONS: CoachSession[] = [
 	{
@@ -536,7 +904,7 @@ export const COACH_SCHEDULED_SESSIONS: CoachScheduledSession[] = [
 			"Reviewed decision-making frameworks and set action items for the next sprint.",
 		scope: "past",
 		notes:
-			"Strong session on prioritisation. Client committed to a weekly planning ritual and delegating one recurring task.",
+			"Great progress on delegation skills. Michael struggled with letting go of control but made breakthrough realizations about team empowerment. Action items: practice weekly reflection, delegate one major project.",
 	},
 ];
 
@@ -571,7 +939,9 @@ export const COACH_SESSION_REQUESTS: CoachSessionRequest[] = [
 		title: "Stress Management",
 		status: "cancelled",
 		statusLabel: "Cancelled",
-		metaText: "You've cancelled the session request of 18 May, 2026 at 11:30 AM",
+		metaText: "You’ve cancelled the session request of 18 May, 2026 at 11:30 AM",
+		reason:
+			"Due to an unexpected scheduling conflict, I’m unable to attend the session at the planned time.",
 		actions: ["viewReason"],
 	},
 	{
@@ -582,6 +952,8 @@ export const COACH_SESSION_REQUESTS: CoachSessionRequest[] = [
 		clientName: "Kianna Dokidis",
 		clientInitials: "KD",
 		metaText: "has cancelled a session request of 30 Apr, 2026 at 5:15 PM",
+		reason:
+			"Due to an unexpected scheduling conflict, I’m unable to attend the session at the planned time.",
 		actions: ["viewReason"],
 	},
 ];
