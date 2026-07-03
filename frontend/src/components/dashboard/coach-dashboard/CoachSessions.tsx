@@ -74,6 +74,8 @@ import {
 	type CoachSessionRequest,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { CancelSessionModal } from "./CancelSessionModal";
+import { type QuickPrepData, QuickPrepModal } from "./QuickPrepModal";
 import { ViewReasonModal } from "./ViewReasonModal";
 
 const C = COACH_DASHBOARD_CONTENT.sessionsPage;
@@ -194,10 +196,14 @@ function SessionCard({
 	session,
 	selected,
 	onSelect,
+	onQuickPrep,
+	onCancelSession,
 }: {
 	session: CoachScheduledSession;
 	selected: boolean;
 	onSelect: (session: CoachScheduledSession) => void;
+	onQuickPrep: (session: CoachScheduledSession) => void;
+	onCancelSession: (session: CoachScheduledSession) => void;
 }) {
 	const isPast = session.scope === "past";
 	return (
@@ -244,13 +250,17 @@ function SessionCard({
 							align="end"
 							className="min-w-48 rounded-lg border border-border bg-background p-0.5 shadow-xl"
 						>
-							<DropdownMenuItem className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground">
+							<DropdownMenuItem
+								className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground"
+								onSelect={() => onQuickPrep(session)}
+							>
 								<Zap className="size-5" aria-hidden />
 								<span>{C.quickPrep}</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								variant="destructive"
 								className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small"
+								onSelect={() => onCancelSession(session)}
 							>
 								<CalendarX2 className="size-5" aria-hidden />
 								<span>{C.cancelSession}</span>
@@ -275,9 +285,13 @@ function DetailField({ label, value }: { label: string; value: string }) {
 function SessionDetailsPanel({
 	session,
 	onClose,
+	onQuickPrep,
+	onCancelSession,
 }: {
 	session: CoachScheduledSession | null;
 	onClose: () => void;
+	onQuickPrep: (session: CoachScheduledSession) => void;
+	onCancelSession: (session: CoachScheduledSession) => void;
 }) {
 	return (
 		<Card className="flex min-w-0 flex-1 flex-col gap-0 rounded-[10px] border border-border bg-background p-0 shadow-none">
@@ -333,13 +347,18 @@ function SessionDetailsPanel({
 						<Button variant="outline" icon={CalendarSync}>
 							{C.reschedule}
 						</Button>
-						<Button variant="outline" icon={Zap}>
+						<Button
+							variant="outline"
+							icon={Zap}
+							onClick={() => onQuickPrep(session)}
+						>
 							{C.quickPrep}
 						</Button>
 						<Button
 							variant="outline"
 							icon={CalendarX2}
 							className="border-border text-destructive hover:bg-destructive/10 hover:text-destructive"
+							onClick={() => onCancelSession(session)}
 						>
 							{C.cancelSession}
 						</Button>
@@ -617,11 +636,27 @@ export function CoachSessions() {
 	);
 	const [notes, setNotes] = useState("");
 	const [savingNotes, setSavingNotes] = useState(false);
+	const [quickPrep, setQuickPrep] = useState<Partial<QuickPrepData> | null>(
+		null,
+	);
+	const [cancelOpen, setCancelOpen] = useState(false);
 
 	const selectedSession = useMemo(
 		() => COACH_SCHEDULED_SESSIONS.find((s) => s.id === selectedId) ?? null,
 		[selectedId],
 	);
+
+	const handleQuickPrep = useCallback((session: CoachScheduledSession) => {
+		setQuickPrep({
+			sessionType: session.title,
+			clientName: session.clientName,
+			clientEmail: session.clientEmail,
+			clientInitials: session.clientInitials,
+			clientAvatar: session.clientAvatar,
+		});
+	}, []);
+
+	const handleCancelSession = useCallback(() => setCancelOpen(true), []);
 
 	const handleScheduleSession = useCallback(() => {
 		setScheduling(true);
@@ -716,6 +751,8 @@ export function CoachSessions() {
 												session={session}
 												selected={session.id === selectedId}
 												onSelect={handleSelectSession}
+												onQuickPrep={handleQuickPrep}
+												onCancelSession={handleCancelSession}
 											/>
 										))
 									)}
@@ -742,6 +779,8 @@ export function CoachSessions() {
 												session={session}
 												selected={session.id === selectedId}
 												onSelect={handleSelectSession}
+												onQuickPrep={handleQuickPrep}
+												onCancelSession={handleCancelSession}
 											/>
 										))
 									)}
@@ -766,12 +805,24 @@ export function CoachSessions() {
 						<SessionDetailsPanel
 							session={selectedSession}
 							onClose={handleCloseDetail}
+							onQuickPrep={handleQuickPrep}
+							onCancelSession={handleCancelSession}
 						/>
 					)}
 				</div>
 			) : (
 				<SessionRequests />
 			)}
+
+			<QuickPrepModal
+				open={quickPrep !== null}
+				onOpenChange={(open) => {
+					if (!open) setQuickPrep(null);
+				}}
+				data={quickPrep ?? undefined}
+			/>
+
+			<CancelSessionModal open={cancelOpen} onOpenChange={setCancelOpen} />
 		</div>
 	);
 }
