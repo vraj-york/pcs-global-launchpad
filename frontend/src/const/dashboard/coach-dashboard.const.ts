@@ -47,6 +47,12 @@ export interface CoachWelcomeHighlight {
 	accent: "blue" | "green" | "yellow";
 }
 
+export interface CoachLaunchUpdate {
+	id: string;
+	label: string;
+	href: string;
+}
+
 export interface CoachResource {
 	id: string;
 	/** Bold lead-in of the label (Figma node 4:19379 heading, weight 700). */
@@ -96,6 +102,19 @@ export const COACH_DASHBOARD_CONTENT = {
 		title: "Your coaching toolkit",
 		description:
 			"Get up to speed on everything you need to guide your clients with confidence.",
+	},
+	whatLaunched: {
+		title: "Explore every update",
+		intro: "Each release brings new tools to your coaching workspace:",
+		footnotePrefix: "Check out the",
+		footnoteLink: "help center",
+		footnoteHref: "/support",
+		footnoteSuffix: "for the latest platform updates.",
+		panelTitle: "Coaching Updates",
+		panelSectionLabel: "Updates",
+		panelActiveItem: "Overview",
+		searchLabel: "Search updates",
+		addLabel: "New update",
 	},
 	comingSoon: {
 		title: "Be the first to try new updates",
@@ -200,6 +219,16 @@ export const COACH_AVAILABILITY: CoachAvailabilityRow[] = [
 		label: "Buffer Time (In-between Sessions)",
 		value: "15 min",
 	},
+];
+
+export const COACH_LAUNCH_UPDATES: CoachLaunchUpdate[] = [
+	{ id: "session-insights", label: "Session insights", href: "/support" },
+	{
+		id: "progress-reports",
+		label: "Client progress reports",
+		href: "/support",
+	},
+	{ id: "smart-scheduling", label: "Smart scheduling", href: "/support" },
 ];
 
 export const COACH_WELCOME_HIGHLIGHTS: CoachWelcomeHighlight[] = [

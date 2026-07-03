@@ -50,6 +50,7 @@ import { cn } from "@/lib/utils";
 import { ComingSoon } from "./ComingSoon";
 import { Resources } from "./Resources";
 import { WelcomeBanner } from "./WelcomeBanner";
+import { WhatLaunched } from "./WhatLaunched";
 
 const C = COACH_DASHBOARD_CONTENT;
 
@@ -378,6 +379,9 @@ export function CoachDashboard() {
 
 			{/* What's coming soon — Figma node 4:19398 */}
 			<ComingSoon />
+
+			{/* What launched — Figma node 4:19407 */}
+			<WhatLaunched />
 
 			{/* Resources — Figma node 4:19379 */}
 			<Resources />
