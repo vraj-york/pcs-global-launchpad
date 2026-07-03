@@ -53,6 +53,16 @@ export interface CoachLaunchUpdate {
 	href: string;
 }
 
+export interface CoachClientSession {
+	id: string;
+	/** Session title, e.g. "Leadership Coaching". */
+	title: string;
+	/** Formatted date + time range, e.g. "2 May, 2026 • 9:30 AM - 9:45 AM". */
+	dateTime: string;
+	/** Coach notes captured for the session (past sessions). */
+	notes?: string;
+}
+
 export interface CoachResource {
 	id: string;
 	/** Bold lead-in of the label (Figma node 4:19379 heading, weight 700). */
@@ -127,6 +137,24 @@ export const COACH_DASHBOARD_CONTENT = {
 		],
 		cta: "Request early access",
 		ctaHref: "/support",
+	},
+	sessionInfo: {
+		upcomingTitle: "Upcoming Sessions",
+		pastTitle: "Past Sessions",
+		reschedule: "Reschedule",
+		join: "Join",
+		viewNotes: "View Notes",
+		moreActionsLabel: "More session actions",
+		quickPrep: "Quick Prep",
+		cancelSession: "Cancel Session",
+		notesTitle: "Session Notes",
+		notesPlaceholder: "Add your session notes here…",
+		close: "Close",
+		save: "Save Notes",
+		saving: "Saving…",
+		emptyUpcoming: "No upcoming sessions.",
+		emptyPast: "No past sessions.",
+		notesEmpty: "Select a past session to view or add its notes.",
 	},
 	emptyStates: {
 		sessions: "No sessions scheduled for today.",
@@ -218,6 +246,29 @@ export const COACH_AVAILABILITY: CoachAvailabilityRow[] = [
 		id: "buffer-time",
 		label: "Buffer Time (In-between Sessions)",
 		value: "15 min",
+	},
+];
+
+export const COACH_UPCOMING_SESSIONS: CoachClientSession[] = [
+	{
+		id: "upcoming-leadership-coaching",
+		title: "Leadership Coaching",
+		dateTime: "2 May, 2026 • 9:30 AM - 9:45 AM",
+	},
+	{
+		id: "upcoming-strategic-thinking",
+		title: "Strategic Thinking",
+		dateTime: "18 Apr, 2026 • 1:00 PM - 1:15 PM",
+	},
+];
+
+export const COACH_PAST_SESSIONS: CoachClientSession[] = [
+	{
+		id: "past-strategic-thinking",
+		title: "Strategic Thinking",
+		dateTime: "18 Apr, 2026 • 2:30 PM - 2:45 PM",
+		notes:
+			"Great progress on delegation skills. Michael struggled with letting go of control but made breakthrough realizations about team empowerment. Action items: practice weekly reflection, delegate one major project.",
 	},
 ];
 

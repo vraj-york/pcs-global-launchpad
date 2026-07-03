@@ -49,6 +49,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ComingSoon } from "./ComingSoon";
 import { Resources } from "./Resources";
+import { SessionsAndNotes } from "./SessionsAndNotes";
 import { WelcomeBanner } from "./WelcomeBanner";
 import { WhatLaunched } from "./WhatLaunched";
 
@@ -385,6 +386,9 @@ export function CoachDashboard() {
 
 			{/* Resources — Figma node 4:19379 */}
 			<Resources />
+
+			{/* Client sessions & notes ("Session Info." tab) — Figma node 4:20808 */}
+			<SessionsAndNotes />
 		</div>
 	);
 }
