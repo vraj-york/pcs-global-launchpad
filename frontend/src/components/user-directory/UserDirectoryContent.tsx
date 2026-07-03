@@ -133,6 +133,10 @@ export function UserDirectoryContent() {
 	>([]);
 	const [companiesForMoreFiltersLoading, setCompaniesForMoreFiltersLoading] =
 		useState(false);
+	// Top-level "All Companies" quick filter (users tab). `undefined` = all companies.
+	const [listCompanyFilter, setListCompanyFilter] = useState<
+		string | undefined
+	>(undefined);
 
 	const {
 		listItems,
@@ -370,8 +374,14 @@ export function UserDirectoryContent() {
 
 	useEffect(() => {
 		if (isContactsTab) return;
+		// The top-level company quick filter takes precedence over the
+		// multi-select company filter from the "Filters" dialog when set.
+		const effectiveCompanyIds =
+			showMoreFiltersCompany && listCompanyFilter
+				? [listCompanyFilter]
+				: appliedUserMoreFilters.companyIds;
 		const corpKey = [...appliedUserMoreFilters.corporationIds].sort().join(",");
-		const compKey = [...appliedUserMoreFilters.companyIds].sort().join(",");
+		const compKey = [...effectiveCompanyIds].sort().join(",");
 		const tzKey = [...appliedUserMoreFilters.timeZones].sort().join(",");
 		const key = {
 			page: listPage,
@@ -411,9 +421,7 @@ export function UserDirectoryContent() {
 					? appliedUserMoreFilters.corporationIds
 					: undefined,
 			companyIds:
-				appliedUserMoreFilters.companyIds.length > 0
-					? appliedUserMoreFilters.companyIds
-					: undefined,
+				effectiveCompanyIds.length > 0 ? effectiveCompanyIds : undefined,
 			timezones:
 				appliedUserMoreFilters.timeZones.length > 0
 					? appliedUserMoreFilters.timeZones
@@ -426,6 +434,8 @@ export function UserDirectoryContent() {
 		listSortOrder,
 		listStatusFilter,
 		listCategoryIdFilter,
+		listCompanyFilter,
+		showMoreFiltersCompany,
 		appliedUserMoreFilters.corporationIds,
 		appliedUserMoreFilters.companyIds,
 		appliedUserMoreFilters.timeZones,
@@ -735,6 +745,7 @@ export function UserDirectoryContent() {
 			setListSearch("");
 			setListStatusFilter(undefined);
 			setListCategoryIdFilter(undefined);
+			setListCompanyFilter(undefined);
 			setMoreFilters({ ...EMPTY_MORE_FILTERS });
 			setContactMoreFilters({ ...EMPTY_MORE_FILTERS });
 			setListPage(1);
@@ -794,6 +805,15 @@ export function UserDirectoryContent() {
 			lastFetched.current = null;
 		},
 		[setListStatusFilter, setListPage],
+	);
+
+	const handleCompanyFilterChange = useCallback(
+		(value: string) => {
+			setListCompanyFilter(value === "all" ? undefined : value);
+			setListPage(1);
+			lastFetched.current = null;
+		},
+		[setListPage],
 	);
 
 	const handleCategoryFilterChange = useCallback(
@@ -1122,6 +1142,37 @@ export function UserDirectoryContent() {
 											))}
 										</SelectContent>
 									</Select>
+
+									{showMoreFiltersCompany && (
+										<Select
+											value={listCompanyFilter ?? "all"}
+											onValueChange={handleCompanyFilterChange}
+											disabled={userFiltersBusy}
+										>
+											<SelectTrigger
+												className="h-9 w-full min-w-0 sm:w-44"
+												aria-label={
+													USER_DIRECTORY_PAGE_CONTENT.companiesFilterAriaLabel
+												}
+											>
+												<SelectValue
+													placeholder={
+														USER_DIRECTORY_PAGE_CONTENT.companiesFilterAllLabel
+													}
+												/>
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="all">
+													{USER_DIRECTORY_PAGE_CONTENT.companiesFilterAllLabel}
+												</SelectItem>
+												{companiesForMoreFilters.map((company) => (
+													<SelectItem key={company.id} value={company.id}>
+														{company.label}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									)}
 								</>
 							)}
 
