@@ -1,7 +1,8 @@
-# Login 2FA — "Enter Verification Code" page (nodes `4:24045`, `4:23763`, `4:23856`)
+# Login 2FA — "Enter Verification Code" page (nodes `4:24045`, `4:23763`, `4:23856`, `4:23950`)
 
-Figma nodes `4:24045` ("2FA - Code"), `4:23763` ("2FA - Enter Code"), and `4:23856` ("2FA / Code - Error
-State") are the split-screen login **Enter Verification Code** page: left brand panel (gradient +
+Figma nodes `4:24045` ("2FA - Code"), `4:23763` ("2FA - Enter Code"), `4:23856` ("2FA / Code - Error
+State"), and `4:23950` ("2FA / Code - Toast Message") are the split-screen login **Enter Verification Code**
+page: left brand panel (gradient +
 behavioral-nodes art + BSP symbol + "Map your behavioral intelligence." headline + subtitle) and a right
 card with BSP logo, "Enter Verification Code" heading, "We've sent a 6-digit code to your email <masked>",
 a 6-digit OTP input with a countdown, a **Verify Account** button, "Didn't receive the code? Resend Code",
@@ -29,18 +30,25 @@ the only frontend change was adding the inline error message for the error state
     (`text-text-foreground`, `text-text-secondary`, `text-link`, `text-destructive`, `bg-card`, brand
     gradient tokens). No new assets — brand art (`BehavioralNodes`, `BSPSymbol`, `BSPLogo`) already exists.
 
-## Error state (node `4:23856`)
+## Error state (nodes `4:23856`, `4:23950`)
 
-The "2FA / Code - Error State" is the same page with an invalid code: the OTP inputs render with a red
-(error) border and an inline red message appears below them ("The verification code is invalid.").
+Both "2FA / Code - Error State" (`4:23856`) and "2FA / Code - Toast Message" (`4:23950`) are the same page
+with an invalid code: the OTP inputs render with a red (error) border and a red message describes the
+failure ("We couldn't verify your credentials. Kindly get a new code & try again.").
 
-- **Changed:** `components/auth/VerificationForm.tsx` — renders the store's `error` inline below the
-  `OTPInput` (`text-small text-destructive`, `role="alert"`) inside an 8px-gap column, matching the Figma
-  error layout. The red input border was already wired via `OTPInput`'s `error` prop; the message clears as
-  soon as the user edits the code (`clearError`).
+- **Placement reconciliation:** the two nodes disagree on where the error sits — `4:23856` shows it inline
+  under the OTP (left-aligned), while `4:23950` shows it as a centered message directly above the "Verify
+  Account" button (Figma frame `#4:24033` groups the error + button in an 8px-gap column). The centered
+  above-button treatment (`4:23950`) is used because it matches the card's centered layout and is the more
+  complete/"designed" error frame.
+- **Changed:** `components/auth/VerificationForm.tsx` — renders the store's `error` as a centered message
+  (`text-center text-small font-medium text-destructive`, `role="alert"`) in an 8px-gap column immediately
+  above the submit button. The red input border stays wired via `OTPInput`'s `error` prop; the message
+  clears as soon as the user edits the code (`clearError`).
 - The message text is the auth store's mapped error
-  (`AUTH_ERROR_MESSAGES.invalidVerificationCode`), set by `confirmSignIn` on a Cognito
-  `CodeMismatch`/expiry.
+  (`AUTH_ERROR_MESSAGES.invalidVerificationCode` — "The verification code is invalid or has expired", the
+  functional equivalent of the Figma copy), set by `confirmSignIn` on a Cognito `CodeMismatch`/expiry. The
+  dynamic store message is kept as the single source of truth rather than hard-coding the mockup copy.
 - No new component, asset, token, or backend change for the error state.
 
 ## Backend / auth

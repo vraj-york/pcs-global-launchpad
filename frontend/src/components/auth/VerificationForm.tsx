@@ -114,45 +114,45 @@ export function VerificationForm({ email, password }: VerificationFormProps) {
 									{formatTime(timer)}
 								</span>
 							</div>
-							<div className="flex flex-col gap-2">
-								<Controller
-									name="code"
-									control={control}
-									render={({ field }) => (
-										<OTPInput
-											length={VERIFICATION_CONFIG.codeLength}
-											value={field.value}
-											onChange={(value) => {
-												if (error) clearError();
-												field.onChange(value);
-											}}
-											error={!!error}
-										/>
-									)}
-								/>
-								{error ? (
-									<p
-										className="text-small leading-small text-destructive"
-										role="alert"
-									>
-										{error}
-									</p>
-								) : null}
-							</div>
+							<Controller
+								name="code"
+								control={control}
+								render={({ field }) => (
+									<OTPInput
+										length={VERIFICATION_CONFIG.codeLength}
+										value={field.value}
+										onChange={(value) => {
+											if (error) clearError();
+											field.onChange(value);
+										}}
+										error={!!error}
+									/>
+								)}
+							/>
 						</div>
 					</div>
 
-					<Button
-						type="submit"
-						disabled={!isCodeComplete}
-						isLoading={isVerifying}
-						size="lg"
-						className="h-10 min-h-10 w-full rounded-lg text-small font-semibold text-light-same"
-					>
-						{isVerifying
-							? VERIFICATION_PAGE_CONTENT.loadingText
-							: VERIFICATION_PAGE_CONTENT.submitButton}
-					</Button>
+					<div className="flex flex-col gap-2">
+						{error ? (
+							<p
+								className="text-center text-small font-medium leading-small text-destructive"
+								role="alert"
+							>
+								{error}
+							</p>
+						) : null}
+						<Button
+							type="submit"
+							disabled={!isCodeComplete}
+							isLoading={isVerifying}
+							size="lg"
+							className="h-10 min-h-10 w-full rounded-lg text-small font-semibold text-light-same"
+						>
+							{isVerifying
+								? VERIFICATION_PAGE_CONTENT.loadingText
+								: VERIFICATION_PAGE_CONTENT.submitButton}
+						</Button>
+					</div>
 
 					<div className="flex flex-wrap items-center justify-center gap-1 text-center">
 						<span className="text-small font-normal leading-small text-text-secondary">
