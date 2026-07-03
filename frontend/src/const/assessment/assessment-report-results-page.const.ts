@@ -27,6 +27,13 @@ export const ASSESSMENT_REPORT_RESULTS_PAGE = {
 		"mx-auto flex w-full min-w-0 max-w-full flex-col gap-8 overflow-x-hidden rounded-3xl scroll-mt-28 bg-background p-4 sm:p-6 lg:p-8",
 } as const;
 
+/** Admin "View Result" modal (User Directory → View Details → Assessments & Results). */
+export const ASSESSMENT_RESULT_MODAL = {
+	title: "Assessment Result",
+	downloadLabel: "Download",
+	closeLabel: "Close",
+} as const;
+
 export const ASSESSMENT_REPORT_RESULTS_NAV_STYLES = {
 	listClassName: "flex w-full flex-col gap-2.5 lg:max-w-60",
 	itemBaseClassName:
