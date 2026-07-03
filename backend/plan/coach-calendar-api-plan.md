@@ -49,6 +49,22 @@ Detail-panel / block actions reuse existing endpoints (no duplication):
 - **Cancel Session** → `DELETE /coach-dashboard/sessions/:id`
 - **Schedule Session** (page header) → `POST /coach-dashboard/sessions`
 
+### Session Quick Prep modal (node `4:21790`)
+
+The **Quick Prep** action (week detail panel + month day-card dropdown) opens the read-only **Session Quick Prep** modal (`frontend/src/components/dashboard/coach-dashboard/QuickPrepModal.tsx`, reused `ContentModal` + `Avatar` + `Button`; 640px, footer Cancel + **Join Session** with the video icon). It shows a prep brief for the upcoming session, backed by the **already-planned** `GET /coach-dashboard/sessions/:id/quick-prep` — **no new endpoint**. Response shape (maps to the modal's `QuickPrepData`):
+
+```jsonc
+// GET /coach-dashboard/sessions/:id/quick-prep
+{
+  "lastSessionOn":   "Apr 28, 2026, 10:00 AM",   // previous session with this client (or null → "—")
+  "sessionType":     "Leadership Coaching",       // this session's type/title
+  "client":          { "name": "Nicolas Hamilton", "email": "nicolas_hamilton@email.com", "initials": "NH", "avatarUrl": "…" },
+  "lastSessionNotes": "Great progress on delegation skills. …"  // the coach's most recent SessionNote for this client
+}
+```
+
+The service derives `lastSessionOn` / `lastSessionNotes` from the client's most recent completed `CoachingSession` + its `SessionNote`; `sessionType` and `client` from the current session. The **Join Session** footer button reuses `POST /coach-dashboard/sessions/:id/join`. The frontend currently merges event-derived client/type over a static `quickPrepModal.sample` until the endpoint is wired.
+
 ### Reschedule Session modal (node `4:21733`)
 
 The **Reschedule** action (week detail panel + month day-card dropdown) opens the **Reschedule Session** modal (`frontend/src/components/dashboard/coach-dashboard/RescheduleSessionModal.tsx`, reused `ContentModal` + `DatePickerInput` + time-range `Popover` + `Switch` + `Textarea`). It collects a new date, a new start/end time (end defaults to start + 15 min per the tooltip), optional additional notes, and a "notify client" toggle, then calls the **already-planned** `PATCH /coach-dashboard/sessions/:id/reschedule` — **no new endpoint**. It reuses `RescheduleSessionDto` (see `coach-dashboard-api-plan.md`):
@@ -128,6 +144,7 @@ DTOs via `class-validator` (`CalendarQueryDto { view: 'week'|'month'; start: str
 - Wire prev/next month + range controls to refetch with a new `start`; wire the Week/Month toggle to `view`; wire block/detail/day-card actions (Join / Reschedule / Quick Prep / Cancel Session) to the existing session endpoints.
 - **Reschedule** is already wired to open the implemented `RescheduleSessionModal` (week detail panel + month day-card dropdown, prefilling Additional Notes from the session description). Its `onConfirm` currently runs a placeholder timeout; wire it to `rescheduleSession(id, payload)` (Axios) with the payload above, then invalidate the calendar/detail queries on success.
 - **Schedule Session** (page header) is already wired to open the implemented `ScheduleSessionModal`. Its `onConfirm` currently runs a placeholder timeout; wire it to `scheduleSession(payload)` and replace the static `scheduleModal.clients` list with `getCoachClients()`, invalidating the calendar query on success.
+- **Quick Prep** is already wired to open the implemented `QuickPrepModal` (week detail panel + month day-card dropdown, passing the selected event's client + type). Wire it to `getSessionQuickPrep(id)` to replace the static `quickPrepModal.sample` (`lastSessionOn` / `lastSessionNotes`); the modal's **Join Session** button should call `joinSession(id)`.
 
 ---
 

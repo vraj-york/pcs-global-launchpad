@@ -416,6 +416,25 @@ export const COACH_DASHBOARD_CONTENT = {
 			{ id: "david-chen", name: "David Chen" },
 		],
 	},
+	quickPrepModal: {
+		title: "Session Quick Prep",
+		description: "A quick & helpful info. to prepare you for upcoming session",
+		lastSessionOnLabel: "Last Session On",
+		sessionTypeLabel: "Session Type",
+		clientLabel: "Client",
+		lastSessionNotesLabel: "Last Session Notes",
+		cancel: "Cancel",
+		join: "Join Session",
+		sample: {
+			lastSessionOn: "Apr 28, 2026, 10:00 AM",
+			sessionType: "Leadership Coaching",
+			clientName: "Nicolas Hamilton",
+			clientEmail: "nicolas_hamilton@email.com",
+			clientInitials: "NH",
+			lastSessionNotes:
+				"Great progress on delegation skills. Michael struggled with letting go of control but made breakthrough realizations about team empowerment.",
+		},
+	},
 	emptyStates: {
 		sessions: "No sessions scheduled for today.",
 		activity: "No recent client activity.",

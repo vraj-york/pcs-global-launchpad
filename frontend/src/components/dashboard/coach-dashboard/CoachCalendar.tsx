@@ -52,6 +52,7 @@ import {
 	type CoachCalendarMonthEvent,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { type QuickPrepData, QuickPrepModal } from "./QuickPrepModal";
 import { RescheduleSessionModal } from "./RescheduleSessionModal";
 import { ScheduleSessionModal } from "./ScheduleSessionModal";
 
@@ -203,9 +204,11 @@ function WeekGrid({
 function SessionDetailsPanel({
 	event,
 	onReschedule,
+	onQuickPrep,
 }: {
 	event: CoachCalendarEvent | null;
 	onReschedule?: () => void;
+	onQuickPrep?: () => void;
 }) {
 	if (!event) {
 		return (
@@ -265,7 +268,12 @@ function SessionDetailsPanel({
 				>
 					{C.reschedule}
 				</Button>
-				<Button variant="outline" icon={Zap} className="w-full">
+				<Button
+					variant="outline"
+					icon={Zap}
+					className="w-full"
+					onClick={onQuickPrep}
+				>
 					{C.quickPrep}
 				</Button>
 				<Button
@@ -357,7 +365,13 @@ function MonthGrid({
 	);
 }
 
-function MonthEventActions({ onReschedule }: { onReschedule?: () => void }) {
+function MonthEventActions({
+	onReschedule,
+	onQuickPrep,
+}: {
+	onReschedule?: () => void;
+	onQuickPrep?: () => void;
+}) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -379,7 +393,10 @@ function MonthEventActions({ onReschedule }: { onReschedule?: () => void }) {
 					<CalendarSync className="size-5" aria-hidden />
 					<span>{C.reschedule}</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground">
+				<DropdownMenuItem
+					onSelect={onQuickPrep}
+					className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground"
+				>
 					<Zap className="size-5" aria-hidden />
 					<span>{C.quickPrep}</span>
 				</DropdownMenuItem>
@@ -399,9 +416,11 @@ function MonthEventActions({ onReschedule }: { onReschedule?: () => void }) {
 function DayEventCard({
 	event,
 	onReschedule,
+	onQuickPrep,
 }: {
 	event: CoachCalendarMonthEvent;
 	onReschedule?: () => void;
+	onQuickPrep?: () => void;
 }) {
 	return (
 		<Card className="flex flex-col gap-6 rounded-xl border border-border bg-background p-4 shadow-none">
@@ -433,7 +452,10 @@ function DayEventCard({
 				<Button icon={Video} size="sm" className="flex-1">
 					{C.join}
 				</Button>
-				<MonthEventActions onReschedule={onReschedule} />
+				<MonthEventActions
+					onReschedule={onReschedule}
+					onQuickPrep={onQuickPrep}
+				/>
 			</div>
 		</Card>
 	);
@@ -443,10 +465,12 @@ function DayEventsPanel({
 	dateLabel,
 	events,
 	onReschedule,
+	onQuickPrep,
 }: {
 	dateLabel: string;
 	events: CoachCalendarMonthEvent[];
 	onReschedule?: (event: CoachCalendarMonthEvent) => void;
+	onQuickPrep?: (event: CoachCalendarMonthEvent) => void;
 }) {
 	const count = events.length;
 	const countLabel =
@@ -472,6 +496,7 @@ function DayEventsPanel({
 							key={event.id}
 							event={event}
 							onReschedule={() => onReschedule?.(event)}
+							onQuickPrep={() => onQuickPrep?.(event)}
 						/>
 					))
 				)}
@@ -490,6 +515,9 @@ export function CoachCalendar() {
 		COACH_CALENDAR_MONTH_SELECTED_DATE,
 	);
 	const [reschedule, setReschedule] = useState<{ notes?: string } | null>(
+		null,
+	);
+	const [quickPrep, setQuickPrep] = useState<Partial<QuickPrepData> | null>(
 		null,
 	);
 
@@ -614,6 +642,19 @@ export function CoachCalendar() {
 							onReschedule={() =>
 								setReschedule({ notes: selectedEvent?.description })
 							}
+							onQuickPrep={() =>
+								setQuickPrep(
+									selectedEvent
+										? {
+												sessionType: selectedEvent.title,
+												clientName: selectedEvent.clientName,
+												clientEmail: selectedEvent.clientEmail,
+												clientInitials: selectedEvent.clientInitials,
+												clientAvatar: selectedEvent.clientAvatar,
+											}
+										: {},
+								)
+							}
 						/>
 					</div>
 				) : (
@@ -626,6 +667,14 @@ export function CoachCalendar() {
 							dateLabel={selectedDayLabel}
 							events={selectedDay?.events ?? []}
 							onReschedule={() => setReschedule({})}
+							onQuickPrep={(event) =>
+								setQuickPrep({
+									sessionType: event.title,
+									clientName: event.clientName,
+									clientInitials: event.clientInitials,
+									clientAvatar: event.clientAvatar,
+								})
+							}
 						/>
 					</div>
 				)}
@@ -642,6 +691,14 @@ export function CoachCalendar() {
 					if (!open) setReschedule(null);
 				}}
 				defaultNotes={reschedule?.notes}
+			/>
+
+			<QuickPrepModal
+				open={quickPrep !== null}
+				onOpenChange={(open) => {
+					if (!open) setQuickPrep(null);
+				}}
+				data={quickPrep ?? undefined}
 			/>
 		</div>
 	);
