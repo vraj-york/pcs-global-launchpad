@@ -1,6 +1,7 @@
 export * from "./assessment-only-dashboard.const";
 export * from "./behavioral-profile-graph.const";
 export * from "./chart-analytics.const";
+export * from "./coach-dashboard.const";
 export * from "./company-admin-analytics-dashboard.const";
 export * from "./corporation-admin-dashboard.const";
 export * from "./growth-spark.const";

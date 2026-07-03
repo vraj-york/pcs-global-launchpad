@@ -2,6 +2,7 @@ export * from "./CompanyAdminCompaniesList";
 export * from "./CompanyAdminOnboardingFlow";
 export * from "./CompanyAdminOnboardingGate";
 export * from "./CompanyBasicDetailsReview";
+export * from "./coach-dashboard";
 export * from "./company-admin-dashboard";
 export * from "./corporation-admin-dashboard";
 export * from "./DashboardAccessPlaceholder";
