@@ -133,6 +133,10 @@ export function UserDirectoryContent() {
 	>([]);
 	const [companiesForMoreFiltersLoading, setCompaniesForMoreFiltersLoading] =
 		useState(false);
+	// Top-level "All Corporations" quick filter (users tab). `undefined` = all corporations.
+	const [listCorporationFilter, setListCorporationFilter] = useState<
+		string | undefined
+	>(undefined);
 	// Top-level "All Companies" quick filter (users tab). `undefined` = all companies.
 	const [listCompanyFilter, setListCompanyFilter] = useState<
 		string | undefined
@@ -374,13 +378,17 @@ export function UserDirectoryContent() {
 
 	useEffect(() => {
 		if (isContactsTab) return;
-		// The top-level company quick filter takes precedence over the
-		// multi-select company filter from the "Filters" dialog when set.
+		// The top-level corporation/company quick filters take precedence over the
+		// multi-select filters from the "Filters" dialog when set.
+		const effectiveCorporationIds =
+			showMoreFiltersCorporation && listCorporationFilter
+				? [listCorporationFilter]
+				: appliedUserMoreFilters.corporationIds;
 		const effectiveCompanyIds =
 			showMoreFiltersCompany && listCompanyFilter
 				? [listCompanyFilter]
 				: appliedUserMoreFilters.companyIds;
-		const corpKey = [...appliedUserMoreFilters.corporationIds].sort().join(",");
+		const corpKey = [...effectiveCorporationIds].sort().join(",");
 		const compKey = [...effectiveCompanyIds].sort().join(",");
 		const tzKey = [...appliedUserMoreFilters.timeZones].sort().join(",");
 		const key = {
@@ -417,8 +425,8 @@ export function UserDirectoryContent() {
 			status: listStatusFilter,
 			categoryId: listCategoryIdFilter,
 			corporationIds:
-				appliedUserMoreFilters.corporationIds.length > 0
-					? appliedUserMoreFilters.corporationIds
+				effectiveCorporationIds.length > 0
+					? effectiveCorporationIds
 					: undefined,
 			companyIds:
 				effectiveCompanyIds.length > 0 ? effectiveCompanyIds : undefined,
@@ -434,7 +442,9 @@ export function UserDirectoryContent() {
 		listSortOrder,
 		listStatusFilter,
 		listCategoryIdFilter,
+		listCorporationFilter,
 		listCompanyFilter,
+		showMoreFiltersCorporation,
 		showMoreFiltersCompany,
 		appliedUserMoreFilters.corporationIds,
 		appliedUserMoreFilters.companyIds,
@@ -745,6 +755,7 @@ export function UserDirectoryContent() {
 			setListSearch("");
 			setListStatusFilter(undefined);
 			setListCategoryIdFilter(undefined);
+			setListCorporationFilter(undefined);
 			setListCompanyFilter(undefined);
 			setMoreFilters({ ...EMPTY_MORE_FILTERS });
 			setContactMoreFilters({ ...EMPTY_MORE_FILTERS });
@@ -805,6 +816,15 @@ export function UserDirectoryContent() {
 			lastFetched.current = null;
 		},
 		[setListStatusFilter, setListPage],
+	);
+
+	const handleCorporationFilterChange = useCallback(
+		(value: string) => {
+			setListCorporationFilter(value === "all" ? undefined : value);
+			setListPage(1);
+			lastFetched.current = null;
+		},
+		[setListPage],
 	);
 
 	const handleCompanyFilterChange = useCallback(
@@ -1142,6 +1162,42 @@ export function UserDirectoryContent() {
 											))}
 										</SelectContent>
 									</Select>
+
+									{showMoreFiltersCorporation && (
+										<Select
+											value={listCorporationFilter ?? "all"}
+											onValueChange={handleCorporationFilterChange}
+											disabled={userFiltersBusy}
+										>
+											<SelectTrigger
+												className="h-9 w-full min-w-0 sm:w-44"
+												aria-label={
+													USER_DIRECTORY_PAGE_CONTENT.corporationsFilterAriaLabel
+												}
+											>
+												<SelectValue
+													placeholder={
+														USER_DIRECTORY_PAGE_CONTENT.corporationsFilterAllLabel
+													}
+												/>
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="all">
+													{
+														USER_DIRECTORY_PAGE_CONTENT.corporationsFilterAllLabel
+													}
+												</SelectItem>
+												{corporationOptionsForMoreFilters.map((corporation) => (
+													<SelectItem
+														key={corporation.id}
+														value={corporation.id}
+													>
+														{corporation.label}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									)}
 
 									{showMoreFiltersCompany && (
 										<Select

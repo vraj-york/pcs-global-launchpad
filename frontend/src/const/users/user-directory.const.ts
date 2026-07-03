@@ -28,6 +28,8 @@ export const USER_DIRECTORY_PAGE_CONTENT = {
 	statusFilterAllLabel: "All Status",
 	categoriesFilterAriaLabel: "Filter by categories",
 	categoriesFilterAllLabel: "All Categories",
+	corporationsFilterAriaLabel: "Filter by corporation",
+	corporationsFilterAllLabel: "All Corporations",
 	companiesFilterAriaLabel: "Filter by company",
 	companiesFilterAllLabel: "All Companies",
 	moreFiltersButton: "Filters",
