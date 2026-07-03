@@ -1,11 +1,16 @@
 # View User Details page — backend mapping
 
-Figma node `4:20576` (`PCS_Global_Coach_Persona_Launchpad_Test`, "User Directory / View Details -
-Basic Details") is the **View User Details** page (app shell + sidebar + header/breadcrumb, Back +
-name + `USER-005` + status badges, tab bar, **Basic Info.** card, **Corporation & Company Info.**
-card). The **Basic Details** view is **already implemented** in the dev repo as a superset of the
-static mock — **no new backend work is required** for it. This file documents the existing wiring and
-scopes the coach-persona deltas as follow-up.
+Figma nodes `4:20576` ("View Details - Basic Details") and `4:20713` ("View Details - Assessments &
+Results") of `PCS_Global_Coach_Persona_Launchpad_Test` are the two tabs of the same **View User
+Details** page (app shell + sidebar + header/breadcrumb, Back + name + `USER-005` + status badges,
+tab bar). Both tabs are **already implemented** in the dev repo as a superset of the static mock —
+**no new backend work is required**. This file documents the existing wiring and scopes the
+coach-persona deltas as follow-up.
+
+- `4:20576` — **Basic Details** tab: **Basic Info.** card + **Corporation & Company Info.** card.
+- `4:20713` — **Assessments & Results** tab: filters (All Status / All Time) + sortable, paginated
+  assessments table (Assessments / Start Date / End Date / Status / Actions), rendered by
+  `AssessmentDirectoryContent` (`variant="adminUser"`).
 
 ## Frontend (existing)
 
@@ -18,6 +23,12 @@ scopes the coach-persona deltas as follow-up.
 - Rows: `components/common` `DetailRow` — label `text-small font-normal text-text-secondary`, value
   `text-small font-medium text-text-foreground`, 1px `border-b border-border` between rows
   (`last:border-b-0`), matching the Figma `#DDD9EB` separators.
+- Assessments tab: `src/components/assessment-directory/AssessmentDirectoryContent.tsx`
+  (`variant="adminUser"`) — `WhiteBox` card, `components/ui/select` status/time filters, `DataTable`
+  with server sort + pagination ("Showing X of Y results"). Columns in
+  `src/tables/assessment/AssessmentDirectoryColumn.tsx`: status uses `BSPBadge`
+  (`success` = Completed, `pending` = Incomplete); admin actions show `Eye` (view report) + `Download`
+  on completed rows only (no Share/Resume), matching the mock.
 - Badges/buttons reuse `BSPBadge` + `components/ui/button`; styling uses `index.css` tokens only
   (`bg-background`, `border-border`, `rounded-xl`, `text-heading-4`, `text-brand-primary`,
   `bg-card-foreground` tab track). Field labels/copy live in
@@ -33,7 +44,9 @@ scopes the coach-persona deltas as follow-up.
 | Remove | `DELETE /users/:id` |
 | Cancel invitation | `PATCH /users/:id/invitation/cancel` |
 | Resend invite | `POST /users/:id/invitation/resend` |
-| Assessments tab | reuses `AssessmentDirectoryContent` (`variant="adminUser"`, by `cognitoSub`) |
+| Assessments tab list (admin view of a user) | `GET /assessments/users/:cognitoSub` (page/limit/sortBy/sortOrder/status/timeFilter) |
+| View assessment report | `GET /assessments/:id` (+ report results routes) |
+| Download report | presigned report key via `downloadAssessmentReport` |
 
 ## Coach-persona deltas (follow-up, not on the shared admin page)
 
