@@ -40,6 +40,13 @@ export interface CoachAvailabilityRow {
 
 export type CoachResourceAccent = "green" | "blue" | "red";
 
+export interface CoachWelcomeHighlight {
+	id: string;
+	label: string;
+	icon: "sparkles" | "trending-up" | "calendar-clock";
+	accent: "blue" | "green" | "yellow";
+}
+
 export interface CoachResource {
 	id: string;
 	/** Bold lead-in of the label (Figma node 4:19379 heading, weight 700). */
@@ -84,6 +91,11 @@ export const COACH_DASHBOARD_CONTENT = {
 		title: "Resources",
 		subtitle: "Guides and updates to help you coach with confidence.",
 		emptyState: "No resources available right now.",
+	},
+	welcome: {
+		title: "Your coaching toolkit",
+		description:
+			"Get up to speed on everything you need to guide your clients with confidence.",
 	},
 	comingSoon: {
 		title: "Be the first to try new updates",
@@ -187,6 +199,22 @@ export const COACH_AVAILABILITY: CoachAvailabilityRow[] = [
 		id: "buffer-time",
 		label: "Buffer Time (In-between Sessions)",
 		value: "15 min",
+	},
+];
+
+export const COACH_WELCOME_HIGHLIGHTS: CoachWelcomeHighlight[] = [
+	{ id: "session-summaries", label: "AI session summaries", icon: "sparkles", accent: "blue" },
+	{
+		id: "progress-insights",
+		label: "Client progress insights",
+		icon: "trending-up",
+		accent: "green",
+	},
+	{
+		id: "smart-scheduling",
+		label: "Smart scheduling",
+		icon: "calendar-clock",
+		accent: "yellow",
 	},
 ];
 

@@ -49,6 +49,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ComingSoon } from "./ComingSoon";
 import { Resources } from "./Resources";
+import { WelcomeBanner } from "./WelcomeBanner";
 
 const C = COACH_DASHBOARD_CONTENT;
 
@@ -371,6 +372,9 @@ export function CoachDashboard() {
 					</section>
 				</div>
 			</div>
+
+			{/* Welcome / coaching toolkit — Figma node 4:19414 */}
+			<WelcomeBanner />
 
 			{/* What's coming soon — Figma node 4:19398 */}
 			<ComingSoon />
