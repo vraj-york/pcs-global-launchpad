@@ -85,6 +85,18 @@ export const COACH_DASHBOARD_CONTENT = {
 		subtitle: "Guides and updates to help you coach with confidence.",
 		emptyState: "No resources available right now.",
 	},
+	comingSoon: {
+		title: "Be the first to try new updates",
+		description:
+			"We’re rolling several new coaching tools into closed beta in the coming days. Join the wait list to request early access to these features as they roll out:",
+		features: [
+			"AI-assisted session summaries",
+			"Client progress insights",
+			"Smart scheduling & reminders",
+		],
+		cta: "Request early access",
+		ctaHref: "/support",
+	},
 	emptyStates: {
 		sessions: "No sessions scheduled for today.",
 		activity: "No recent client activity.",

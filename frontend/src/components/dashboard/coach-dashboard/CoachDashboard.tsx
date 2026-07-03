@@ -47,6 +47,7 @@ import {
 	type CoachSession,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { ComingSoon } from "./ComingSoon";
 import { Resources } from "./Resources";
 
 const C = COACH_DASHBOARD_CONTENT;
@@ -370,6 +371,9 @@ export function CoachDashboard() {
 					</section>
 				</div>
 			</div>
+
+			{/* What's coming soon — Figma node 4:19398 */}
+			<ComingSoon />
 
 			{/* Resources — Figma node 4:19379 */}
 			<Resources />
