@@ -4,6 +4,7 @@ export * from "./assessment-directory.store";
 export * from "./auth.store";
 export * from "./billing-management.store";
 export * from "./chatbot.store";
+export * from "./coach-sidebar-preview.store";
 export * from "./coach-calendar.store";
 export * from "./coach-dashboard.store";
 export * from "./coach-sessions.store";

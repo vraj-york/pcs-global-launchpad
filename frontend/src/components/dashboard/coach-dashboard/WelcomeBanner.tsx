@@ -55,7 +55,7 @@ function HighlightCard({
 	return (
 		<Card
 			className={cn(
-				"flex-row items-center gap-3 p-4 shadow-lg transition-transform duration-200 hover:rotate-0",
+				"flex-row items-center gap-3 p-4 transition-transform duration-200 hover:rotate-0",
 				rotation,
 			)}
 		>

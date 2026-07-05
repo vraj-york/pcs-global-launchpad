@@ -11,9 +11,11 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSidebarOptional } from "@/components/ui/sidebar";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { HEADER_CONTENT, ROUTES, USER_DROPDOWN_LABELS } from "@/const";
-import { useTheme } from "@/hooks";
-import { useAuthStore, useUsersStore } from "@/store";
+import { useTheme, useUserRoles } from "@/hooks";
+import { useAuthStore, useCoachSidebarPreviewStore, useUsersStore } from "@/store";
 import type { HeaderProps } from "@/types";
 import { getUserInitials } from "@/utils/sharedUtils";
 
@@ -24,6 +26,13 @@ export function Header({
 	const { theme, toggleTheme } = useTheme();
 	const { logout } = useAuthStore();
 	const { firstName, lastName, userProfile } = useUsersStore();
+	const { isSuperAdmin } = useUserRoles();
+	const coachSidebarPreview = useCoachSidebarPreviewStore(
+		(s) => s.coachSidebarPreview,
+	);
+	const setCoachSidebarPreview = useCoachSidebarPreviewStore(
+		(s) => s.setCoachSidebarPreview,
+	);
 	const sidebarCtx = useSidebarOptional();
 	const toggleSidebar = sidebarCtx?.toggleSidebar ?? (() => {});
 	const hasSidebar = sidebarCtx !== null;
@@ -88,6 +97,23 @@ export function Header({
 
 			{/* Right Section */}
 			<div className="flex shrink-0 items-center gap-2">
+				{import.meta.env.DEV && isSuperAdmin && hasSidebar ? (
+					<div className="mr-1 flex items-center gap-2 border-r border-border pr-3">
+						<Label
+							htmlFor="coach-sidebar-preview"
+							className="hidden text-mini text-muted-foreground sm:inline"
+						>
+							{HEADER_CONTENT.coachSidebarPreview}
+						</Label>
+						<Switch
+							id="coach-sidebar-preview"
+							checked={coachSidebarPreview}
+							onCheckedChange={setCoachSidebarPreview}
+							aria-label={HEADER_CONTENT.coachSidebarPreviewAria}
+						/>
+					</div>
+				) : null}
+
 				{/* Theme Toggle */}
 				<Button
 					variant="ghost"

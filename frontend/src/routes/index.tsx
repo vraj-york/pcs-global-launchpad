@@ -126,7 +126,9 @@ export const routes: RouteConfig[] = [
 		path: ROUTES.coachDashboard.root,
 		element: (
 			<ProtectedRoute>
-				<RoleGuardRoute allowedGroups={[COGNITO_COACH_GROUP]}>
+				<RoleGuardRoute
+					allowedGroups={[COGNITO_COACH_GROUP, COGNITO_SUPER_ADMIN_GROUP]}
+				>
 					<SubmoduleGuardRoute required={SUBMODULE_KEYS.COACH_DASHBOARD_VIEW}>
 						<CoachDashboardPage />
 					</SubmoduleGuardRoute>
@@ -138,7 +140,9 @@ export const routes: RouteConfig[] = [
 		path: ROUTES.coachSessions.root,
 		element: (
 			<ProtectedRoute>
-				<RoleGuardRoute allowedGroups={[COGNITO_COACH_GROUP]}>
+				<RoleGuardRoute
+					allowedGroups={[COGNITO_COACH_GROUP, COGNITO_SUPER_ADMIN_GROUP]}
+				>
 					<SubmoduleGuardRoute required={SUBMODULE_KEYS.COACH_DASHBOARD_VIEW}>
 						<CoachSessionsPage />
 					</SubmoduleGuardRoute>
@@ -150,7 +154,9 @@ export const routes: RouteConfig[] = [
 		path: ROUTES.coachCalendar.root,
 		element: (
 			<ProtectedRoute>
-				<RoleGuardRoute allowedGroups={[COGNITO_COACH_GROUP]}>
+				<RoleGuardRoute
+					allowedGroups={[COGNITO_COACH_GROUP, COGNITO_SUPER_ADMIN_GROUP]}
+				>
 					<SubmoduleGuardRoute required={SUBMODULE_KEYS.COACH_DASHBOARD_VIEW}>
 						<CoachCalendarPage />
 					</SubmoduleGuardRoute>
@@ -162,7 +168,9 @@ export const routes: RouteConfig[] = [
 		path: ROUTES.coachSettings.root,
 		element: (
 			<ProtectedRoute>
-				<RoleGuardRoute allowedGroups={[COGNITO_COACH_GROUP]}>
+				<RoleGuardRoute
+					allowedGroups={[COGNITO_COACH_GROUP, COGNITO_SUPER_ADMIN_GROUP]}
+				>
 					<SubmoduleGuardRoute required={SUBMODULE_KEYS.COACH_DASHBOARD_VIEW}>
 						<CoachSettingsPage />
 					</SubmoduleGuardRoute>

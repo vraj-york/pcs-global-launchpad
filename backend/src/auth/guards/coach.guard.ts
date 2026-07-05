@@ -21,6 +21,7 @@ interface AuthenticatedRequest extends Request {
 
 /**
  * Requires Cognito {@link COGNITO_GROUP_NAMES.COACH} (use after {@link CognitoAuthGuard}).
+ * SuperAdmin is allowed for local E2E testing without a pcs-coach group assignment.
  */
 @Injectable()
 export class CoachGuard implements CanActivate {
@@ -28,7 +29,9 @@ export class CoachGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const user = request.user;
     const groups = user?.groups ?? [];
-    if (!groups.includes(COGNITO_GROUP_NAMES.COACH)) {
+    const isCoach = groups.includes(COGNITO_GROUP_NAMES.COACH);
+    const isSuperAdmin = groups.includes(COGNITO_GROUP_NAMES.SUPER_ADMIN);
+    if (!isCoach && !isSuperAdmin) {
       throw new ForbiddenException(COACH_ROLE_REQUIRED_MESSAGE);
     }
     return true;

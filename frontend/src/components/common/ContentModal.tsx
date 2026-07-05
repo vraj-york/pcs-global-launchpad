@@ -59,7 +59,7 @@ export function ContentModal({
 									<Button
 										variant="ghost"
 										size="icon"
-										className="size-9 shrink-0 rounded-lg bg-card p-2 text-icon-secondary shadow-xs hover:bg-muted hover:text-text-foreground"
+										className="size-9 shrink-0 rounded-lg bg-card p-2 text-icon-secondary hover:bg-muted hover:text-text-foreground"
 										aria-label="Close"
 									>
 										<X className="size-4" aria-hidden />

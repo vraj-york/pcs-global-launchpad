@@ -218,7 +218,7 @@ function WeekGrid({
 										onClick={() => onSelect(event)}
 										style={{ top }}
 										className={cn(
-											"pointer-events-auto absolute right-1 left-1 flex cursor-pointer flex-col justify-center gap-1 rounded px-2 py-1 text-left text-mini font-semibold shadow-lg outline-none",
+											"pointer-events-auto absolute right-1 left-1 flex cursor-pointer flex-col justify-center gap-1 rounded px-2 py-1 text-left text-mini font-semibold outline-none",
 											EVENT_ACCENT[event.accent],
 											selectedId === event.id && "ring-2 ring-ring",
 										)}
@@ -389,7 +389,7 @@ function MonthGrid({
 									<span
 										key={event.id}
 										className={cn(
-											"truncate rounded border-l-[3px] py-1 pr-1.5 pl-2 text-mini font-semibold shadow-sm",
+											"truncate rounded border-l-[3px] py-1 pr-1.5 pl-2 text-mini font-semibold",
 											accent.border,
 											accent.text,
 											isSelected ? "bg-background" : "bg-secondary",
@@ -428,7 +428,7 @@ function MonthEventActions({
 			</DropdownMenuTrigger>
 			<DropdownMenuContent
 				align="end"
-				className="min-w-40 rounded-lg border border-border bg-background p-0.5 shadow-xl"
+				className="min-w-40 rounded-lg border border-border bg-background p-0.5 shadow-none ring-0"
 			>
 				<DropdownMenuItem
 					onSelect={onReschedule}

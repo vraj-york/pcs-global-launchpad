@@ -16,10 +16,10 @@ import {
 	Sidebar as SidebarRoot,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { SIDEBAR_LOADING, SIDEBAR_MENU } from "@/const";
-import { usePermissions, useUserGroups } from "@/hooks";
+import { SIDEBAR_LOADING, COACH_SIDEBAR_MENU, SIDEBAR_MENU } from "@/const";
+import { usePermissions, useUserGroups, useUserRoles } from "@/hooks";
 import { getVisibleSidebarSections, isSidebarAccessPending } from "@/lib";
-import { useUsersStore } from "@/store";
+import { useCoachSidebarPreviewStore, useUsersStore } from "@/store";
 
 function SidebarToggle() {
 	const { toggleSidebar } = useSidebar();
@@ -61,8 +61,16 @@ function SidebarNavSkeleton() {
 
 export function Sidebar() {
 	const { groups, ready: groupsReady } = useUserGroups();
+	const { isSuperAdmin, isCoach } = useUserRoles();
 	const { ready: permissionsReady, enabledKeys } = usePermissions();
 	const userProfileError = useUsersStore((s) => s.userProfileError);
+	const coachSidebarPreview = useCoachSidebarPreviewStore(
+		(s) => s.coachSidebarPreview,
+	);
+	const showCoachSidebarPreview =
+		import.meta.env.DEV && isSuperAdmin && coachSidebarPreview;
+	const useCoachSidebar = isCoach || showCoachSidebarPreview;
+	const menu = useCoachSidebar ? COACH_SIDEBAR_MENU : SIDEBAR_MENU;
 
 	const accessPending = isSidebarAccessPending({
 		groupsReady,
@@ -70,16 +78,29 @@ export function Sidebar() {
 		profileError: userProfileError,
 	});
 
-	const visibleSections = useMemo(
-		() =>
-			getVisibleSidebarSections(SIDEBAR_MENU, {
-				groups,
-				groupsReady,
-				enabledKeys,
-				permissionsReady,
-			}),
-		[groups, groupsReady, enabledKeys, permissionsReady],
-	);
+	const visibleSections = useMemo(() => {
+		// SuperAdmin local preview is not in pcs-coach; show full coach nav without RBAC filter.
+		if (showCoachSidebarPreview) {
+			return COACH_SIDEBAR_MENU.map((section) => ({
+				title: section.title,
+				items: [...section.items],
+			}));
+		}
+
+		return getVisibleSidebarSections(menu, {
+			groups,
+			groupsReady,
+			enabledKeys,
+			permissionsReady,
+		});
+	}, [
+		showCoachSidebarPreview,
+		menu,
+		groups,
+		groupsReady,
+		enabledKeys,
+		permissionsReady,
+	]);
 
 	return (
 		<SidebarRoot collapsible="icon" className="border-r border-border">
