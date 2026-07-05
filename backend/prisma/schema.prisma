@@ -14,28 +14,67 @@ enum TwoFactorAuth {
   OFF
 }
 
+enum SessionType {
+  communication_conflict
+  goal_review
+  one_on_one_coaching
+  leadership_coaching
+  strategic_thinking
+  stress_management
+  communication_skills
+}
+
+enum SessionStatus {
+  scheduled
+  completed
+  cancelled
+  rescheduled
+}
+
+enum ActivityKind {
+  session_created
+  session_requested
+  session_rescheduled
+  session_cancelled
+  session_completed
+  request_accepted
+  request_declined
+  request_proposed
+  request_reminded
+  request_cancelled
+  notes_added
+}
+
+enum RequestStatus {
+  pending
+  proposed
+  accepted
+  declined
+  cancelled
+}
+
 model Corporation {
-  id                          String                       @id @default(uuid())
-  corporationCode             Int                          @map("corporation_code")
-  legalName                   String                       @unique @map("legal_name") @db.VarChar(255)
-  dbaName                     String?                      @map("DBA_name") @db.VarChar(255)
-  website                     String?                      @db.VarChar(255)
-  dataResidencyRegion         String                       @map("data_residency_region") @db.VarChar(255)
-  ownershipType               String                       @map("ownership_type") @db.VarChar(255)
-  industry                    String                       @db.VarChar(255)
-  phoneNo                     String                       @map("phone_no") @db.VarChar(255)
-  brandLogo                   String?                      @map("brand_logo") @db.VarChar(255)
-  status                      String                       @db.VarChar(255)
-  mode                        String                       @db.VarChar(255)
-  suspendCloseReason          String?                      @map("suspend_close_reason") @db.VarChar(255)
-  suspendCloseAdditionalNotes String?                      @map("suspend_close_additional_notes") @db.VarChar(255)
-  suspendedClosedOn           DateTime?                    @map("suspended_closed_on")
-  submittedSteps              Int                          @default(1) @map("submitted_steps")
-  passwordPolicy              String?                      @map("password_policy") @db.VarChar(255)
-  MFA                         TwoFactorAuth                @default(OFF) @map("MFA")
-  sessionTimeout              Int                          @default(0) @map("session_timeout")
-  createdAt                   DateTime                     @default(now()) @map("created_at")
-  updatedAt                   DateTime                     @updatedAt @map("updated_at")
+  id                          String               @id @default(uuid())
+  corporationCode             Int                  @map("corporation_code")
+  legalName                   String               @unique @map("legal_name") @db.VarChar(255)
+  dbaName                     String?              @map("DBA_name") @db.VarChar(255)
+  website                     String?              @db.VarChar(255)
+  dataResidencyRegion         String               @map("data_residency_region") @db.VarChar(255)
+  ownershipType               String               @map("ownership_type") @db.VarChar(255)
+  industry                    String               @db.VarChar(255)
+  phoneNo                     String               @map("phone_no") @db.VarChar(255)
+  brandLogo                   String?              @map("brand_logo") @db.VarChar(255)
+  status                      String               @db.VarChar(255)
+  mode                        String               @db.VarChar(255)
+  suspendCloseReason          String?              @map("suspend_close_reason") @db.VarChar(255)
+  suspendCloseAdditionalNotes String?              @map("suspend_close_additional_notes") @db.VarChar(255)
+  suspendedClosedOn           DateTime?            @map("suspended_closed_on")
+  submittedSteps              Int                  @default(1) @map("submitted_steps")
+  passwordPolicy              String?              @map("password_policy") @db.VarChar(255)
+  MFA                         TwoFactorAuth        @default(OFF) @map("MFA")
+  sessionTimeout              Int                  @default(0) @map("session_timeout")
+  createdAt                   DateTime             @default(now()) @map("created_at")
+  updatedAt                   DateTime             @updatedAt @map("updated_at")
   address                     CorporationAddress?
   companies                   CorporationCompany[]
   appKeyContacts              AppKeyContact[]
@@ -65,50 +104,51 @@ model CorporationAddress {
 }
 
 model CorporationCompany {
-  id                       String                @id @default(uuid())
-  corporationId            String                @map("corporation_id")
-  companyCode              Int                   @unique @default(autoincrement()) @map("company_code")
-  legalName                String                @map("legal_name") @db.VarChar(255)
-  dbaName                  String?               @map("dba_name") @db.VarChar(255)
-  website                  String?               @db.VarChar(255)
-  companyType              String                @map("company_type") @db.VarChar(255)
-  officeType               String                @map("office_type") @db.VarChar(255)
-  industry                 String                @db.VarChar(255)
-  primaryLanguage          String?               @map("primary_language") @db.VarChar(255)
-  phoneNo                  String?               @map("phone_no") @db.VarChar(255)
-  sameAsCorpAdmin          Boolean               @default(false) @map("same_as_corp_admin")
-  planId                   String?               @map("plan_id")
-  stripeCustomerId         String?               @unique @map("stripe_customer_id") @db.VarChar(255)
-  stripeSubscriptionId     String?               @unique @map("stripe_subscription_id") @db.VarChar(255)
-  subscriptionStatus       String?               @map("subscription_status") @db.VarChar(50)
-  implementationFeeChargedAt DateTime?           @map("implementation_fee_charged_at")
+  id                         String                      @id @default(uuid())
+  corporationId              String                      @map("corporation_id")
+  companyCode                Int                         @unique @default(autoincrement()) @map("company_code")
+  legalName                  String                      @map("legal_name") @db.VarChar(255)
+  dbaName                    String?                     @map("dba_name") @db.VarChar(255)
+  website                    String?                     @db.VarChar(255)
+  companyType                String                      @map("company_type") @db.VarChar(255)
+  officeType                 String                      @map("office_type") @db.VarChar(255)
+  industry                   String                      @db.VarChar(255)
+  primaryLanguage            String?                     @map("primary_language") @db.VarChar(255)
+  phoneNo                    String?                     @map("phone_no") @db.VarChar(255)
+  sameAsCorpAdmin            Boolean                     @default(false) @map("same_as_corp_admin")
+  planId                     String?                     @map("plan_id")
+  stripeCustomerId           String?                     @unique @map("stripe_customer_id") @db.VarChar(255)
+  stripeSubscriptionId       String?                     @unique @map("stripe_subscription_id") @db.VarChar(255)
+  subscriptionStatus         String?                     @map("subscription_status") @db.VarChar(50)
+  implementationFeeChargedAt DateTime?                   @map("implementation_fee_charged_at")
   /// Purchased one-time assessment credits (set after successful `one_time` checkout).
-  assessmentQuantity       Int?                  @map("assessment_quantity")
+  assessmentQuantity         Int?                        @map("assessment_quantity")
   /// Last Stripe Checkout session id (company-admin one_time checkout idempotency).
-  lastCheckoutSessionId    String?               @map("last_checkout_session_id") @db.VarChar(255)
-  securityPosture          String                @map("security_posture") @db.VarChar(255)
-  submittedSteps           Int                   @default(1) @map("submitted_steps")
-  status                   String                @db.VarChar(255)
-  suspendReason            String?               @map("suspend_reason") @db.VarChar(255)
-  suspendAdditionalNotes   String?               @map("suspend_additional_notes") @db.VarChar(255)
-  suspendedClosedOn        DateTime?             @map("suspended_closed_on")
-  addressLine              String                @map("address_line") @db.VarChar(255)
-  state                    String                @db.VarChar(255)
-  city                     String                @db.VarChar(255)
-  country                  String                @db.VarChar(255)
-  zip                      String                @db.VarChar(255)
-  brandLogo                String?               @map("brand_logo") @db.VarChar(255)
-  createdAt                DateTime              @default(now()) @map("created_at")
-  updatedAt                DateTime              @updatedAt @map("updated_at")
-  deletedAt                DateTime?             @map("deleted_at")
-  companyAdminInviteSentAt DateTime?             @map("company_admin_invite_sent_at")
-  corporation              Corporation           @relation(fields: [corporationId], references: [id], onDelete: Cascade)
-  plan                     PricingPlan?          @relation(fields: [planId], references: [id])
-  appKeyContacts           AppKeyContact[]
-  userCompanyAccesses      UserCompanyAccess[]
-  planSeat                 CompanyPlanSeat?
-  configuration            CompanyConfiguration?
-  promoCodes               PromoCode[]
+  lastCheckoutSessionId      String?                     @map("last_checkout_session_id") @db.VarChar(255)
+  securityPosture            String                      @map("security_posture") @db.VarChar(255)
+  submittedSteps             Int                         @default(1) @map("submitted_steps")
+  status                     String                      @db.VarChar(255)
+  suspendReason              String?                     @map("suspend_reason") @db.VarChar(255)
+  suspendAdditionalNotes     String?                     @map("suspend_additional_notes") @db.VarChar(255)
+  suspendedClosedOn          DateTime?                   @map("suspended_closed_on")
+  addressLine                String                      @map("address_line") @db.VarChar(255)
+  state                      String                      @db.VarChar(255)
+  city                       String                      @db.VarChar(255)
+  country                    String                      @db.VarChar(255)
+  zip                        String                      @db.VarChar(255)
+  brandLogo                  String?                     @map("brand_logo") @db.VarChar(255)
+  createdAt                  DateTime                    @default(now()) @map("created_at")
+  updatedAt                  DateTime                    @updatedAt @map("updated_at")
+  deletedAt                  DateTime?                   @map("deleted_at")
+  companyAdminInviteSentAt   DateTime?                   @map("company_admin_invite_sent_at")
+  corporation                Corporation                 @relation(fields: [corporationId], references: [id], onDelete: Cascade)
+  plan                       PricingPlan?                @relation(fields: [planId], references: [id])
+  appKeyContacts             AppKeyContact[]
+  userCompanyAccesses        UserCompanyAccess[]
+  coachingSessions           CoachingSession[]
+  planSeat                   CompanyPlanSeat?
+  configuration              CompanyConfiguration?
+  promoCodes                 PromoCode[]
   billingSubscriptionActions BillingSubscriptionAction[]
 
   @@map("corporation_companies")
@@ -155,14 +195,14 @@ model CompanyPlanSeat {
   billingCurrency      String             @default("USD ($)") @map("billing_currency") @db.VarChar(50)
   autoConvertTrial     Boolean            @default(true) @map("auto_convert_trial")
   /// Customer-facing promo code chosen at company setup; applied at Company Admin checkout when valid.
-  checkoutPromoCode   String?            @map("checkout_promo_code") @db.VarChar(50)
+  checkoutPromoCode    String?            @map("checkout_promo_code") @db.VarChar(50)
   /// Optional training selector captured in plan setup (off / 1_day / 2_days). At checkout we send
   /// a single Stripe per-day Price (`STRIPE_ONSITE_TRAINING_PRICE_ID`) with quantity 1 (`1_day`)
   /// or 2 (`2_days`). Amounts come from Stripe and are not stored on this row.
-  onsiteTrainingOption String            @default("off") @map("onsite_training_option") @db.VarChar(20)
-  createdAt           DateTime           @default(now()) @map("created_at")
-  updatedAt           DateTime           @updatedAt @map("updated_at")
-  company             CorporationCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  onsiteTrainingOption String             @default("off") @map("onsite_training_option") @db.VarChar(20)
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
+  company              CorporationCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@map("company_plan_seats")
 }
@@ -249,9 +289,9 @@ model PromoCode {
   stripeCouponId        String              @map("stripe_coupon_id") @db.VarChar(255)
   stripePromotionCodeId String              @map("stripe_promotion_code_id") @db.VarChar(255)
   /// Mirrors Stripe promotion `active` for filtering/sorting; synced on list and PATCH.
-  stripePromotionActive Boolean           @default(true) @map("stripe_promotion_active")
+  stripePromotionActive Boolean             @default(true) @map("stripe_promotion_active")
   /// Last seen Stripe `times_redeemed`; synced on list for ordering.
-  timesRedeemedSnapshot Int                @default(0) @map("times_redeemed_snapshot")
+  timesRedeemedSnapshot Int                 @default(0) @map("times_redeemed_snapshot")
   deletedAt             DateTime?           @map("deleted_at")
   createdAt             DateTime            @default(now()) @map("created_at")
   updatedAt             DateTime            @updatedAt @map("updated_at")
@@ -346,15 +386,15 @@ model AuditLog {
 // JWT `sub` is the primary link to Cognito. Group names must match Cognito User Pool group names exactly.
 
 model CognitoUserGroup {
-  id             String        @id @default(uuid())
-  name           String        @unique @db.VarChar(64)
-  description    String?       @db.VarChar(500)
-  roleCategoryId String?       @map("role_category_id")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  name           String   @unique @db.VarChar(64)
+  description    String?  @db.VarChar(500)
+  roleCategoryId String?  @map("role_category_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
-  memberships    AppUserGroupMembership[]
-  roleCategory   RoleCategory? @relation(fields: [roleCategoryId], references: [id], onDelete: SetNull)
+  memberships  AppUserGroupMembership[]
+  roleCategory RoleCategory?            @relation(fields: [roleCategoryId], references: [id], onDelete: SetNull)
 
   @@index([roleCategoryId])
   @@map("cognito_user_groups")
@@ -362,45 +402,57 @@ model CognitoUserGroup {
 
 /// One row per Cognito user (keyed by access/id token `sub`).
 model AppUser {
-  cognitoSub         String              @id @map("cognito_sub") @db.VarChar(128)
-  corporationId      String?             @map("corporation_id")
-  userCode           Int                 @unique @default(autoincrement()) @map("user_code")
-  roleId             String?             @map("role_id")
-  nickname           String?             @db.VarChar(255)
+  cognitoSub                   String                   @id @map("cognito_sub") @db.VarChar(128)
+  corporationId                String?                  @map("corporation_id")
+  userCode                     Int                      @unique @default(autoincrement()) @map("user_code")
+  roleId                       String?                  @map("role_id")
+  nickname                     String?                  @db.VarChar(255)
   /// Uniqueness among non-deleted rows is enforced in DB by partial index `app_users_email_active_unique` (see migration).
-  email              String?             @db.VarChar(255)
-  inviteType         String?             @map("invite_type") @db.VarChar(255)
-  jobRole            String?             @map("job_role") @db.VarChar(255)
-  avatar             String?             @db.VarChar(255)
-  status             String              @default("Pending") @db.VarChar(255)
-  completedOnboardingSteps Int           @default(0) @map("completed_onboarding_steps")
-  workPhone          String?             @map("work_phone") @db.VarChar(255)
-  cellPhone          String?             @map("cell_phone") @db.VarChar(255)
-  timezone           String?             @db.VarChar(255)
-  invitationSentAt   DateTime?           @map("invitation_sent_at")
-  firstName          String?             @map("first_name") @db.VarChar(255)
-  lastName           String?             @map("last_name") @db.VarChar(255)
-  userType           String?             @map("user_type") @db.VarChar(255)
-  stripeCustomerId   String?             @unique @map("stripe_customer_id") @db.VarChar(255)
-  paymentStatus      String?             @map("payment_status") @db.VarChar(50)
-  pricingPlanId      String?             @map("pricing_plan_id")
-  promoCodeId        String?             @map("promo_code_id")
-  paidAt             DateTime?           @map("paid_at")
-  lastCheckoutSessionId String?          @map("last_checkout_session_id") @db.VarChar(255)
-  blockedCancelledOn DateTime?           @map("blocked_cancelled_on")
-  lastSeenAt         DateTime?           @map("last_seen_at")
-  createdAt          DateTime            @default(now()) @map("created_at")
-  updatedAt          DateTime            @updatedAt @map("updated_at")
-  deletedAt          DateTime?           @map("deleted_at")
-  corporation        Corporation?        @relation(fields: [corporationId], references: [id], onDelete: SetNull)
-  role               Role?               @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  pricingPlan        PricingPlan?        @relation(fields: [pricingPlanId], references: [id], onDelete: SetNull)
-  promoCode          PromoCode?          @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
-  groupMemberships   AppUserGroupMembership[]
-  companyAccess      UserCompanyAccess[]
-  appKeyContact      AppKeyContact?
-  assessments        Assessment[]
-  growthSparkIntros  UserGrowthSparkIntro[]
+  email                        String?                  @db.VarChar(255)
+  inviteType                   String?                  @map("invite_type") @db.VarChar(255)
+  jobRole                      String?                  @map("job_role") @db.VarChar(255)
+  avatar                       String?                  @db.VarChar(255)
+  status                       String                   @default("Pending") @db.VarChar(255)
+  completedOnboardingSteps     Int                      @default(0) @map("completed_onboarding_steps")
+  workPhone                    String?                  @map("work_phone") @db.VarChar(255)
+  cellPhone                    String?                  @map("cell_phone") @db.VarChar(255)
+  timezone                     String?                  @db.VarChar(255)
+  professionalTitle            String?                  @map("professional_title") @db.VarChar(255)
+  yearsOfExperience            Int?                     @map("years_of_experience")
+  bio                          String?                  @db.Text
+  invitationSentAt             DateTime?                @map("invitation_sent_at")
+  firstName                    String?                  @map("first_name") @db.VarChar(255)
+  lastName                     String?                  @map("last_name") @db.VarChar(255)
+  userType                     String?                  @map("user_type") @db.VarChar(255)
+  stripeCustomerId             String?                  @unique @map("stripe_customer_id") @db.VarChar(255)
+  paymentStatus                String?                  @map("payment_status") @db.VarChar(50)
+  pricingPlanId                String?                  @map("pricing_plan_id")
+  promoCodeId                  String?                  @map("promo_code_id")
+  paidAt                       DateTime?                @map("paid_at")
+  lastCheckoutSessionId        String?                  @map("last_checkout_session_id") @db.VarChar(255)
+  blockedCancelledOn           DateTime?                @map("blocked_cancelled_on")
+  lastSeenAt                   DateTime?                @map("last_seen_at")
+  createdAt                    DateTime                 @default(now()) @map("created_at")
+  updatedAt                    DateTime                 @updatedAt @map("updated_at")
+  deletedAt                    DateTime?                @map("deleted_at")
+  corporation                  Corporation?             @relation(fields: [corporationId], references: [id], onDelete: SetNull)
+  role                         Role?                    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  pricingPlan                  PricingPlan?             @relation(fields: [pricingPlanId], references: [id], onDelete: SetNull)
+  promoCode                    PromoCode?               @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
+  groupMemberships             AppUserGroupMembership[]
+  companyAccess                UserCompanyAccess[]
+  appKeyContact                AppKeyContact?
+  assessments                  Assessment[]
+  growthSparkIntros            UserGrowthSparkIntro[]
+  coachingSessionsAsCoach      CoachingSession[]        @relation("CoachSessionsAsCoach")
+  coachingSessionsAsClient     CoachingSession[]        @relation("CoachSessionsAsClient")
+  coachActivitiesAsCoach       CoachClientActivity[]    @relation("CoachActivitiesAsCoach")
+  coachActivitiesAsClient      CoachClientActivity[]    @relation("CoachActivitiesAsClient")
+  coachAvailability            CoachAvailability?
+  coachSessionNotes            SessionNote[]
+  coachSessionRequestsAsCoach  SessionRequest[]         @relation("CoachSessionRequestsAsCoach")
+  coachSessionRequestsAsClient SessionRequest[]         @relation("CoachSessionRequestsAsClient")
+  waitlistEntries              WaitlistEntry[]
 
   @@index([email])
   @@index([corporationId])
@@ -476,16 +528,16 @@ model RoleCategory {
 }
 
 model Role {
-  id             String          @id @default(uuid())
-  name           String          @db.VarChar(255)
-  description    String?         @db.VarChar(1000)
-  categoryId     String          @map("category_id")
-  isPrivate      Boolean         @default(false) @map("is_private") // false = Public, true = Private
-  isExternal     Boolean         @default(false) @map("is_external") // false = Internal, true = External
-  createdAt      DateTime        @default(now()) @map("created_at")
-  updatedAt      DateTime        @updatedAt @map("updated_at")
-  category       RoleCategory    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  appUsers       AppUser[]
+  id          String       @id @default(uuid())
+  name        String       @db.VarChar(255)
+  description String?      @db.VarChar(1000)
+  categoryId  String       @map("category_id")
+  isPrivate   Boolean      @default(false) @map("is_private") // false = Public, true = Private
+  isExternal  Boolean      @default(false) @map("is_external") // false = Internal, true = External
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  category    RoleCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  appUsers    AppUser[]
 
   @@unique([name, categoryId])
   @@index([categoryId])
@@ -542,6 +594,182 @@ model RoleCategorySubmodule {
   @@index([roleCategoryId])
   @@index([submoduleId])
   @@map("role_category_submodules")
+}
+
+model CoachingSession {
+  id           String        @id @default(uuid())
+  coachId      String        @map("coach_id") @db.VarChar(128)
+  clientId     String        @map("client_id") @db.VarChar(128)
+  companyId    String?       @map("company_id")
+  title        String        @db.VarChar(255)
+  description  String?       @db.Text
+  type         SessionType
+  status       SessionStatus @default(scheduled)
+  startsAt     DateTime      @map("starts_at")
+  durationMins Int           @default(60) @map("duration_mins")
+  meetingUrl   String?       @map("meeting_url") @db.VarChar(1000)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  coach      AppUser               @relation("CoachSessionsAsCoach", fields: [coachId], references: [cognitoSub], onDelete: Cascade)
+  client     AppUser               @relation("CoachSessionsAsClient", fields: [clientId], references: [cognitoSub], onDelete: Cascade)
+  company    CorporationCompany?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  note       SessionNote?
+  activities CoachClientActivity[]
+
+  @@index([coachId, startsAt])
+  @@index([clientId, startsAt])
+  @@index([companyId, startsAt])
+  @@map("coaching_sessions")
+}
+
+model SessionNote {
+  id        String   @id @default(uuid())
+  sessionId String   @unique @map("session_id")
+  coachId   String   @map("coach_id") @db.VarChar(128)
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  session CoachingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  coach   AppUser         @relation(fields: [coachId], references: [cognitoSub], onDelete: Cascade)
+
+  @@index([coachId])
+  @@map("session_notes")
+}
+
+model CoachClientActivity {
+  id        String       @id @default(uuid())
+  coachId   String       @map("coach_id") @db.VarChar(128)
+  clientId  String       @map("client_id") @db.VarChar(128)
+  sessionId String?      @map("session_id")
+  kind      ActivityKind
+  message   String       @db.Text
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  coach   AppUser          @relation("CoachActivitiesAsCoach", fields: [coachId], references: [cognitoSub], onDelete: Cascade)
+  client  AppUser          @relation("CoachActivitiesAsClient", fields: [clientId], references: [cognitoSub], onDelete: Cascade)
+  session CoachingSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([coachId, createdAt])
+  @@index([clientId, createdAt])
+  @@map("coach_client_activities")
+}
+
+model CoachAvailability {
+  id                       String   @id @default(uuid())
+  coachId                  String   @unique @map("coach_id") @db.VarChar(128)
+  timezone                 String   @db.VarChar(255)
+  defaultSessionLengthMins Int      @default(60) @map("default_session_length_mins")
+  bufferMins               Int      @default(15) @map("buffer_mins")
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  coach   AppUser                   @relation(fields: [coachId], references: [cognitoSub], onDelete: Cascade)
+  windows CoachAvailabilityWindow[]
+
+  @@map("coach_availabilities")
+}
+
+model CoachAvailabilityWindow {
+  id             String   @id @default(uuid())
+  availabilityId String   @map("availability_id")
+  dayOfWeek      Int      @map("day_of_week")
+  startTime      String   @map("start_time") @db.VarChar(10)
+  endTime        String   @map("end_time") @db.VarChar(10)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  availability CoachAvailability @relation(fields: [availabilityId], references: [id], onDelete: Cascade)
+
+  @@index([availabilityId, dayOfWeek])
+  @@map("coach_availability_windows")
+}
+
+model SessionRequest {
+  id            String        @id @default(uuid())
+  coachId       String        @map("coach_id") @db.VarChar(128)
+  clientId      String        @map("client_id") @db.VarChar(128)
+  title         String        @db.VarChar(255)
+  message       String?       @db.Text
+  preferredAt   DateTime?     @map("preferred_at")
+  proposedSlots Json?         @map("proposed_slots")
+  status        RequestStatus @default(pending)
+  cancelReason  String?       @map("cancel_reason") @db.Text
+  cancelledBy   String?       @map("cancelled_by") @db.VarChar(128)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  coach  AppUser @relation("CoachSessionRequestsAsCoach", fields: [coachId], references: [cognitoSub], onDelete: Cascade)
+  client AppUser @relation("CoachSessionRequestsAsClient", fields: [clientId], references: [cognitoSub], onDelete: Cascade)
+
+  @@index([coachId, status, createdAt])
+  @@index([clientId, status, createdAt])
+  @@map("session_requests")
+}
+
+model CoachResource {
+  id          String   @id @default(uuid())
+  lead        String   @db.VarChar(255)
+  connector   String   @db.VarChar(32)
+  linkLabel   String   @map("link_label") @db.VarChar(255)
+  href        String   @db.VarChar(1024)
+  icon        String   @db.VarChar(64)
+  accent      String   @db.VarChar(32)
+  audience    String   @default("COACH") @db.VarChar(32)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([audience, isPublished, sortOrder])
+  @@map("coach_resources")
+}
+
+model ProductUpdate {
+  id        String   @id @default(uuid())
+  label     String   @db.VarChar(255)
+  href      String   @db.VarChar(1024)
+  status    String   @default("RELEASED") @db.VarChar(32)
+  audience  String   @default("COACH") @db.VarChar(32)
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([audience, status, sortOrder])
+  @@map("product_updates")
+}
+
+model BetaFeature {
+  id              String          @id @default(uuid())
+  featureKey      String          @unique @map("feature_key") @db.VarChar(100)
+  title           String          @db.VarChar(255)
+  description     String?         @db.Text
+  audience        String          @default("COACH") @db.VarChar(32)
+  sortOrder       Int             @default(0) @map("sort_order")
+  isPublished     Boolean         @default(true) @map("is_published")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  waitlistEntries WaitlistEntry[]
+
+  @@index([audience, isPublished, sortOrder])
+  @@map("beta_features")
+}
+
+model WaitlistEntry {
+  id        String   @id @default(uuid())
+  featureId String   @map("feature_id")
+  userId    String   @map("user_id") @db.VarChar(128)
+  status    String   @default("ACTIVE") @db.VarChar(32)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  feature BetaFeature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  user    AppUser     @relation(fields: [userId], references: [cognitoSub], onDelete: Cascade)
+
+  @@unique([featureId, userId])
+  @@index([userId, status])
+  @@map("waitlist_entries")
 }
 
 // --- Assessment Engine ---
@@ -665,12 +893,12 @@ model BspStyle {
 
 // User assessment attempt; FK to app_users.cognito_sub. At most one in_progress row per user (partial unique).
 model Assessment {
-  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId            String             @map("user_id") @db.VarChar(128)
-  status            AssessmentStatus   @default(in_progress)
-  startedAt         DateTime           @default(now()) @map("started_at")
-  completedAt       DateTime?          @map("completed_at")
-  user              AppUser            @relation(fields: [userId], references: [cognitoSub], onDelete: Cascade)
+  id                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String                 @map("user_id") @db.VarChar(128)
+  status            AssessmentStatus       @default(in_progress)
+  startedAt         DateTime               @default(now()) @map("started_at")
+  completedAt       DateTime?              @map("completed_at")
+  user              AppUser                @relation(fields: [userId], references: [cognitoSub], onDelete: Cascade)
   questionResponses QuestionResponse[]
   assessmentScore   AssessmentScore?
   assessmentReport  AssessmentReport?
@@ -782,28 +1010,28 @@ model UserGrowthSparkIntro {
 }
 
 model AppKeyContact {
-  id                String              @id @default(uuid())
-  contactCode       Int                 @unique @default(autoincrement()) @map("contact_code")
-  corporationId     String?             @map("corporation_id")
-  companyId         String?             @map("company_id")
-  firstName         String?             @map("first_name") @db.VarChar(255)
-  lastName          String?             @map("last_name") @db.VarChar(255)
-  nickname          String?             @db.VarChar(255)
-  email             String?             @db.VarChar(255)
-  contactType       String?             @map("contact_type") @db.VarChar(255)
-  status            String              @default("Not Invited") @db.VarChar(255)
-  jobRole           String?             @map("job_role") @db.VarChar(255)
-  workPhone         String?             @map("work_phone") @db.VarChar(255)
-  cellPhone         String?             @map("cell_phone") @db.VarChar(255)
-  timezone          String?             @db.VarChar(255)
-  sameAsCorpAdmin   Boolean             @default(false) @map("same_as_corp_admin")
-  appUserId         String?             @unique @map("app_user_id") @db.VarChar(128)
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  deletedAt         DateTime?           @map("deleted_at")
-  corporation       Corporation?        @relation(fields: [corporationId], references: [id], onDelete: SetNull)
-  company           CorporationCompany? @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  appUser           AppUser?            @relation(fields: [appUserId], references: [cognitoSub], onDelete: SetNull)
+  id              String              @id @default(uuid())
+  contactCode     Int                 @unique @default(autoincrement()) @map("contact_code")
+  corporationId   String?             @map("corporation_id")
+  companyId       String?             @map("company_id")
+  firstName       String?             @map("first_name") @db.VarChar(255)
+  lastName        String?             @map("last_name") @db.VarChar(255)
+  nickname        String?             @db.VarChar(255)
+  email           String?             @db.VarChar(255)
+  contactType     String?             @map("contact_type") @db.VarChar(255)
+  status          String              @default("Not Invited") @db.VarChar(255)
+  jobRole         String?             @map("job_role") @db.VarChar(255)
+  workPhone       String?             @map("work_phone") @db.VarChar(255)
+  cellPhone       String?             @map("cell_phone") @db.VarChar(255)
+  timezone        String?             @db.VarChar(255)
+  sameAsCorpAdmin Boolean             @default(false) @map("same_as_corp_admin")
+  appUserId       String?             @unique @map("app_user_id") @db.VarChar(128)
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+  deletedAt       DateTime?           @map("deleted_at")
+  corporation     Corporation?        @relation(fields: [corporationId], references: [id], onDelete: SetNull)
+  company         CorporationCompany? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  appUser         AppUser?            @relation(fields: [appUserId], references: [cognitoSub], onDelete: SetNull)
 
   @@index([corporationId])
   @@index([companyId])

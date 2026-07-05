@@ -1906,6 +1906,9 @@ export class AppUserService {
         workPhone: string | null;
         cellPhone: string | null;
         timezone: string | null;
+        professionalTitle: string | null;
+        yearsOfExperience: number | null;
+        bio: string | null;
         userType: string | null;
         inviteType: string | null;
         invitationSentAt: Date | null;
@@ -1931,6 +1934,9 @@ export class AppUserService {
           workPhone: true,
           cellPhone: true,
           timezone: true,
+          professionalTitle: true,
+          yearsOfExperience: true,
+          bio: true,
           userType: true,
           inviteType: true,
           invitationSentAt: true,
@@ -2018,6 +2024,9 @@ export class AppUserService {
         workPhone: user.workPhone ?? null,
         cellPhone: user.cellPhone ?? null,
         timezone: user.timezone ?? null,
+        professionalTitle: user.professionalTitle?.trim() || null,
+        yearsOfExperience: user.yearsOfExperience ?? null,
+        bio: user.bio?.trim() || null,
         completedOnboardingSteps: user.completedOnboardingSteps ?? 0,
         assessmentCompletionCount,
         corporation: user.corporation?.legalName ?? null,
@@ -2066,7 +2075,15 @@ export class AppUserService {
     }
 
     const providedKeys = (
-      ['nickname', 'workPhone', 'cellPhone', 'timezone'] as const
+      [
+        'nickname',
+        'workPhone',
+        'cellPhone',
+        'timezone',
+        'professionalTitle',
+        'yearsOfExperience',
+        'bio',
+      ] as const
     ).filter((k) => dto[k] !== undefined);
     if (providedKeys.length === 0) {
       throw new BadRequestException(APP_USER_UPDATE_EMPTY_BODY_MSG);
@@ -2090,6 +2107,15 @@ export class AppUserService {
     if (dto.timezone !== undefined) {
       data.timezone = trimToNull(dto.timezone);
     }
+    if (dto.professionalTitle !== undefined) {
+      data.professionalTitle = trimToNull(dto.professionalTitle);
+    }
+    if (dto.yearsOfExperience !== undefined) {
+      data.yearsOfExperience = dto.yearsOfExperience;
+    }
+    if (dto.bio !== undefined) {
+      data.bio = trimToNull(dto.bio);
+    }
 
     try {
       const existing = await this.prisma.appUser.findFirst({
@@ -2111,6 +2137,9 @@ export class AppUserService {
             workPhone: true,
             cellPhone: true,
             timezone: true,
+            professionalTitle: true,
+            yearsOfExperience: true,
+            bio: true,
           },
         });
 
@@ -2140,6 +2169,9 @@ export class AppUserService {
         workPhone: updated.workPhone ?? null,
         cellPhone: updated.cellPhone ?? null,
         timezone: updated.timezone ?? null,
+        professionalTitle: updated.professionalTitle?.trim() || null,
+        yearsOfExperience: updated.yearsOfExperience ?? null,
+        bio: updated.bio?.trim() || null,
       });
     } catch (error) {
       if (

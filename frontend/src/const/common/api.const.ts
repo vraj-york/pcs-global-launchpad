@@ -209,6 +209,73 @@ export const API_ENDPOINTS = {
 			`/assessments/${encodeURIComponent(assessmentId)}/user-styles`,
 		bspStyles: "/bsp-styles",
 	},
+	coachDashboard: {
+		summary: "/coach-dashboard/summary",
+		sessions: "/coach-dashboard/sessions",
+		sessionById: (sessionId: string) =>
+			`/coach-dashboard/sessions/${encodeURIComponent(sessionId)}`,
+		sessionReschedule: (sessionId: string) =>
+			`/coach-dashboard/sessions/${encodeURIComponent(sessionId)}/reschedule`,
+		sessionJoin: (sessionId: string) =>
+			`/coach-dashboard/sessions/${encodeURIComponent(sessionId)}/join`,
+		sessionQuickPrep: (sessionId: string) =>
+			`/coach-dashboard/sessions/${encodeURIComponent(sessionId)}/quick-prep`,
+		activity: "/coach-dashboard/activity",
+		insight: "/coach-dashboard/insight",
+		availability: "/coach-dashboard/availability",
+		clients: "/coach-dashboard/clients",
+	},
+	coach: {
+		sessions: "/coach/sessions",
+		sessionById: (sessionId: string) =>
+			`/coach/sessions/${encodeURIComponent(sessionId)}`,
+		sessionNotes: (sessionId: string) =>
+			`/coach/sessions/${encodeURIComponent(sessionId)}/notes`,
+		sessionRequests: "/coach/session-requests",
+		sessionRequestAccept: (requestId: string) =>
+			`/coach/session-requests/${encodeURIComponent(requestId)}/accept`,
+		sessionRequestDecline: (requestId: string) =>
+			`/coach/session-requests/${encodeURIComponent(requestId)}/decline`,
+		sessionRequestProposeSlots: (requestId: string) =>
+			`/coach/session-requests/${encodeURIComponent(requestId)}/propose-slots`,
+		sessionRequestSlots: (requestId: string) =>
+			`/coach/session-requests/${encodeURIComponent(requestId)}/slots`,
+		sessionRequestRemind: (requestId: string) =>
+			`/coach/session-requests/${encodeURIComponent(requestId)}/remind`,
+		sessionRequestCancel: (requestId: string) =>
+			`/coach/session-requests/${encodeURIComponent(requestId)}/cancel`,
+		sessionRequestReason: (requestId: string) =>
+			`/coach/session-requests/${encodeURIComponent(requestId)}/reason`,
+		calendar: "/coach/calendar",
+		clientSessions: (clientId: string) =>
+			`/coach/clients/${encodeURIComponent(clientId)}/sessions`,
+	},
+	coachResources: {
+		root: "/coach-resources",
+		byId: (resourceId: string) =>
+			`/coach-resources/${encodeURIComponent(resourceId)}`,
+		reorder: "/coach-resources/reorder",
+	},
+	productUpdates: {
+		root: "/product-updates",
+		byId: (updateId: string) =>
+			`/product-updates/${encodeURIComponent(updateId)}`,
+	},
+	earlyAccess: {
+		features: "/early-access/features",
+		waitlist: "/early-access/waitlist",
+		waitlistByFeature: (featureKey: string) =>
+			`/early-access/waitlist/${encodeURIComponent(featureKey)}`,
+		featureById: (featureId: string) =>
+			`/early-access/features/${encodeURIComponent(featureId)}`,
+	},
+	coachIntegrations: {
+		root: "/coach-integrations",
+		connect: (provider: string) =>
+			`/coach-integrations/${encodeURIComponent(provider)}/connect`,
+		disconnect: (provider: string) =>
+			`/coach-integrations/${encodeURIComponent(provider)}`,
+	},
 	support: {
 		root: "/support-requests",
 	},

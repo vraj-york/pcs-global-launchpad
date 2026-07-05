@@ -53,6 +53,13 @@ const ROLES: RoleSeed[] = [
     isPrivate: false,
     isExternal: false,
   },
+  {
+    roleName: 'Coach',
+    categoryName: 'Coach',
+    description: 'Coach persona with session, calendar, and coaching tools access',
+    isPrivate: false,
+    isExternal: false,
+  },
 ];
 
 async function main() {

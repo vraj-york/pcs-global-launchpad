@@ -18,14 +18,12 @@ import { PanelLeft, Plus, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-	COACH_DASHBOARD_CONTENT,
-	COACH_LAUNCH_UPDATES,
-} from "@/const";
+import { COACH_DASHBOARD_CONTENT } from "@/const";
+import type { CoachLaunchUpdate } from "@/types";
 
 const C = COACH_DASHBOARD_CONTENT.whatLaunched;
 
-function UpdatesPanel() {
+function UpdatesPanel({ updates }: { updates: CoachLaunchUpdate[] }) {
 	return (
 		<Card className="gap-0 p-0">
 			{/* Header — panel title + collapse affordance */}
@@ -64,7 +62,7 @@ function UpdatesPanel() {
 
 			{/* Update items — mirror the left-hand links */}
 			<ul className="flex flex-col px-2 pb-3">
-				{COACH_LAUNCH_UPDATES.map((update) => (
+				{updates.map((update) => (
 					<li key={update.id}>
 						<Link
 							to={update.href}
@@ -79,7 +77,11 @@ function UpdatesPanel() {
 	);
 }
 
-export function WhatLaunched() {
+export function WhatLaunched({
+	updates,
+}: {
+	updates: CoachLaunchUpdate[];
+}) {
 	return (
 		<section className="grid grid-cols-1 items-center gap-10 overflow-hidden rounded-xl bg-foreground p-8 sm:p-12 lg:grid-cols-2 lg:p-16">
 			{/* Left column — Figma frame 4:19409 (column, gap 32px) */}
@@ -91,7 +93,7 @@ export function WhatLaunched() {
 				<div className="flex max-w-[468px] flex-col gap-4 text-heading-3 font-normal leading-relaxed text-background/90">
 					<p>{C.intro}</p>
 					<ul className="flex flex-col gap-1 pl-6">
-						{COACH_LAUNCH_UPDATES.map((update) => (
+						{updates.map((update) => (
 							<li key={update.id} className="list-disc marker:text-background/50">
 								<Link
 									to={update.href}
@@ -118,7 +120,7 @@ export function WhatLaunched() {
 			{/* Right column — updates panel (rebuilt from Figma pages panel) */}
 			<div className="flex justify-center lg:justify-end">
 				<div className="w-full max-w-[461px]">
-					<UpdatesPanel />
+					<UpdatesPanel updates={updates} />
 				</div>
 			</div>
 		</section>

@@ -7,6 +7,7 @@ export const COGNITO_GROUP_NAMES = {
   CORPORATION_ADMIN: 'CorporationAdmin',
   COMPANY_ADMIN: 'CompanyAdmin',
   USER: 'User',
+  COACH: 'pcs-coach',
 } as const;
 
 export const COGNITO_USER_GROUP_COMPANY_ADMIN_MISSING_MESSAGE = `CognitoUserGroup "${COGNITO_GROUP_NAMES.COMPANY_ADMIN}" is missing; apply migrations.`;

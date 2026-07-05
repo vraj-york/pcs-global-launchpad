@@ -1,3 +1,4 @@
+import { Navigate } from "react-router-dom";
 import {
 	AppLoader,
 	CompanyAdminOnboardingGate,
@@ -44,7 +45,7 @@ function CompanyAdminLoadError() {
 }
 
 export function DashboardPage() {
-	const { isSuperAdmin, isCompanyAdmin, isCorporationAdmin, ready } =
+	const { isSuperAdmin, isCompanyAdmin, isCorporationAdmin, isCoach, ready } =
 		useUserRoles();
 	const {
 		can,
@@ -124,6 +125,10 @@ export function DashboardPage() {
 				</div>
 			</AppLayout>
 		);
+	}
+
+	if (isCoach) {
+		return <Navigate to={ROUTES.coachDashboard.root} replace />;
 	}
 
 	if (isCompanyAdmin) {

@@ -36,7 +36,7 @@ export interface RescheduleSessionModalProps {
 	onOpenChange: (open: boolean) => void;
 	/** Prefills the Additional Notes textarea (e.g. the session's description). */
 	defaultNotes?: string;
-	onConfirm?: (values: RescheduleValues) => void;
+	onConfirm?: (values: RescheduleValues) => Promise<boolean> | boolean;
 }
 
 export function RescheduleSessionModal({
@@ -64,7 +64,7 @@ export function RescheduleSessionModal({
 		setErrors({});
 	}, [open, defaultNotes]);
 
-	const handleConfirm = () => {
+	const handleConfirm = async () => {
 		const nextErrors: { date?: string; time?: string } = {};
 		if (!date) nextErrors.date = M.requiredError;
 		if (!startTime || !endTime) nextErrors.time = M.requiredError;
@@ -72,12 +72,20 @@ export function RescheduleSessionModal({
 		if (Object.keys(nextErrors).length > 0) return;
 
 		setSaving(true);
-		// Placeholder async action until the reschedule API is wired up.
-		onConfirm?.({ date, startTime, endTime, notes, notify });
-		setTimeout(() => {
+		try {
+			const success = await onConfirm?.({
+				date,
+				startTime,
+				endTime,
+				notes,
+				notify,
+			});
+			if (success === false) return;
 			setSaving(false);
 			onOpenChange(false);
-		}, 1000);
+		} finally {
+			setSaving(false);
+		}
 	};
 
 	return (

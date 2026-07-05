@@ -132,6 +132,9 @@ export type UserProfile = {
 	workPhone: string | null;
 	cellPhone: string | null;
 	timezone: string | null;
+	professionalTitle?: string | null;
+	yearsOfExperience?: number | null;
+	bio?: string | null;
 	completedOnboardingSteps: number;
 	assessmentCompletionCount: number;
 	corporation: string | null;
@@ -177,6 +180,9 @@ export type PatchMyProfilePayload = {
 	workPhone?: string;
 	cellPhone?: string;
 	timezone?: string;
+	professionalTitle?: string;
+	yearsOfExperience?: number;
+	bio?: string;
 };
 
 /** PATCH /users/me/onboarding-steps */

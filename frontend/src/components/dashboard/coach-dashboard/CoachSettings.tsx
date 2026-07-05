@@ -12,7 +12,7 @@
  *   - Footer: Cancel (outline) + Save & Update (primary), enabled when dirty
  */
 import { Lock } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { FormInput } from "@/components/common";
 import {
@@ -32,6 +32,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { COACH_SETTINGS_CONTENT, MORE_FILTERS_TIMEZONE_OPTIONS } from "@/const";
 import { cn } from "@/lib/utils";
+import { useUsersStore } from "@/store";
 import { CoachAvailabilityTab } from "./CoachAvailabilityTab";
 import { CoachCalendarSyncTab } from "./CoachCalendarSyncTab";
 import { CoachSecurityTab } from "./CoachSecurityTab";
@@ -69,12 +70,44 @@ function buildInitialValues(): CoachProfileFormValues {
 }
 
 function ProfileOverviewTab() {
-	const initialValues = useMemo(buildInitialValues, []);
+	const {
+		userProfile,
+		userProfileLoading,
+		isMyProfileSaving,
+		isMyAvatarUploading,
+		isMyAvatarRemoving,
+		fetchUserProfile,
+		updateMyProfile,
+		uploadMyAvatar,
+		removeMyAvatar,
+	} = useUsersStore();
+	const initialValues = useMemo(() => {
+		if (!userProfile) return buildInitialValues();
+		return {
+			nickname: userProfile.nickname ?? "",
+			workPhone: userProfile.workPhone ?? "",
+			cellPhone: userProfile.cellPhone ?? "",
+			timezone: userProfile.timezone ?? "",
+			professionalTitle: userProfile.professionalTitle ?? "",
+			yearsOfExperience:
+				userProfile.yearsOfExperience != null
+					? String(userProfile.yearsOfExperience)
+					: "",
+			bio: userProfile.bio ?? "",
+		};
+	}, [userProfile]);
 	const [values, setValues] = useState<CoachProfileFormValues>(initialValues);
 	const [workPhoneError, setWorkPhoneError] = useState<string | undefined>(
 		undefined,
 	);
-	const [saving, setSaving] = useState(false);
+
+	useEffect(() => {
+		void fetchUserProfile();
+	}, [fetchUserProfile]);
+
+	useEffect(() => {
+		setValues(initialValues);
+	}, [initialValues]);
 
 	const isDirty = useMemo(
 		() =>
@@ -99,31 +132,40 @@ function ProfileOverviewTab() {
 		setWorkPhoneError(undefined);
 	};
 
-	const handleSave = () => {
+	const handleSave = async () => {
 		if (!values.workPhone.trim()) {
 			setWorkPhoneError(C.requiredError);
 			return;
 		}
 		setWorkPhoneError(undefined);
-		setSaving(true);
-		// Placeholder async action until the coach profile API is wired up.
-		setTimeout(() => {
-			setSaving(false);
-			toast.success("Profile updated successfully.");
-		}, 1000);
+		await updateMyProfile({
+			nickname: values.nickname,
+			workPhone: values.workPhone,
+			cellPhone: values.cellPhone,
+			timezone: values.timezone,
+			professionalTitle: values.professionalTitle,
+			yearsOfExperience: values.yearsOfExperience
+				? Number(values.yearsOfExperience)
+				: undefined,
+			bio: values.bio,
+		});
 	};
 
 	return (
 		<div className="w-full rounded-xl border border-border bg-background">
 			<div className="flex flex-col flex-wrap items-start gap-6 p-6 lg:flex-row">
 				<SettingsProfileAvatar
-					avatarUrl={C.profile.avatarUrl}
-					firstName={C.profile.firstName}
-					lastName={C.profile.lastName}
-					isUploading={false}
-					isRemoving={false}
-					onUpload={async () => {}}
-					onRemove={async () => {}}
+					avatarUrl={userProfile?.avatar ?? C.profile.avatarUrl}
+					firstName={userProfile?.firstName ?? C.profile.firstName}
+					lastName={userProfile?.lastName ?? C.profile.lastName}
+					isUploading={isMyAvatarUploading}
+					isRemoving={isMyAvatarRemoving}
+					onUpload={async (file) => {
+						await uploadMyAvatar(file);
+					}}
+					onRemove={async () => {
+						await removeMyAvatar();
+					}}
 					onValidationError={(message) => toast.error(message)}
 				/>
 
@@ -142,7 +184,7 @@ function ProfileOverviewTab() {
 								tooltip={C.managedByOrgTooltip}
 								readOnly
 								disabled
-								value={C.profile.firstName}
+								value={userProfile?.firstName ?? C.profile.firstName}
 								className="bg-card text-muted-foreground"
 								rightElement={lockedFieldRightElement}
 								aria-readonly
@@ -153,7 +195,7 @@ function ProfileOverviewTab() {
 								tooltip={C.managedByOrgTooltip}
 								readOnly
 								disabled
-								value={C.profile.lastName}
+								value={userProfile?.lastName ?? C.profile.lastName}
 								className="bg-card text-muted-foreground"
 								rightElement={lockedFieldRightElement}
 								aria-readonly
@@ -172,7 +214,7 @@ function ProfileOverviewTab() {
 								tooltip={C.managedByOrgTooltip}
 								readOnly
 								disabled
-								value={C.profile.email}
+								value={userProfile?.email ?? C.profile.email}
 								className="bg-card text-muted-foreground"
 								rightElement={lockedFieldRightElement}
 								aria-readonly
@@ -271,17 +313,17 @@ function ProfileOverviewTab() {
 				<Button
 					type="button"
 					variant="outline"
-					disabled={saving || !isDirty}
+					disabled={isMyProfileSaving || !isDirty || userProfileLoading}
 					onClick={handleCancel}
 				>
 					{C.cancel}
 				</Button>
 				<Button
 					type="button"
-					disabled={saving || !isDirty}
-					onClick={handleSave}
+					disabled={isMyProfileSaving || !isDirty || userProfileLoading}
+					onClick={() => void handleSave()}
 				>
-					{saving ? C.saving : C.save}
+					{isMyProfileSaving ? C.saving : C.save}
 				</Button>
 			</div>
 		</div>

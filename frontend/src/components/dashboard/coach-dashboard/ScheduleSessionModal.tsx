@@ -46,7 +46,7 @@ export interface ScheduleSessionValues {
 export interface ScheduleSessionModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onConfirm?: (values: ScheduleSessionValues) => void;
+	onConfirm?: (values: ScheduleSessionValues) => Promise<boolean> | boolean;
 }
 
 export function ScheduleSessionModal({
@@ -82,7 +82,7 @@ export function ScheduleSessionModal({
 		setErrors({});
 	}, [open]);
 
-	const handleConfirm = () => {
+	const handleConfirm = async () => {
 		const nextErrors: typeof errors = {};
 		if (!title.trim()) nextErrors.title = S.requiredError;
 		if (!date) nextErrors.date = S.requiredError;
@@ -92,20 +92,22 @@ export function ScheduleSessionModal({
 		if (Object.keys(nextErrors).length > 0) return;
 
 		setSaving(true);
-		// Placeholder async action until the schedule-session API is wired up.
-		onConfirm?.({
-			title: title.trim(),
-			date,
-			startTime,
-			endTime,
-			clientId,
-			description,
-			notify,
-		});
-		setTimeout(() => {
+		try {
+			const success = await onConfirm?.({
+				title: title.trim(),
+				date,
+				startTime,
+				endTime,
+				clientId,
+				description,
+				notify,
+			});
+			if (success === false) return;
 			setSaving(false);
 			onOpenChange(false);
-		}, 1000);
+		} finally {
+			setSaving(false);
+		}
 	};
 
 	return (

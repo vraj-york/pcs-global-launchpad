@@ -33,6 +33,11 @@ import { AccountSecurityModule } from './account-security';
 import { PrivacyDataModule } from './privacy-data';
 import { AssessmentModule } from './assessment';
 import { InviteManagementModule } from './invite-management';
+import { CoachDashboardModule } from './coach-dashboard';
+import { CoachResourcesModule } from './coach-resources';
+import { ProductUpdatesModule } from './product-updates';
+import { EarlyAccessModule } from './early-access';
+import { CoachIntegrationsModule } from './coach-integrations';
 
 @Module({
   imports: [
@@ -55,6 +60,11 @@ import { InviteManagementModule } from './invite-management';
     PromoModule,
     SuperAdminDashboardModule,
     SupportRequestModule,
+    CoachDashboardModule,
+    CoachResourcesModule,
+    ProductUpdatesModule,
+    EarlyAccessModule,
+    CoachIntegrationsModule,
     AssessmentModule,
     InviteManagementModule,
     IndividualPaymentModule,

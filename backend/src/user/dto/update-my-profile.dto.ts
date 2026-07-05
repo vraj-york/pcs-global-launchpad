@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 /** PATCH body for the current user: only these fields may be changed; omit fields you are not updating. */
 export class UpdateMyProfileDto {
@@ -26,4 +27,26 @@ export class UpdateMyProfileDto {
   @IsString()
   @MaxLength(255)
   timezone?: string;
+
+  @ApiPropertyOptional({ example: 'Executive & Leadership Coach' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  professionalTitle?: string;
+
+  @ApiPropertyOptional({ example: 12 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  yearsOfExperience?: number;
+
+  @ApiPropertyOptional({
+    example:
+      'Helping leaders unlock their behavioral potential through evidence-based coaching.',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  bio?: string;
 }

@@ -165,6 +165,15 @@ Resources:
       Description: Standard application user
       Precedence: 15
 
+  # Coach persona user
+  CoachGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: pcs-coach
+      UserPoolId: !Ref CognitoUserPool
+      Description: Coach persona user
+      Precedence: 20
+
 Outputs:
   UserPoolId:
     Description: Cognito User Pool ID
@@ -207,3 +216,9 @@ Outputs:
     Value: SuperAdmin
     Export:
       Name: !Sub '${ProjectName}-${Environment}-SuperAdminGroupName'
+
+  CoachGroupName:
+    Description: Coach Group Name
+    Value: pcs-coach
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CoachGroupName'

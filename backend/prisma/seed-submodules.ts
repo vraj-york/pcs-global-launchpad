@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import {
+  COACH_SUBMODULE_KEYS,
   COMPANY_ADMIN_SUBMODULE_KEYS,
   COGNITO_GROUP_ROLE_CATEGORY_MAP,
   CORPORATION_ADMIN_SUBMODULE_KEYS,
@@ -228,6 +229,12 @@ async function seedCategorySubmoduleDefaults(
     true,
   );
   await upsertCategorySubmodules(
+    COGNITO_GROUP_ROLE_CATEGORY_MAP['pcs-coach'],
+    COACH_SUBMODULE_KEYS,
+    keyToId,
+    true,
+  );
+  await upsertCategorySubmodules(
     COGNITO_GROUP_ROLE_CATEGORY_MAP.CorporationAdmin,
     CORPORATION_ADMIN_SUBMODULE_KEYS,
     keyToId,
@@ -258,6 +265,10 @@ async function ensureCognitoGroupsExist(): Promise<void> {
     {
       name: COGNITO_GROUP_NAMES.USER,
       description: 'Standard application user',
+    },
+    {
+      name: COGNITO_GROUP_NAMES.COACH,
+      description: 'Coach persona user',
     },
   ];
 

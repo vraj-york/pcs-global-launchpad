@@ -4,14 +4,15 @@
  * Coach Settings → Calendar Sync tab.
  * - Two integration cards (Outlook Calendar, Zoom Workplace), each with a brand
  *   logo, title + description, and a primary "Connect" button (left icon).
- * - Connect buttons kick off the OAuth connect flow (placeholder until wired).
+ * - Connect buttons call the stubbed local-dev integration endpoints.
  */
 import { CalendarDays, type LucideIcon, Video } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect } from "react";
 import outlookLogo from "@/assets/coach-dashboard/outlook-calendar.svg";
 import zoomLogo from "@/assets/coach-dashboard/zoom-workplace.svg";
 import { Button } from "@/components/ui/button";
 import { COACH_CALENDAR_SYNC_SETTINGS } from "@/const";
+import { useCoachDashboardStore } from "@/store";
 
 const C = COACH_CALENDAR_SYNC_SETTINGS;
 
@@ -20,6 +21,7 @@ function IntegrationCard({
 	title,
 	description,
 	connectLabel,
+	connected,
 	icon,
 	onConnect,
 }: {
@@ -27,6 +29,7 @@ function IntegrationCard({
 	title: string;
 	description: string;
 	connectLabel: string;
+	connected?: boolean;
 	icon: LucideIcon;
 	onConnect: () => void;
 }) {
@@ -38,6 +41,9 @@ function IntegrationCard({
 					{title}
 				</h3>
 				<p className="text-small text-text-secondary">{description}</p>
+				<p className="text-mini text-muted-foreground">
+					{connected ? "Connected" : "Not connected"}
+				</p>
 			</div>
 			<Button
 				type="button"
@@ -46,17 +52,24 @@ function IntegrationCard({
 				className="w-full"
 				onClick={onConnect}
 			>
-				{connectLabel}
+				{connected ? "Disconnect" : connectLabel}
 			</Button>
 		</div>
 	);
 }
 
 export function CoachCalendarSyncTab() {
-	// Placeholder until the OAuth connect endpoints are wired up.
-	const handleConnect = (provider: string) => {
-		toast.info(`Connecting ${provider}…`);
-	};
+	const { integrations, fetchContent, connectIntegration, disconnectIntegration } =
+		useCoachDashboardStore();
+
+	useEffect(() => {
+		if (integrations.length === 0) {
+			void fetchContent();
+		}
+	}, [fetchContent, integrations.length]);
+
+	const outlook = integrations.find((item) => item.provider === "outlook");
+	const zoom = integrations.find((item) => item.provider === "zoom");
 
 	return (
 		<div className="flex flex-col gap-4 sm:flex-row">
@@ -65,16 +78,26 @@ export function CoachCalendarSyncTab() {
 				title={C.outlook.title}
 				description={C.outlook.description}
 				connectLabel={C.outlook.connect}
+				connected={outlook?.connected}
 				icon={CalendarDays}
-				onConnect={() => handleConnect(C.outlook.title)}
+				onConnect={() =>
+					void (outlook?.connected
+						? disconnectIntegration("outlook")
+						: connectIntegration("outlook"))
+				}
 			/>
 			<IntegrationCard
 				logo={zoomLogo}
 				title={C.zoom.title}
 				description={C.zoom.description}
 				connectLabel={C.zoom.connect}
+				connected={zoom?.connected}
 				icon={Video}
-				onConnect={() => handleConnect(C.zoom.title)}
+				onConnect={() =>
+					void (zoom?.connected
+						? disconnectIntegration("zoom")
+						: connectIntegration("zoom"))
+				}
 			/>
 		</div>
 	);

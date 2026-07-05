@@ -1,6 +1,7 @@
 export * from "./analytics/me-analytics-context.types";
 export * from "./assessment";
 export * from "./chatbot";
+export * from "./coach";
 export * from "./common";
 export * from "./companies";
 export * from "./company-admin.types";

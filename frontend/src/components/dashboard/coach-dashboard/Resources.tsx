@@ -18,10 +18,9 @@ import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import {
 	COACH_DASHBOARD_CONTENT,
-	COACH_RESOURCES,
-	type CoachResource,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import type { CoachResource } from "@/types";
 
 const C = COACH_DASHBOARD_CONTENT.resources;
 
@@ -85,7 +84,7 @@ function ResourceCard({ resource }: { resource: CoachResource }) {
 	);
 }
 
-export function Resources() {
+export function Resources({ resources }: { resources: CoachResource[] }) {
 	return (
 		<section className="flex flex-col gap-6 rounded-xl bg-foreground p-6 sm:p-10">
 			<header className="flex flex-col gap-0.5">
@@ -95,11 +94,11 @@ export function Resources() {
 				<p className="text-small text-background/70">{C.subtitle}</p>
 			</header>
 
-			{COACH_RESOURCES.length === 0 ? (
+			{resources.length === 0 ? (
 				<p className="text-small text-background/70">{C.emptyState}</p>
 			) : (
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-					{COACH_RESOURCES.map((resource) => (
+					{resources.map((resource) => (
 						<ResourceCard key={resource.id} resource={resource} />
 					))}
 				</div>

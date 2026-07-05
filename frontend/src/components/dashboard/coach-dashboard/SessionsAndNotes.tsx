@@ -35,13 +35,9 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
-import {
-	COACH_DASHBOARD_CONTENT,
-	COACH_PAST_SESSIONS,
-	COACH_UPCOMING_SESSIONS,
-	type CoachClientSession,
-} from "@/const";
+import { COACH_DASHBOARD_CONTENT } from "@/const";
 import { cn } from "@/lib/utils";
+import type { CoachClientSession } from "@/types";
 
 const C = COACH_DASHBOARD_CONTENT.sessionInfo;
 
@@ -166,15 +162,23 @@ function PastSessionCard({
 	);
 }
 
-export function SessionsAndNotes() {
+export function SessionsAndNotes({
+	upcomingSessions,
+	pastSessions,
+	onSaveNotes,
+}: {
+	upcomingSessions: CoachClientSession[];
+	pastSessions: CoachClientSession[];
+	onSaveNotes?: (sessionId: string, notes: string) => Promise<boolean> | boolean;
+}) {
 	const [upcomingOpen, setUpcomingOpen] = useState(true);
 	const [pastOpen, setPastOpen] = useState(true);
 	const [selectedId, setSelectedId] = useState<string | null>(
-		COACH_PAST_SESSIONS[0]?.id ?? null,
+		pastSessions[0]?.id ?? null,
 	);
 	const selectedSession = useMemo(
-		() => COACH_PAST_SESSIONS.find((s) => s.id === selectedId) ?? null,
-		[selectedId],
+		() => pastSessions.find((s) => s.id === selectedId) ?? null,
+		[selectedId, pastSessions],
 	);
 	const [notes, setNotes] = useState(selectedSession?.notes ?? "");
 	const [saving, setSaving] = useState(false);
@@ -190,9 +194,9 @@ export function SessionsAndNotes() {
 
 	const handleSave = useCallback(() => {
 		setSaving(true);
-		// Placeholder async action until the session-notes API is wired up.
-		setTimeout(() => setSaving(false), 1000);
-	}, []);
+		Promise.resolve(onSaveNotes?.(selectedId ?? "", notes))
+			.finally(() => setSaving(false));
+	}, [notes, onSaveNotes, selectedId]);
 
 	return (
 		<div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
@@ -201,17 +205,17 @@ export function SessionsAndNotes() {
 				<Collapsible open={upcomingOpen} onOpenChange={setUpcomingOpen}>
 					<SectionHeader
 						label={C.upcomingTitle}
-						count={COACH_UPCOMING_SESSIONS.length}
+							count={upcomingSessions.length}
 						open={upcomingOpen}
 					/>
 					<CollapsibleContent className="mt-4">
 						<div className="flex flex-col gap-4">
-							{COACH_UPCOMING_SESSIONS.length === 0 ? (
+							{upcomingSessions.length === 0 ? (
 								<p className="text-small text-muted-foreground">
 									{C.emptyUpcoming}
 								</p>
 							) : (
-								COACH_UPCOMING_SESSIONS.map((session) => (
+								upcomingSessions.map((session) => (
 									<UpcomingSessionCard key={session.id} session={session} />
 								))
 							)}
@@ -222,17 +226,17 @@ export function SessionsAndNotes() {
 				<Collapsible open={pastOpen} onOpenChange={setPastOpen}>
 					<SectionHeader
 						label={C.pastTitle}
-						count={COACH_PAST_SESSIONS.length}
+							count={pastSessions.length}
 						open={pastOpen}
 					/>
 					<CollapsibleContent className="mt-4">
 						<div className="flex flex-col gap-4">
-							{COACH_PAST_SESSIONS.length === 0 ? (
+							{pastSessions.length === 0 ? (
 								<p className="text-small text-muted-foreground">
 									{C.emptyPast}
 								</p>
 							) : (
-								COACH_PAST_SESSIONS.map((session) => (
+								pastSessions.map((session) => (
 									<PastSessionCard
 										key={session.id}
 										session={session}

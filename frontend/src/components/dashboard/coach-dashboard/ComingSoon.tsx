@@ -17,10 +17,21 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { COACH_DASHBOARD_CONTENT } from "@/const";
+import type { CoachBetaFeature } from "@/types";
 
 const C = COACH_DASHBOARD_CONTENT.comingSoon;
 
-export function ComingSoon() {
+export function ComingSoon({
+	features,
+	onRequestEarlyAccess,
+}: {
+	features?: CoachBetaFeature[];
+	onRequestEarlyAccess?: () => void | Promise<void>;
+}) {
+	const featureLabels = features?.length
+		? features.map((feature) => feature.title)
+		: C.features;
+
 	return (
 		<section className="grid grid-cols-1 items-center gap-10 overflow-hidden rounded-xl bg-foreground p-8 sm:p-12 lg:grid-cols-2 lg:p-16">
 			{/* Left column — Figma frame 4:19400 (column, gap 32px) */}
@@ -34,7 +45,7 @@ export function ComingSoon() {
 						{C.description}
 					</p>
 					<ul className="flex flex-col gap-1.5 pl-6">
-						{C.features.map((feature) => (
+						{featureLabels.map((feature) => (
 							<li
 								key={feature}
 								className="list-disc text-heading-3 font-normal text-background/90 marker:text-background/50"
@@ -46,16 +57,27 @@ export function ComingSoon() {
 				</div>
 
 				{/* next-link — white pill, underlined label + arrow */}
-				<Button
-					asChild
-					size="lg"
-					className="w-fit bg-background text-foreground hover:bg-background/90"
-				>
-					<Link to={C.ctaHref}>
+				{onRequestEarlyAccess ? (
+					<Button
+						size="lg"
+						className="w-fit bg-background text-foreground hover:bg-background/90"
+						onClick={() => void onRequestEarlyAccess()}
+					>
 						<span className="underline underline-offset-4">{C.cta}</span>
 						<ArrowRight className="size-4 shrink-0" aria-hidden />
-					</Link>
-				</Button>
+					</Button>
+				) : (
+					<Button
+						asChild
+						size="lg"
+						className="w-fit bg-background text-foreground hover:bg-background/90"
+					>
+						<Link to={C.ctaHref}>
+							<span className="underline underline-offset-4">{C.cta}</span>
+							<ArrowRight className="size-4 shrink-0" aria-hidden />
+						</Link>
+					</Button>
+				)}
 			</div>
 
 			{/* Right column — product preview slot (Figma image 610×343) */}

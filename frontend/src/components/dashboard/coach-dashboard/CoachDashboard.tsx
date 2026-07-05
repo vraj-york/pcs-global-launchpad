@@ -26,7 +26,8 @@ import {
 	Video,
 	Zap,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,18 +38,21 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	COACH_AVAILABILITY,
-	COACH_CLIENT_ACTIVITY,
 	COACH_DASHBOARD_CONTENT,
-	COACH_INSIGHT_STATS,
-	COACH_SESSIONS,
-	type CoachClientActivity,
-	type CoachInsightStat,
-	type CoachSession,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { useCoachDashboardStore, useCoachSessionsStore } from "@/store";
+import type {
+	CoachClientActivity,
+	CoachInsightStat,
+	CoachSession,
+	CoachClientSession,
+} from "@/types";
+import { CancelSessionModal } from "./CancelSessionModal";
 import { ComingSoon } from "./ComingSoon";
+import { QuickPrepModal } from "./QuickPrepModal";
 import { Resources } from "./Resources";
+import { ScheduleSessionModal } from "./ScheduleSessionModal";
 import { SessionsAndNotes } from "./SessionsAndNotes";
 import { WelcomeBanner } from "./WelcomeBanner";
 import { WhatLaunched } from "./WhatLaunched";
@@ -65,10 +69,14 @@ function SessionRow({
 	session,
 	onQuickPrep,
 	onCancel,
+	onJoin,
+	onReschedule,
 }: {
 	session: CoachSession;
 	onQuickPrep: (session: CoachSession) => void;
 	onCancel: (session: CoachSession) => void;
+	onJoin: (session: CoachSession) => void;
+	onReschedule: (session: CoachSession) => void;
 }) {
 	return (
 		<div className="flex items-center gap-4 rounded-xl border border-border bg-background p-4">
@@ -105,10 +113,15 @@ function SessionRow({
 			</div>
 
 			<div className="flex items-center gap-2">
-				<Button variant="outline" size="sm" icon={CalendarSync}>
+				<Button
+					variant="outline"
+					size="sm"
+					icon={CalendarSync}
+					onClick={() => onReschedule(session)}
+				>
 					{C.todaysSessions.reschedule}
 				</Button>
-				<Button size="sm" icon={Video}>
+				<Button size="sm" icon={Video} onClick={() => onJoin(session)}>
 					{C.todaysSessions.join}
 				</Button>
 				<DropdownMenu>
@@ -204,21 +217,90 @@ function InsightStatTile({ stat }: { stat: CoachInsightStat }) {
 }
 
 export function CoachDashboard() {
-	const [scheduling, setScheduling] = useState(false);
+	const navigate = useNavigate();
+	const {
+		sessions,
+		activity,
+		insight,
+		availability,
+		resources,
+		launchUpdates,
+		earlyAccessFeatures,
+		quickPrep,
+		loading,
+		actionLoading,
+		fetchDashboard,
+		fetchContent,
+		fetchQuickPrep,
+		scheduleSession,
+		cancelSession,
+		joinSession,
+	} = useCoachDashboardStore();
+	const {
+		upcomingSessions,
+		pastSessions,
+		fetchSessionsPage,
+		saveNotes,
+	} = useCoachSessionsStore();
+	const [scheduleOpen, setScheduleOpen] = useState(false);
+	const [cancelTarget, setCancelTarget] = useState<CoachSession | null>(null);
+	const [quickPrepOpen, setQuickPrepOpen] = useState(false);
+
+	useEffect(() => {
+		void fetchDashboard();
+		void fetchContent();
+		void fetchSessionsPage();
+	}, [fetchContent, fetchDashboard, fetchSessionsPage]);
 
 	const handleScheduleSession = useCallback(() => {
-		setScheduling(true);
-		// Placeholder async action until the scheduling flow API is wired up.
-		setTimeout(() => setScheduling(false), 1000);
+		setScheduleOpen(true);
 	}, []);
 
-	const handleQuickPrep = useCallback((_session: CoachSession) => {
-		// Placeholder until the Quick Prep flow API is wired up.
+	const handleQuickPrep = useCallback(
+		async (session: CoachSession) => {
+			const data = await fetchQuickPrep(session.id);
+			if (data) {
+				setQuickPrepOpen(true);
+			}
+		},
+		[fetchQuickPrep],
+	);
+
+	const handleCancelSession = useCallback((session: CoachSession) => {
+		setCancelTarget(session);
 	}, []);
 
-	const handleCancelSession = useCallback((_session: CoachSession) => {
-		// Placeholder until the cancel-session API is wired up.
-	}, []);
+	const handleJoin = useCallback(
+		async (session: CoachSession) => {
+			const meetingUrl = await joinSession(session.id);
+			if (meetingUrl) {
+				window.open(meetingUrl, "_blank", "noopener,noreferrer");
+			}
+		},
+		[joinSession],
+	);
+
+	const mappedUpcomingSessions = useMemo<CoachClientSession[]>(
+		() =>
+			upcomingSessions.map((session) => ({
+				id: session.id,
+				title: session.title,
+				dateTime: `${session.date} • ${session.timeRange}`,
+				notes: session.notes,
+			})),
+		[upcomingSessions],
+	);
+
+	const mappedPastSessions = useMemo<CoachClientSession[]>(
+		() =>
+			pastSessions.map((session) => ({
+				id: session.id,
+				title: session.title,
+				dateTime: `${session.date} • ${session.timeRange}`,
+				notes: session.notes,
+			})),
+		[pastSessions],
+	);
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -232,7 +314,7 @@ export function CoachDashboard() {
 				</div>
 				<Button
 					icon={Plus}
-					isLoading={scheduling}
+					isLoading={actionLoading}
 					onClick={handleScheduleSession}
 					className="shrink-0"
 				>
@@ -269,17 +351,21 @@ export function CoachDashboard() {
 						</header>
 
 						<div className="flex flex-col gap-3">
-							{COACH_SESSIONS.length === 0 ? (
+							{loading ? (
+								<p className="text-small text-muted-foreground">Loading…</p>
+							) : sessions.length === 0 ? (
 								<p className="text-small text-muted-foreground">
 									{C.emptyStates.sessions}
 								</p>
 							) : (
-								COACH_SESSIONS.map((session) => (
+								sessions.map((session) => (
 									<SessionRow
 										key={session.id}
 										session={session}
 										onQuickPrep={handleQuickPrep}
 										onCancel={handleCancelSession}
+										onJoin={handleJoin}
+										onReschedule={() => navigate("/coach-sessions")}
 									/>
 								))
 							)}
@@ -303,16 +389,18 @@ export function CoachDashboard() {
 						</header>
 
 						<div className="flex flex-col gap-4">
-							{COACH_CLIENT_ACTIVITY.length === 0 ? (
+							{loading ? (
+								<p className="text-small text-muted-foreground">Loading…</p>
+							) : activity.length === 0 ? (
 								<p className="text-small text-muted-foreground">
 									{C.emptyStates.activity}
 								</p>
 							) : (
-								COACH_CLIENT_ACTIVITY.map((activity, index) => (
+								activity.map((activity, index, rows) => (
 									<ActivityRow
 										key={activity.id}
 										activity={activity}
-										isLast={index === COACH_CLIENT_ACTIVITY.length - 1}
+										isLast={index === rows.length - 1}
 									/>
 								))
 							)}
@@ -331,7 +419,7 @@ export function CoachDashboard() {
 							</h2>
 						</div>
 						<div className="grid grid-cols-2 gap-2">
-							{COACH_INSIGHT_STATS.map((stat) => (
+							{insight.map((stat) => (
 								<InsightStatTile key={stat.id} stat={stat} />
 							))}
 						</div>
@@ -349,12 +437,12 @@ export function CoachDashboard() {
 						</header>
 
 						<div className="flex flex-col gap-4">
-							{COACH_AVAILABILITY.map((row, index) => (
+							{(availability?.summary ?? []).map((row, index, rows) => (
 								<div
 									key={row.id}
 									className={cn(
 										"flex items-center justify-between gap-4",
-										index !== COACH_AVAILABILITY.length - 1 &&
+										index !== rows.length - 1 &&
 											"border-b border-border pb-4",
 									)}
 								>
@@ -368,7 +456,12 @@ export function CoachDashboard() {
 							))}
 						</div>
 
-						<Button variant="outline" icon={Settings2} className="w-full">
+						<Button
+							variant="outline"
+							icon={Settings2}
+							className="w-full"
+							onClick={() => navigate("/coach-settings")}
+						>
 							{C.availability.manage}
 						</Button>
 					</section>
@@ -379,16 +472,68 @@ export function CoachDashboard() {
 			<WelcomeBanner />
 
 			{/* What's coming soon — Figma node 4:19398 */}
-			<ComingSoon />
+			<ComingSoon
+				features={earlyAccessFeatures}
+				onRequestEarlyAccess={() => {
+					void useCoachDashboardStore.getState().requestEarlyAccess(
+						earlyAccessFeatures[0]?.featureKey,
+					);
+				}}
+			/>
 
 			{/* What launched — Figma node 4:19407 */}
-			<WhatLaunched />
+			<WhatLaunched updates={launchUpdates} />
 
 			{/* Resources — Figma node 4:19379 */}
-			<Resources />
+			<Resources resources={resources} />
 
 			{/* Client sessions & notes ("Session Info." tab) — Figma node 4:20808 */}
-			<SessionsAndNotes />
+			<SessionsAndNotes
+				upcomingSessions={mappedUpcomingSessions}
+				pastSessions={mappedPastSessions}
+				onSaveNotes={saveNotes}
+			/>
+
+			<ScheduleSessionModal
+				open={scheduleOpen}
+				onOpenChange={setScheduleOpen}
+				onConfirm={async (values) => {
+					const success = await scheduleSession(values);
+					if (success) {
+						setScheduleOpen(false);
+						void fetchSessionsPage();
+					}
+					return success;
+				}}
+			/>
+			<QuickPrepModal
+				open={quickPrepOpen}
+				onOpenChange={setQuickPrepOpen}
+				data={quickPrep ?? undefined}
+				onJoin={() => {
+					if (quickPrep?.clientName) {
+						const session = sessions.find((item) => item.name === quickPrep.clientName);
+						if (session) {
+							void handleJoin(session);
+						}
+					}
+				}}
+			/>
+			<CancelSessionModal
+				open={!!cancelTarget}
+				onOpenChange={(open) => {
+					if (!open) setCancelTarget(null);
+				}}
+				onConfirm={async (values) => {
+					if (!cancelTarget) return false;
+					const success = await cancelSession(cancelTarget.id, values);
+					if (success) {
+						setCancelTarget(null);
+						void fetchSessionsPage();
+					}
+					return success;
+				}}
+			/>
 		</div>
 	);
 }

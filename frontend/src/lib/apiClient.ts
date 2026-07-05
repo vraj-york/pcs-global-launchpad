@@ -185,6 +185,18 @@ export const apiClient = {
 			.catch(transformError);
 		return response;
 	},
+
+	deleteWithBody: async <T>(
+		endpoint: string,
+		body?: unknown,
+		headers?: Record<string, string>,
+	): Promise<ApiResponse<T> | ApiError> => {
+		const response = await axiosInstance
+			.delete<T>(endpoint, { data: body, headers })
+			.then(transformResponse<T>)
+			.catch(transformError);
+		return response;
+	},
 };
 
 /**

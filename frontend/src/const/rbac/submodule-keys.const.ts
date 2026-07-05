@@ -39,6 +39,7 @@ export const SUBMODULE_KEYS = {
 	USER_DIRECTORY_RESEND_INVITE: "user_directory.resend_invite",
 	USER_DIRECTORY_CANCEL_INVITATION: "user_directory.cancel_invitation",
 	USER_DIRECTORY_SCHEDULE_SESSION: "user_directory.schedule_session",
+	COACH_DASHBOARD_VIEW: "coach_dashboard.view",
 	ROLES_PERMISSIONS_VIEW: "roles_permissions.view",
 	ROLES_PERMISSIONS_MANAGE: "roles_permissions.manage",
 	INVITE_MANAGEMENT_SEND: "invite_management.send_individual_invite",

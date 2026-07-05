@@ -26,7 +26,7 @@ import {
 	Video,
 	Zap,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -38,22 +38,22 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	COACH_CALENDAR_DAYS,
-	COACH_CALENDAR_EVENTS,
 	COACH_CALENDAR_GRID_END_MINUTES,
 	COACH_CALENDAR_GRID_START_MINUTES,
-	COACH_CALENDAR_MONTH_SELECTED_DATE,
-	COACH_CALENDAR_MONTH_WEEKS,
 	COACH_DASHBOARD_CONTENT,
-	type CalendarEventAccent,
-	type CoachCalendarEvent,
-	type CoachCalendarMonthAccent,
-	type CoachCalendarMonthDay,
-	type CoachCalendarMonthEvent,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { useCoachCalendarStore, useCoachDashboardStore } from "@/store";
+import type {
+	CalendarEventAccent,
+	CoachCalendarDay,
+	CoachCalendarEvent,
+	CoachCalendarMonthAccent,
+	CoachCalendarMonthDay,
+	CoachCalendarMonthEvent,
+} from "@/types";
 import { CancelSessionModal } from "./CancelSessionModal";
-import { type QuickPrepData, QuickPrepModal } from "./QuickPrepModal";
+import { QuickPrepModal } from "./QuickPrepModal";
 import { RescheduleSessionModal } from "./RescheduleSessionModal";
 import { ScheduleSessionModal } from "./ScheduleSessionModal";
 
@@ -70,8 +70,6 @@ const MONTH_EVENT_ACCENT: Record<
 	success: { border: "border-success", text: "text-success" },
 	warning: { border: "border-warning", text: "text-warning" },
 };
-
-const MONTH_DAYS = COACH_CALENDAR_MONTH_WEEKS.flat();
 
 const HOUR_HEIGHT = 56;
 const GRID_COLUMNS = "3.5rem repeat(5, minmax(0, 1fr))";
@@ -91,6 +89,37 @@ function formatHour(hour: number): string {
 	const period = hour >= 12 ? "PM" : "AM";
 	const normalized = hour % 12 === 0 ? 12 : hour % 12;
 	return `${normalized}:00 ${period}`;
+}
+
+function formatDateParam(date: Date) {
+	return date.toISOString().slice(0, 10);
+}
+
+function startOfWeekMonday(date: Date) {
+	const next = new Date(date);
+	const day = next.getDay();
+	const diff = day === 0 ? -6 : 1 - day;
+	next.setDate(next.getDate() + diff);
+	next.setHours(0, 0, 0, 0);
+	return next;
+}
+
+function startOfMonth(date: Date) {
+	const next = new Date(date.getFullYear(), date.getMonth(), 1);
+	next.setHours(0, 0, 0, 0);
+	return next;
+}
+
+function addDays(date: Date, amount: number) {
+	const next = new Date(date);
+	next.setDate(next.getDate() + amount);
+	return next;
+}
+
+function addMonths(date: Date, amount: number) {
+	const next = new Date(date);
+	next.setMonth(next.getMonth() + amount);
+	return next;
 }
 
 function ClientAvatar({
@@ -122,9 +151,13 @@ function DetailField({ label, value }: { label: string; value: string }) {
 }
 
 function WeekGrid({
+	days,
+	events,
 	selectedId,
 	onSelect,
 }: {
+	days: CoachCalendarDay[];
+	events: CoachCalendarEvent[];
 	selectedId: string | null;
 	onSelect: (event: CoachCalendarEvent) => void;
 }) {
@@ -133,7 +166,7 @@ function WeekGrid({
 			{/* Day headers */}
 			<div className="grid" style={{ gridTemplateColumns: GRID_COLUMNS }}>
 				<div />
-				{COACH_CALENDAR_DAYS.map((day) => (
+				{days.map((day) => (
 					<div
 						key={day.id}
 						className={cn(
@@ -157,7 +190,7 @@ function WeekGrid({
 						<div className="relative -top-2 pr-2 text-right text-mini text-muted-foreground">
 							{formatHour(hour)}
 						</div>
-						{COACH_CALENDAR_DAYS.map((day) => (
+						{days.map((day) => (
 							<div key={day.id} className="border-t border-l border-border" />
 						))}
 					</div>
@@ -169,11 +202,11 @@ function WeekGrid({
 					style={{ gridTemplateColumns: GRID_COLUMNS }}
 				>
 					<div />
-					{COACH_CALENDAR_DAYS.map((day, dayIndex) => (
+					{days.map((day, dayIndex) => (
 						<div key={day.id} className="relative">
-							{COACH_CALENDAR_EVENTS.filter(
-								(event) => event.dayIndex === dayIndex,
-							).map((event) => {
+							{events
+								.filter((event) => event.dayIndex === dayIndex)
+								.map((event) => {
 								const top =
 									((event.startMinutes - COACH_CALENDAR_GRID_START_MINUTES) /
 										60) *
@@ -193,7 +226,7 @@ function WeekGrid({
 										<span className="truncate">{event.title}</span>
 									</button>
 								);
-							})}
+								})}
 						</div>
 					))}
 				</div>
@@ -204,11 +237,13 @@ function WeekGrid({
 
 function SessionDetailsPanel({
 	event,
+	onJoin,
 	onReschedule,
 	onQuickPrep,
 	onCancelSession,
 }: {
 	event: CoachCalendarEvent | null;
+	onJoin?: () => void;
 	onReschedule?: () => void;
 	onQuickPrep?: () => void;
 	onCancelSession?: () => void;
@@ -260,7 +295,7 @@ function SessionDetailsPanel({
 			</div>
 
 			<div className="flex flex-col gap-3">
-				<Button icon={Video} className="w-full">
+				<Button icon={Video} className="w-full" onClick={onJoin}>
 					{C.join}
 				</Button>
 				<Button
@@ -293,12 +328,15 @@ function SessionDetailsPanel({
 }
 
 function MonthGrid({
+	weeks,
 	selectedDate,
 	onSelectDate,
 }: {
+	weeks: CoachCalendarMonthDay[][];
 	selectedDate: number | null;
 	onSelectDate: (date: number) => void;
 }) {
+	const days = useMemo(() => weeks.flat(), [weeks]);
 	return (
 		<div className="min-w-0 flex-1 px-4 pt-4 pb-6">
 			{/* Weekday headers */}
@@ -315,9 +353,9 @@ function MonthGrid({
 
 			{/* Day cells */}
 			<div className="grid grid-cols-7 overflow-hidden rounded-lg border border-border">
-				{MONTH_DAYS.map((day, index) => {
+				{days.map((day, index) => {
 					const isSelected = day.inMonth && day.date === selectedDate;
-					const isLastRow = index >= MONTH_DAYS.length - 7;
+					const isLastRow = index >= days.length - 7;
 					const isLastCol = (index + 1) % 7 === 0;
 					return (
 						<button
@@ -422,11 +460,13 @@ function MonthEventActions({
 
 function DayEventCard({
 	event,
+	onJoin,
 	onReschedule,
 	onQuickPrep,
 	onCancelSession,
 }: {
 	event: CoachCalendarMonthEvent;
+	onJoin?: () => void;
 	onReschedule?: () => void;
 	onQuickPrep?: () => void;
 	onCancelSession?: () => void;
@@ -458,7 +498,7 @@ function DayEventCard({
 				</div>
 			</div>
 			<div className="flex items-center gap-1.5">
-				<Button icon={Video} size="sm" className="flex-1">
+				<Button icon={Video} size="sm" className="flex-1" onClick={onJoin}>
 					{C.join}
 				</Button>
 				<MonthEventActions
@@ -474,11 +514,14 @@ function DayEventCard({
 function DayEventsPanel({
 	dateLabel,
 	events,
+	onJoin,
 	onReschedule,
 	onQuickPrep,
+	onCancelSession,
 }: {
 	dateLabel: string;
 	events: CoachCalendarMonthEvent[];
+	onJoin?: (event: CoachCalendarMonthEvent) => void;
 	onReschedule?: (event: CoachCalendarMonthEvent) => void;
 	onQuickPrep?: (event: CoachCalendarMonthEvent) => void;
 	onCancelSession?: (event: CoachCalendarMonthEvent) => void;
@@ -506,6 +549,7 @@ function DayEventsPanel({
 						<DayEventCard
 							key={event.id}
 							event={event}
+							onJoin={() => onJoin?.(event)}
 							onReschedule={() => onReschedule?.(event)}
 							onQuickPrep={() => onQuickPrep?.(event)}
 							onCancelSession={() => onCancelSession?.(event)}
@@ -518,37 +562,119 @@ function DayEventsPanel({
 }
 
 export function CoachCalendar() {
+	const {
+		weekDays,
+		weekEvents,
+		monthLabel,
+		monthWeeks,
+		selectedDate,
+		loading,
+		fetchCalendar,
+		setSelectedDate,
+	} = useCoachCalendarStore();
+	const {
+		quickPrep,
+		actionLoading,
+		fetchQuickPrep,
+		scheduleSession,
+		rescheduleSession,
+		cancelSession,
+		joinSession,
+	} = useCoachDashboardStore();
 	const [view, setView] = useState<CalendarViewId>("week");
 	const [scheduleOpen, setScheduleOpen] = useState(false);
-	const [selectedId, setSelectedId] = useState<string | null>(
-		COACH_CALENDAR_EVENTS[0]?.id ?? null,
+	const [cursorStart, setCursorStart] = useState(() => startOfWeekMonday(new Date()));
+	const [selectedId, setSelectedId] = useState<string | null>(null);
+	const [rescheduleTarget, setRescheduleTarget] =
+		useState<{ id: string; description?: string } | null>(null);
+	const [quickPrepOpen, setQuickPrepOpen] = useState(false);
+	const [quickPrepTargetId, setQuickPrepTargetId] = useState<string | null>(null);
+	const [cancelTarget, setCancelTarget] = useState<{ id: string } | null>(null);
+
+	const fetchStart = useMemo(
+		() =>
+			view === "week"
+				? startOfWeekMonday(cursorStart)
+				: startOfMonth(cursorStart),
+		[view, cursorStart],
 	);
-	const [selectedDate, setSelectedDate] = useState<number>(
-		COACH_CALENDAR_MONTH_SELECTED_DATE,
-	);
-	const [reschedule, setReschedule] = useState<{ notes?: string } | null>(
-		null,
-	);
-	const [quickPrep, setQuickPrep] = useState<Partial<QuickPrepData> | null>(
-		null,
-	);
-	const [cancelOpen, setCancelOpen] = useState(false);
+
+	useEffect(() => {
+		void fetchCalendar(view, formatDateParam(fetchStart));
+	}, [fetchCalendar, fetchStart, view]);
+
+	useEffect(() => {
+		if (view !== "week") return;
+		if (!selectedId && weekEvents[0]) {
+			setSelectedId(weekEvents[0].id);
+			return;
+		}
+		if (selectedId && !weekEvents.some((event) => event.id === selectedId)) {
+			setSelectedId(weekEvents[0]?.id ?? null);
+		}
+	}, [selectedId, view, weekEvents]);
 
 	const selectedEvent = useMemo(
-		() => COACH_CALENDAR_EVENTS.find((e) => e.id === selectedId) ?? null,
-		[selectedId],
+		() => weekEvents.find((e) => e.id === selectedId) ?? null,
+		[selectedId, weekEvents],
 	);
 
+	const monthDays = useMemo(() => monthWeeks.flat(), [monthWeeks]);
 	const selectedDay = useMemo<CoachCalendarMonthDay | null>(
-		() =>
-			MONTH_DAYS.find((d) => d.inMonth && d.date === selectedDate) ?? null,
-		[selectedDate],
+		() => monthDays.find((d) => d.inMonth && d.date === selectedDate) ?? null,
+		[monthDays, selectedDate],
 	);
 
 	const selectedDayLabel = useMemo(() => {
-		const weekdayIndex = (M.firstWeekdayIndex + (selectedDate - 1)) % 7;
-		return `${M.fullWeekdays[weekdayIndex]}, ${M.monthName} ${selectedDate}, ${M.year}`;
-	}, [selectedDate]);
+		if (!selectedDate || !monthLabel) return "";
+		const selected = monthDays.find(
+			(day) => day.inMonth && day.date === selectedDate,
+		);
+		if (!selected) return "";
+		const monthDate = new Date(fetchStart.getFullYear(), fetchStart.getMonth(), selectedDate);
+		return monthDate.toLocaleDateString("en-US", {
+			weekday: "long",
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		});
+	}, [fetchStart, monthDays, monthLabel, selectedDate]);
+
+	const currentMonthLabel =
+		view === "month"
+			? monthLabel
+			: fetchStart.toLocaleDateString("en-US", {
+					month: "long",
+					year: "numeric",
+				});
+
+	const weekRangeLabel = useMemo(() => {
+		if (weekDays.length === 0) return C.rangeLabel;
+		const first = weekDays[0];
+		const last = weekDays[weekDays.length - 1];
+		return `${first.label} ${first.date} - ${last.label} ${last.date}`;
+	}, [weekDays]);
+
+	const shiftCalendar = (direction: -1 | 1) => {
+		setCursorStart((current) =>
+			view === "week" ? addDays(current, direction * 7) : addMonths(current, direction),
+		);
+	};
+
+	const handleQuickPrep = async (sessionId: string) => {
+		const data = await fetchQuickPrep(sessionId);
+		if (data) {
+			setQuickPrepTargetId(sessionId);
+			setQuickPrepOpen(true);
+		}
+	};
+
+	const handleJoin = async (sessionId: string) => {
+		const meetingUrl = await joinSession(sessionId);
+		if (meetingUrl) {
+			window.open(meetingUrl, "_blank", "noopener,noreferrer");
+		}
+	};
 
 	const views: { id: CalendarViewId; label: string }[] = [
 		{ id: "week", label: C.views.week },
@@ -569,6 +695,7 @@ export function CoachCalendar() {
 					icon={Plus}
 					onClick={() => setScheduleOpen(true)}
 					className="shrink-0"
+					isLoading={actionLoading}
 				>
 					{C.scheduleSession}
 				</Button>
@@ -586,9 +713,10 @@ export function CoachCalendar() {
 							icon={ChevronLeft}
 							aria-label={C.prevMonthAria}
 							className="rounded-[10px]"
+							onClick={() => shiftCalendar(-1)}
 						/>
 						<span className="text-heading-4 font-semibold text-text-foreground">
-							{C.monthLabel}
+							{currentMonthLabel}
 						</span>
 						<Button
 							variant="outline"
@@ -596,6 +724,7 @@ export function CoachCalendar() {
 							icon={ChevronRight}
 							aria-label={C.nextMonthAria}
 							className="rounded-[10px]"
+							onClick={() => shiftCalendar(1)}
 						/>
 					</div>
 
@@ -609,9 +738,10 @@ export function CoachCalendar() {
 									icon={ChevronLeft}
 									aria-label={C.prevRangeAria}
 									className="bg-background hover:bg-background/70"
+									onClick={() => shiftCalendar(-1)}
 								/>
 								<span className="text-small font-semibold text-text-foreground">
-									{C.rangeLabel}
+									{weekRangeLabel}
 								</span>
 								<Button
 									variant="ghost"
@@ -619,6 +749,7 @@ export function CoachCalendar() {
 									icon={ChevronRight}
 									aria-label={C.nextRangeAria}
 									className="bg-background hover:bg-background/70"
+									onClick={() => shiftCalendar(1)}
 								/>
 							</div>
 						) : null}
@@ -644,52 +775,59 @@ export function CoachCalendar() {
 				</div>
 
 				{/* Body */}
-				{view === "week" ? (
+				{loading ? (
+					<div className="flex min-h-80 items-center justify-center p-6">
+						<p className="text-small text-muted-foreground">Loading…</p>
+					</div>
+				) : view === "week" ? (
 					<div className="flex flex-col lg:flex-row lg:items-stretch">
 						<WeekGrid
+							days={weekDays}
+							events={weekEvents}
 							selectedId={selectedId}
 							onSelect={(event) => setSelectedId(event.id)}
 						/>
 						<SessionDetailsPanel
 							event={selectedEvent}
-							onReschedule={() =>
-								setReschedule({ notes: selectedEvent?.description })
-							}
-							onQuickPrep={() =>
-								setQuickPrep(
-									selectedEvent
-										? {
-												sessionType: selectedEvent.title,
-												clientName: selectedEvent.clientName,
-												clientEmail: selectedEvent.clientEmail,
-												clientInitials: selectedEvent.clientInitials,
-												clientAvatar: selectedEvent.clientAvatar,
-											}
-										: {},
-								)
-							}
-							onCancelSession={() => setCancelOpen(true)}
+							onJoin={() => {
+								if (selectedEvent) void handleJoin(selectedEvent.id);
+							}}
+							onReschedule={() => {
+								if (selectedEvent) {
+									setRescheduleTarget({
+										id: selectedEvent.id,
+										description: selectedEvent.description,
+									});
+								}
+							}}
+							onQuickPrep={() => {
+								if (selectedEvent) void handleQuickPrep(selectedEvent.id);
+							}}
+							onCancelSession={() => {
+								if (selectedEvent) setCancelTarget({ id: selectedEvent.id });
+							}}
 						/>
 					</div>
 				) : (
 					<div className="flex flex-col lg:flex-row lg:items-stretch">
 						<MonthGrid
+							weeks={monthWeeks}
 							selectedDate={selectedDate}
 							onSelectDate={setSelectedDate}
 						/>
 						<DayEventsPanel
 							dateLabel={selectedDayLabel}
 							events={selectedDay?.events ?? []}
-							onReschedule={() => setReschedule({})}
-							onQuickPrep={(event) =>
-								setQuickPrep({
-									sessionType: event.title,
-									clientName: event.clientName,
-									clientInitials: event.clientInitials,
-									clientAvatar: event.clientAvatar,
-								})
-							}
-							onCancelSession={() => setCancelOpen(true)}
+							onJoin={(event) => {
+								void handleJoin(event.id);
+							}}
+							onReschedule={(event) => {
+								setRescheduleTarget({ id: event.id });
+							}}
+							onQuickPrep={(event) => {
+								void handleQuickPrep(event.id);
+							}}
+							onCancelSession={(event) => setCancelTarget({ id: event.id })}
 						/>
 					</div>
 				)}
@@ -698,25 +836,61 @@ export function CoachCalendar() {
 			<ScheduleSessionModal
 				open={scheduleOpen}
 				onOpenChange={setScheduleOpen}
+				onConfirm={async (values) => {
+					const success = await scheduleSession(values);
+					if (success) {
+						await fetchCalendar(view, formatDateParam(fetchStart));
+					}
+					return success;
+				}}
 			/>
 
 			<RescheduleSessionModal
-				open={reschedule !== null}
+				open={rescheduleTarget !== null}
 				onOpenChange={(open) => {
-					if (!open) setReschedule(null);
+					if (!open) setRescheduleTarget(null);
 				}}
-				defaultNotes={reschedule?.notes}
+				defaultNotes={rescheduleTarget?.description}
+				onConfirm={async (values) => {
+					if (!rescheduleTarget) return false;
+					const success = await rescheduleSession(rescheduleTarget.id, values);
+					if (success) {
+						await fetchCalendar(view, formatDateParam(fetchStart));
+						setRescheduleTarget(null);
+					}
+					return success;
+				}}
 			/>
 
 			<QuickPrepModal
-				open={quickPrep !== null}
+				open={quickPrepOpen}
 				onOpenChange={(open) => {
-					if (!open) setQuickPrep(null);
+					setQuickPrepOpen(open);
+					if (!open) setQuickPrepTargetId(null);
 				}}
 				data={quickPrep ?? undefined}
+				onJoin={() => {
+					if (quickPrepTargetId) {
+						void handleJoin(quickPrepTargetId);
+					}
+				}}
 			/>
 
-			<CancelSessionModal open={cancelOpen} onOpenChange={setCancelOpen} />
+			<CancelSessionModal
+				open={!!cancelTarget}
+				onOpenChange={(open) => {
+					if (!open) setCancelTarget(null);
+				}}
+				onConfirm={async (values) => {
+					if (!cancelTarget) return false;
+					const success = await cancelSession(cancelTarget.id, values);
+					if (success) {
+						await fetchCalendar(view, formatDateParam(fetchStart));
+						setCancelTarget(null);
+					}
+					return success;
+				}}
+			/>
 		</div>
 	);
 }

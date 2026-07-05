@@ -35,7 +35,7 @@ import {
 	X,
 	Zap,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -66,16 +66,15 @@ import {
 } from "@/components/ui/tooltip";
 import {
 	COACH_DASHBOARD_CONTENT,
-	COACH_SCHEDULED_SESSIONS,
-	COACH_SESSION_REQUESTS,
 	type CoachRequestActionId,
 	type CoachRequestStatus,
-	type CoachScheduledSession,
-	type CoachSessionRequest,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { useCoachDashboardStore, useCoachSessionsStore } from "@/store";
+import type { CoachScheduledSession, CoachSessionRequest } from "@/types";
 import { CancelSessionModal } from "./CancelSessionModal";
-import { type QuickPrepData, QuickPrepModal } from "./QuickPrepModal";
+import { QuickPrepModal } from "./QuickPrepModal";
+import { ScheduleSessionModal } from "./ScheduleSessionModal";
 import { ViewReasonModal } from "./ViewReasonModal";
 
 const C = COACH_DASHBOARD_CONTENT.sessionsPage;
@@ -114,9 +113,6 @@ const REQUEST_ACTIONS: Record<
 	remind: { label: R.actions.remind, icon: Bell, variant: "outline" },
 	viewReason: { label: R.actions.viewReason, icon: Eye, variant: "outline" },
 };
-
-const UPCOMING = COACH_SCHEDULED_SESSIONS.filter((s) => s.scope === "upcoming");
-const PAST = COACH_SCHEDULED_SESSIONS.filter((s) => s.scope === "past");
 
 function ClientAvatar({
 	session,
@@ -437,9 +433,11 @@ function SessionNotesPanel({
 
 function RequestActions({
 	request,
+	onAction,
 	onViewReason,
 }: {
 	request: CoachSessionRequest;
+	onAction?: (actionId: CoachRequestActionId, request: CoachSessionRequest) => void;
 	onViewReason?: () => void;
 }) {
 	return (
@@ -453,7 +451,11 @@ function RequestActions({
 						size="sm"
 						icon={action.icon}
 						className={action.className}
-						onClick={actionId === "viewReason" ? onViewReason : undefined}
+						onClick={() =>
+							actionId === "viewReason"
+								? onViewReason?.()
+								: onAction?.(actionId, request)
+						}
 					>
 						{action.label}
 					</Button>
@@ -507,9 +509,11 @@ function RequestMeta({ request }: { request: CoachSessionRequest }) {
 
 function RequestCard({
 	request,
+	onAction,
 	onViewReason,
 }: {
 	request: CoachSessionRequest;
+	onAction?: (actionId: CoachRequestActionId, request: CoachSessionRequest) => void;
 	onViewReason?: () => void;
 }) {
 	return (
@@ -528,12 +532,24 @@ function RequestCard({
 				</div>
 				<RequestMeta request={request} />
 			</div>
-			<RequestActions request={request} onViewReason={onViewReason} />
+			<RequestActions
+				request={request}
+				onAction={onAction}
+				onViewReason={onViewReason}
+			/>
 		</Card>
 	);
 }
 
-function SessionRequests() {
+function SessionRequests({
+	requests,
+	onAction,
+	onFetchReason,
+}: {
+	requests: CoachSessionRequest[];
+	onAction: (actionId: CoachRequestActionId, request: CoachSessionRequest) => void;
+	onFetchReason: (request: CoachSessionRequest) => Promise<string | null>;
+}) {
 	const [status, setStatus] = useState("all");
 	const [employee, setEmployee] = useState("all");
 	const [reasonRequest, setReasonRequest] =
@@ -543,22 +559,22 @@ function SessionRequests() {
 		() =>
 			Array.from(
 				new Set(
-					COACH_SESSION_REQUESTS.map((r) => r.clientName).filter(
+					requests.map((r) => r.clientName).filter(
 						(name): name is string => Boolean(name),
 					),
 				),
 			),
-		[],
+		[requests],
 	);
 
 	const filtered = useMemo(
 		() =>
-			COACH_SESSION_REQUESTS.filter(
+			requests.filter(
 				(request) =>
 					(status === "all" || request.status === status) &&
 					(employee === "all" || request.clientName === employee),
 			),
-		[status, employee],
+		[employee, requests, status],
 	);
 
 	return (
@@ -609,7 +625,13 @@ function SessionRequests() {
 						<RequestCard
 							key={request.id}
 							request={request}
-							onViewReason={() => setReasonRequest(request)}
+							onAction={onAction}
+							onViewReason={async () => {
+								const reason = await onFetchReason(request);
+								setReasonRequest(
+									reason ? { ...request, reason } : request,
+								);
+							}}
 						/>
 					))}
 				</div>
@@ -627,56 +649,148 @@ function SessionRequests() {
 }
 
 export function CoachSessions() {
+	const {
+		upcomingSessions,
+		pastSessions,
+		sessionRequests,
+		loading,
+		notesSaving,
+		fetchSessionsPage,
+		fetchSessionRequests,
+		saveNotes,
+		acceptRequest,
+		declineRequest,
+		proposeSlots,
+		editSlots,
+		remindRequest,
+		cancelRequest,
+		fetchRequestReason,
+	} = useCoachSessionsStore();
+	const {
+		quickPrep,
+		actionLoading,
+		fetchQuickPrep,
+		scheduleSession,
+		cancelSession,
+		joinSession,
+	} = useCoachDashboardStore();
 	const [activeTab, setActiveTab] = useState<SessionsTabId>("allSessions");
 	const [upcomingOpen, setUpcomingOpen] = useState(true);
 	const [pastOpen, setPastOpen] = useState(true);
-	const [scheduling, setScheduling] = useState(false);
-	const [selectedId, setSelectedId] = useState<string | null>(
-		UPCOMING[0]?.id ?? null,
-	);
+	const [scheduleOpen, setScheduleOpen] = useState(false);
+	const [selectedId, setSelectedId] = useState<string | null>(null);
 	const [notes, setNotes] = useState("");
-	const [savingNotes, setSavingNotes] = useState(false);
-	const [quickPrep, setQuickPrep] = useState<Partial<QuickPrepData> | null>(
+	const [quickPrepOpen, setQuickPrepOpen] = useState(false);
+	const [cancelTarget, setCancelTarget] = useState<CoachScheduledSession | null>(
 		null,
 	);
-	const [cancelOpen, setCancelOpen] = useState(false);
+
+	useEffect(() => {
+		void fetchSessionsPage();
+		void fetchSessionRequests();
+	}, [fetchSessionRequests, fetchSessionsPage]);
+
+	useEffect(() => {
+		if (!selectedId && upcomingSessions[0]) {
+			setSelectedId(upcomingSessions[0].id);
+			return;
+		}
+		if (selectedId) {
+			const current = [...upcomingSessions, ...pastSessions].find(
+				(session) => session.id === selectedId,
+			);
+			setNotes(current?.notes ?? "");
+		}
+	}, [pastSessions, selectedId, upcomingSessions]);
 
 	const selectedSession = useMemo(
-		() => COACH_SCHEDULED_SESSIONS.find((s) => s.id === selectedId) ?? null,
-		[selectedId],
+		() =>
+			[...upcomingSessions, ...pastSessions].find((s) => s.id === selectedId) ??
+			null,
+		[pastSessions, selectedId, upcomingSessions],
 	);
 
-	const handleQuickPrep = useCallback((session: CoachScheduledSession) => {
-		setQuickPrep({
-			sessionType: session.title,
-			clientName: session.clientName,
-			clientEmail: session.clientEmail,
-			clientInitials: session.clientInitials,
-			clientAvatar: session.clientAvatar,
-		});
-	}, []);
+	const handleQuickPrep = useCallback(
+		async (session: CoachScheduledSession) => {
+			const data = await fetchQuickPrep(session.id);
+			if (data) setQuickPrepOpen(true);
+		},
+		[fetchQuickPrep],
+	);
 
-	const handleCancelSession = useCallback(() => setCancelOpen(true), []);
+	const handleCancelSession = useCallback(
+		(session: CoachScheduledSession) => setCancelTarget(session),
+		[],
+	);
 
 	const handleScheduleSession = useCallback(() => {
-		setScheduling(true);
-		// Placeholder async action until the scheduling flow API is wired up.
-		setTimeout(() => setScheduling(false), 1000);
+		setScheduleOpen(true);
 	}, []);
 
 	const handleSelectSession = useCallback((session: CoachScheduledSession) => {
 		setSelectedId(session.id);
-		// Past sessions open the notes editor; seed it with any saved notes.
 		setNotes(session.notes ?? "");
 	}, []);
 
 	const handleCloseDetail = useCallback(() => setSelectedId(null), []);
 
-	const handleSaveNotes = useCallback(() => {
-		setSavingNotes(true);
-		// Placeholder async action until the notes API is wired up.
-		setTimeout(() => setSavingNotes(false), 1000);
-	}, []);
+	const handleSaveNotes = useCallback(async () => {
+		if (!selectedSession) return;
+		await saveNotes(selectedSession.id, notes);
+	}, [notes, saveNotes, selectedSession]);
+
+	const handleJoin = useCallback(
+		async (session: CoachScheduledSession) => {
+			const meetingUrl = await joinSession(session.id);
+			if (meetingUrl) {
+				window.open(meetingUrl, "_blank", "noopener,noreferrer");
+			}
+		},
+		[joinSession],
+	);
+
+	const handleRequestAction = useCallback(
+		async (actionId: CoachRequestActionId, request: CoachSessionRequest) => {
+			if (actionId === "accept") {
+				await acceptRequest(request.id);
+				return;
+			}
+			if (actionId === "remind") {
+				await remindRequest(request.id);
+				return;
+			}
+			if (actionId === "cancelRequest") {
+				await cancelRequest(request.id, request.reason);
+				return;
+			}
+			if (actionId === "proposeSlots" || actionId === "editSlots") {
+				const nextSlots =
+					request.tooltipLines && request.tooltipLines.length > 0
+						? request.tooltipLines
+						: ["Mon 10:00 AM - 10:15 AM", "Wed 2:30 PM - 2:45 PM"];
+				if (actionId === "proposeSlots") {
+					await proposeSlots(request.id, nextSlots);
+				} else {
+					await editSlots(request.id, nextSlots);
+				}
+				return;
+			}
+			if (actionId === "viewReason") {
+				await fetchRequestReason(request.id);
+				return;
+			}
+			await declineRequest(request.id);
+		},
+		[
+			acceptRequest,
+			cancelRequest,
+			declineRequest,
+			editSlots,
+			fetchRequestReason,
+			proposeSlots,
+			remindRequest,
+		],
+	);
 
 	const tabs: { id: SessionsTabId; label: string }[] = [
 		{ id: "allRequests", label: C.tabs.allRequests },
@@ -695,7 +809,7 @@ export function CoachSessions() {
 				</div>
 				<Button
 					icon={Plus}
-					isLoading={scheduling}
+					isLoading={actionLoading}
 					onClick={handleScheduleSession}
 					className="shrink-0"
 				>
@@ -735,17 +849,21 @@ export function CoachSessions() {
 						<Collapsible open={upcomingOpen} onOpenChange={setUpcomingOpen}>
 							<SectionHeader
 								label={C.upcomingTitle}
-								count={UPCOMING.length}
+								count={upcomingSessions.length}
 								open={upcomingOpen}
 							/>
 							<CollapsibleContent className="mt-4">
 								<div className="flex flex-col gap-4">
-									{UPCOMING.length === 0 ? (
+									{loading ? (
+										<p className="text-small text-muted-foreground">
+											Loading…
+										</p>
+									) : upcomingSessions.length === 0 ? (
 										<p className="text-small text-muted-foreground">
 											{C.emptyUpcoming}
 										</p>
 									) : (
-										UPCOMING.map((session) => (
+										upcomingSessions.map((session) => (
 											<SessionCard
 												key={session.id}
 												session={session}
@@ -763,17 +881,21 @@ export function CoachSessions() {
 						<Collapsible open={pastOpen} onOpenChange={setPastOpen}>
 							<SectionHeader
 								label={C.pastTitle}
-								count={PAST.length}
+								count={pastSessions.length}
 								open={pastOpen}
 							/>
 							<CollapsibleContent className="mt-4">
 								<div className="flex flex-col gap-4">
-									{PAST.length === 0 ? (
+									{loading ? (
+										<p className="text-small text-muted-foreground">
+											Loading…
+										</p>
+									) : pastSessions.length === 0 ? (
 										<p className="text-small text-muted-foreground">
 											{C.emptyPast}
 										</p>
 									) : (
-										PAST.map((session) => (
+										pastSessions.map((session) => (
 											<SessionCard
 												key={session.id}
 												session={session}
@@ -799,7 +921,7 @@ export function CoachSessions() {
 							onNotesChange={setNotes}
 							onClose={handleCloseDetail}
 							onSave={handleSaveNotes}
-							saving={savingNotes}
+							saving={notesSaving}
 						/>
 					) : (
 						<SessionDetailsPanel
@@ -811,18 +933,50 @@ export function CoachSessions() {
 					)}
 				</div>
 			) : (
-				<SessionRequests />
+				<SessionRequests
+					requests={sessionRequests}
+					onAction={handleRequestAction}
+					onFetchReason={(request) => fetchRequestReason(request.id)}
+				/>
 			)}
 
-			<QuickPrepModal
-				open={quickPrep !== null}
-				onOpenChange={(open) => {
-					if (!open) setQuickPrep(null);
+			<ScheduleSessionModal
+				open={scheduleOpen}
+				onOpenChange={setScheduleOpen}
+				onConfirm={async (values) => {
+					const success = await scheduleSession(values);
+					if (success) {
+						await fetchSessionsPage();
+					}
+					return success;
 				}}
+			/>
+			<QuickPrepModal
+				open={quickPrepOpen}
+				onOpenChange={setQuickPrepOpen}
 				data={quickPrep ?? undefined}
+				onJoin={() => {
+					if (selectedSession) {
+						void handleJoin(selectedSession);
+					}
+				}}
 			/>
 
-			<CancelSessionModal open={cancelOpen} onOpenChange={setCancelOpen} />
+			<CancelSessionModal
+				open={!!cancelTarget}
+				onOpenChange={(open) => {
+					if (!open) setCancelTarget(null);
+				}}
+				onConfirm={async (values) => {
+					if (!cancelTarget) return false;
+					const success = await cancelSession(cancelTarget.id, values);
+					if (success) {
+						await fetchSessionsPage();
+						setCancelTarget(null);
+					}
+					return success;
+				}}
+			/>
 		</div>
 	);
 }

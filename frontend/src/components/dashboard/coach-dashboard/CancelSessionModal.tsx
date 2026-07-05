@@ -27,7 +27,7 @@ export interface CancelSessionValues {
 export interface CancelSessionModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onConfirm?: (values: CancelSessionValues) => void;
+	onConfirm?: (values: CancelSessionValues) => Promise<boolean> | boolean;
 }
 
 export function CancelSessionModal({
@@ -48,19 +48,21 @@ export function CancelSessionModal({
 		setError(undefined);
 	}, [open]);
 
-	const handleConfirm = () => {
+	const handleConfirm = async () => {
 		if (!reason.trim()) {
 			setError(M.requiredError);
 			return;
 		}
 		setError(undefined);
 		setSaving(true);
-		// Placeholder async action until the cancel-session API is wired up.
-		onConfirm?.({ reason: reason.trim(), notify });
-		setTimeout(() => {
+		try {
+			const success = await onConfirm?.({ reason: reason.trim(), notify });
+			if (success === false) return;
 			setSaving(false);
 			onOpenChange(false);
-		}, 1000);
+		} finally {
+			setSaving(false);
+		}
 	};
 
 	return (

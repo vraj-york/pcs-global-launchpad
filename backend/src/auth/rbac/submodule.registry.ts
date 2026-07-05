@@ -34,6 +34,15 @@ export const RBAC_MODULE_CATALOG: readonly ModuleSeed[] = [
     submodules: [{ key: 'dashboard.dashboard', name: 'Dashboard' }],
   },
   {
+    name: 'Coach Dashboard',
+    sortOrder: 12,
+    submodules: [
+      { key: 'coach_dashboard.view', name: 'View Coach Dashboard' },
+      { key: 'coach_sessions.view', name: 'View Coach Sessions' },
+      { key: 'coach_calendar.view', name: 'View Coach Calendar' },
+    ],
+  },
+  {
     name: 'Corporation Overview',
     sortOrder: 15,
     submodules: [
@@ -181,6 +190,7 @@ export const RBAC_MODULE_CATALOG: readonly ModuleSeed[] = [
       { key: 'user_directory.remove_contact', name: 'Remove Contact' },
       { key: 'user_directory.resend_invite', name: 'Resend Invite' },
       { key: 'user_directory.cancel_invitation', name: 'Cancel Invitation' },
+      { key: 'user_directory.schedule_session', name: 'Schedule Session' },
     ],
   },
   {
@@ -228,6 +238,30 @@ export const RBAC_MODULE_CATALOG: readonly ModuleSeed[] = [
       { key: 'settings.privacy_data', name: 'Privacy & data' },
     ],
   },
+  {
+    name: 'Coach Resources',
+    sortOrder: 120,
+    hidden: true,
+    submodules: [
+      { key: 'coach_resources.manage', name: 'Manage Coach Resources' },
+    ],
+  },
+  {
+    name: 'Early Access',
+    sortOrder: 125,
+    hidden: true,
+    submodules: [
+      { key: 'early_access.manage', name: 'Manage Early Access' },
+    ],
+  },
+  {
+    name: 'Product Updates',
+    sortOrder: 130,
+    hidden: true,
+    submodules: [
+      { key: 'product_updates.manage', name: 'Manage Product Updates' },
+    ],
+  },
 ] as const;
 
 /** Cognito group name → role category name (must match `role_categories.name`). */
@@ -237,11 +271,13 @@ export const COGNITO_GROUP_ROLE_CATEGORY_MAP: Readonly<Record<string, string>> =
     CorporationAdmin: 'Corporation Admin',
     CompanyAdmin: 'Company Admin',
     User: 'Employee (Gen. User/ Emp. Associate)',
+    'pcs-coach': 'Coach',
   };
 
 /** Stable ordering for RBAC contributor groups in API responses. */
 export const COGNITO_GROUP_RBAC_ORDER: readonly string[] = [
   'User',
+  'pcs-coach',
   'CompanyAdmin',
   'CorporationAdmin',
   'SuperAdmin',
@@ -263,6 +299,9 @@ export function resolveRbacContributorGroups(groupNames: string[]): string[] {
 
 export const SUBMODULE_KEYS = {
   DASHBOARD: 'dashboard.dashboard',
+  COACH_DASHBOARD_VIEW: 'coach_dashboard.view',
+  COACH_SESSIONS_VIEW: 'coach_sessions.view',
+  COACH_CALENDAR_VIEW: 'coach_calendar.view',
   CORPORATION_OVERVIEW_VIEW: 'corporation_overview.view',
   CORPORATION_DIRECTORY_ADD: 'corporation_directory.add_new_corporation',
   CORPORATION_DIRECTORY_VIEW: 'corporation_directory.view_corporation',
@@ -300,6 +339,7 @@ export const SUBMODULE_KEYS = {
   USER_DIRECTORY_REMOVE_CONTACT: 'user_directory.remove_contact',
   USER_DIRECTORY_RESEND_INVITE: 'user_directory.resend_invite',
   USER_DIRECTORY_CANCEL_INVITATION: 'user_directory.cancel_invitation',
+  USER_DIRECTORY_SCHEDULE_SESSION: 'user_directory.schedule_session',
   ROLES_PERMISSIONS_VIEW: 'roles_permissions.view',
   ROLES_PERMISSIONS_MANAGE: 'roles_permissions.manage',
   INVITE_MANAGEMENT_SEND: 'invite_management.send_individual_invite',
@@ -310,6 +350,9 @@ export const SUBMODULE_KEYS = {
   SETTINGS_PROFILE: 'settings.profile_overview',
   SETTINGS_SECURITY: 'settings.security',
   SETTINGS_PRIVACY: 'settings.privacy_data',
+  COACH_RESOURCES_MANAGE: 'coach_resources.manage',
+  EARLY_ACCESS_MANAGE: 'early_access.manage',
+  PRODUCT_UPDATES_MANAGE: 'product_updates.manage',
 } as const;
 
 export type SubmoduleKey = (typeof SUBMODULE_KEYS)[keyof typeof SUBMODULE_KEYS];
@@ -352,6 +395,19 @@ export const END_USER_SUBMODULE_KEYS: SubmoduleKey[] = [
   SUBMODULE_KEYS.ASSESSMENT_LIST,
   SUBMODULE_KEYS.ASSESSMENT_TAKE,
   SUBMODULE_KEYS.ASSESSMENT_VIEW_RESULT,
+  SUBMODULE_KEYS.SETTINGS_PROFILE,
+  SUBMODULE_KEYS.SETTINGS_SECURITY,
+  SUBMODULE_KEYS.SETTINGS_PRIVACY,
+];
+
+/** Default submodules for the Coach role category. */
+export const COACH_SUBMODULE_KEYS: SubmoduleKey[] = [
+  SUBMODULE_KEYS.DASHBOARD,
+  SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
+  SUBMODULE_KEYS.COACH_SESSIONS_VIEW,
+  SUBMODULE_KEYS.COACH_CALENDAR_VIEW,
+  SUBMODULE_KEYS.USER_DIRECTORY_VIEW,
+  SUBMODULE_KEYS.USER_DIRECTORY_SCHEDULE_SESSION,
   SUBMODULE_KEYS.SETTINGS_PROFILE,
   SUBMODULE_KEYS.SETTINGS_SECURITY,
   SUBMODULE_KEYS.SETTINGS_PRIVACY,

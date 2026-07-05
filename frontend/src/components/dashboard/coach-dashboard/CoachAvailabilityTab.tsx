@@ -10,8 +10,7 @@
  * - Footer: Cancel (outline) + Save & Update (primary), enabled when dirty
  */
 import { Clock, Globe, Hourglass, Plus, X } from "lucide-react";
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -21,11 +20,14 @@ import {
 	type CoachAvailabilitySettingsDay,
 } from "@/const";
 import { cn } from "@/lib/utils";
+import { useCoachDashboardStore } from "@/store";
 
 const A = COACH_AVAILABILITY_SETTINGS;
 
-function cloneDays(): CoachAvailabilitySettingsDay[] {
-	return A.days.map((day) => ({
+function cloneDays(
+	source: readonly CoachAvailabilitySettingsDay[] = A.days,
+): CoachAvailabilitySettingsDay[] {
+	return source.map((day) => ({
 		...day,
 		ranges: day.ranges.map((range) => ({ ...range })),
 	}));
@@ -87,9 +89,21 @@ function TimeCell({
 }
 
 export function CoachAvailabilityTab() {
-	const initialDays = useMemo(cloneDays, []);
-	const [days, setDays] = useState<CoachAvailabilitySettingsDay[]>(cloneDays);
-	const [saving, setSaving] = useState(false);
+	const { availability, availabilitySaving, fetchAvailability, saveAvailability } =
+		useCoachDashboardStore();
+	const initialDays = useMemo(
+		() => cloneDays(availability?.days ?? A.days),
+		[availability?.days],
+	);
+	const [days, setDays] = useState<CoachAvailabilitySettingsDay[]>(initialDays);
+
+	useEffect(() => {
+		if (!availability) {
+			void fetchAvailability();
+			return;
+		}
+		setDays(cloneDays(availability.days));
+	}, [availability, fetchAvailability]);
 
 	const isDirty = useMemo(
 		() => JSON.stringify(days) !== JSON.stringify(initialDays),
@@ -145,15 +159,19 @@ export function CoachAvailabilityTab() {
 		}));
 	};
 
-	const handleCancel = () => setDays(cloneDays());
+	const handleCancel = () => setDays(cloneDays(initialDays));
 
-	const handleSave = () => {
-		setSaving(true);
-		// Placeholder async action until the coach availability API is wired up.
-		setTimeout(() => {
-			setSaving(false);
-			toast.success("Availability updated successfully.");
-		}, 1000);
+	const handleSave = async () => {
+		const success = await saveAvailability({
+			timezone: availability?.timezone ?? A.timezoneCard.subtitle,
+			defaultSessionLengthMins:
+				availability?.defaultSessionLengthMins ?? 60,
+			bufferMins: availability?.bufferMins ?? 15,
+			days,
+		});
+		if (success) {
+			setDays(cloneDays(days));
+		}
 	};
 
 	return (
@@ -165,14 +183,18 @@ export function CoachAvailabilityTab() {
 					iconWrapClassName="bg-info-bg"
 					iconClassName="text-icon-info"
 					title={A.timezoneCard.title}
-					subtitle={A.timezoneCard.subtitle}
+					subtitle={availability?.timezone ?? A.timezoneCard.subtitle}
 				/>
 				<InfoCard
 					icon={Hourglass}
 					iconWrapClassName="bg-success-bg"
 					iconClassName="text-icon-success"
 					title={A.sessionCard.title}
-					subtitle={A.sessionCard.subtitle}
+					subtitle={
+						availability
+							? `${availability.defaultSessionLengthMins} min sessions`
+							: A.sessionCard.subtitle
+					}
 				/>
 			</div>
 
@@ -263,17 +285,17 @@ export function CoachAvailabilityTab() {
 					<Button
 						type="button"
 						variant="outline"
-						disabled={saving || !isDirty}
+						disabled={availabilitySaving || !isDirty}
 						onClick={handleCancel}
 					>
 						{A.cancel}
 					</Button>
 					<Button
 						type="button"
-						disabled={saving || !isDirty}
-						onClick={handleSave}
+						disabled={availabilitySaving || !isDirty}
+						onClick={() => void handleSave()}
 					>
-						{saving ? A.saving : A.save}
+						{availabilitySaving ? A.saving : A.save}
 					</Button>
 				</div>
 			</div>

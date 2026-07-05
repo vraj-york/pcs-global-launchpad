@@ -91,7 +91,8 @@ export class UserSyncService {
         const isInvitedPendingActivation =
           cognitoGroupNames.includes(COGNITO_GROUP_NAMES.COMPANY_ADMIN) ||
           cognitoGroupNames.includes(COGNITO_GROUP_NAMES.CORPORATION_ADMIN) ||
-          cognitoGroupNames.includes(COGNITO_GROUP_NAMES.USER);
+          cognitoGroupNames.includes(COGNITO_GROUP_NAMES.USER) ||
+          cognitoGroupNames.includes(COGNITO_GROUP_NAMES.COACH);
         if (isInvitedPendingActivation) {
           await tx.appUser.updateMany({
             where: {
