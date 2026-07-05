@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 import {
   AuthorizationGuard,
   CoachGuard,
@@ -24,14 +25,29 @@ import { ResponseHelper } from '../common';
 import { EarlyAccessService } from './early-access.service';
 
 class JoinWaitlistDto {
+  @IsOptional()
+  @IsString()
   featureKey?: string;
 }
 
 class UpdateFeatureDto {
+  @IsOptional()
+  @IsString()
   title?: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
   audience?: string;
+
+  @IsOptional()
+  @IsInt()
   sortOrder?: number;
+
+  @IsOptional()
   isPublished?: boolean;
 }
 
