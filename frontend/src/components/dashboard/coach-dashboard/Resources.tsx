@@ -55,7 +55,7 @@ function ResourceCard({ resource }: { resource: CoachResource }) {
 			aria-label={`${resource.lead} ${resource.connector} ${resource.linkLabel}`}
 			className="group/resource block rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 		>
-			<Card className="h-full gap-0 p-0 transition-shadow group-hover/resource:shadow-lg">
+			<Card className="h-full gap-0 p-0">
 				{/* Illustration area — Figma image 590×442 (ratio 590/442) */}
 				<div
 					className={cn(

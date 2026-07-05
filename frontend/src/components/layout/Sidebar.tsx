@@ -16,8 +16,8 @@ import {
 	Sidebar as SidebarRoot,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { SIDEBAR_LOADING, SIDEBAR_MENU } from "@/const";
-import { usePermissions, useUserGroups } from "@/hooks";
+import { SIDEBAR_LOADING, COACH_SIDEBAR_MENU, SIDEBAR_MENU } from "@/const";
+import { usePermissions, useUserGroups, useUserRoles } from "@/hooks";
 import { getVisibleSidebarSections, isSidebarAccessPending } from "@/lib";
 import { useUsersStore } from "@/store";
 
@@ -61,8 +61,10 @@ function SidebarNavSkeleton() {
 
 export function Sidebar() {
 	const { groups, ready: groupsReady } = useUserGroups();
+	const { isCoach } = useUserRoles();
 	const { ready: permissionsReady, enabledKeys } = usePermissions();
 	const userProfileError = useUsersStore((s) => s.userProfileError);
+	const menu = isCoach ? COACH_SIDEBAR_MENU : SIDEBAR_MENU;
 
 	const accessPending = isSidebarAccessPending({
 		groupsReady,
@@ -72,13 +74,13 @@ export function Sidebar() {
 
 	const visibleSections = useMemo(
 		() =>
-			getVisibleSidebarSections(SIDEBAR_MENU, {
+			getVisibleSidebarSections(menu, {
 				groups,
 				groupsReady,
 				enabledKeys,
 				permissionsReady,
 			}),
-		[groups, groupsReady, enabledKeys, permissionsReady],
+		[menu, groups, groupsReady, enabledKeys, permissionsReady],
 	);
 
 	return (

@@ -110,7 +110,7 @@ function UpcomingSessionCard({ session }: { session: CoachClientSession }) {
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
 						align="end"
-						className="min-w-48 rounded-lg border border-border bg-background p-0.5 shadow-xl"
+						className="min-w-48 rounded-lg border border-border bg-background p-0.5 shadow-none ring-0"
 					>
 						<DropdownMenuItem className="min-h-9 gap-2 rounded-md px-2 py-1.5 text-small text-text-foreground">
 							<Zap className="size-5" aria-hidden />
@@ -143,9 +143,7 @@ function PastSessionCard({
 		<Card
 			className={cn(
 				"flex w-full flex-row items-center gap-4 rounded-[10px] border border-border bg-background p-4",
-				selected
-					? "border-l-4 border-info shadow-lg"
-					: "shadow-none",
+				selected && "border-l-4 border-info",
 			)}
 		>
 			<SessionMeta session={session} />

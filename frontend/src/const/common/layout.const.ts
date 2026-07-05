@@ -13,6 +13,7 @@ import {
 	Shield,
 	Tag,
 	Users,
+	Video,
 } from "lucide-react";
 import { COMPANIES_DIRECTORY_PAGE_CONTENT } from "@/const/companies";
 import { CORPORATE_DIRECTORY_PAGE_CONTENT } from "@/const/corporations";
@@ -48,38 +49,6 @@ export const SIDEBAR_MENU: SidebarMenuSection[] = [
 					COGNITO_COMPANY_ADMIN_GROUP,
 					COGNITO_USER_GROUP,
 				],
-			},
-			{
-				id: "coach-dashboard",
-				label: "Dashboard",
-				icon: LayoutDashboard,
-				path: ROUTES.coachDashboard.root,
-				allowedGroups: [COGNITO_COACH_GROUP],
-				requiredSubmodule: SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
-			},
-			{
-				id: "coach-calendar",
-				label: "Calendar",
-				icon: CalendarDays,
-				path: ROUTES.coachCalendar.root,
-				allowedGroups: [COGNITO_COACH_GROUP],
-				requiredSubmodule: SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
-			},
-			{
-				id: "coach-sessions",
-				label: "Sessions",
-				icon: ClipboardList,
-				path: ROUTES.coachSessions.root,
-				allowedGroups: [COGNITO_COACH_GROUP],
-				requiredSubmodule: SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
-			},
-			{
-				id: "coach-settings",
-				label: "Settings",
-				icon: Settings,
-				path: ROUTES.coachSettings.root,
-				allowedGroups: [COGNITO_COACH_GROUP],
-				requiredSubmodule: SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
 			},
 		],
 	},
@@ -234,6 +203,65 @@ export const HEADER_CONTENT = {
 	themeDark: "Dark",
 	themeLabel: "Theme",
 } as const;
+
+/** Coach persona sidebar — Main / Scheduling / Configuration. */
+export const COACH_SIDEBAR_MENU: SidebarMenuSection[] = [
+	{
+		title: "Main",
+		items: [
+			{
+				id: "coach-dashboard",
+				label: "Dashboard",
+				icon: LayoutDashboard,
+				path: ROUTES.coachDashboard.root,
+				allowedGroups: [COGNITO_COACH_GROUP],
+				requiredSubmodule: SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
+			},
+			{
+				id: "user-directory",
+				label: "User Directory",
+				icon: Users,
+				path: ROUTES.userDirectory.root,
+				allowedGroups: [...USER_DIRECTORY_ALLOWED_GROUPS],
+				requiredSubmodule: SUBMODULE_KEYS.USER_DIRECTORY_VIEW,
+			},
+		],
+	},
+	{
+		title: "Scheduling",
+		items: [
+			{
+				id: "coach-calendar",
+				label: "Calendar",
+				icon: CalendarDays,
+				path: ROUTES.coachCalendar.root,
+				allowedGroups: [COGNITO_COACH_GROUP],
+				requiredSubmodule: SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
+			},
+			{
+				id: "coach-sessions",
+				label: "Sessions",
+				icon: Video,
+				path: ROUTES.coachSessions.root,
+				allowedGroups: [COGNITO_COACH_GROUP],
+				requiredSubmodule: SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
+			},
+		],
+	},
+	{
+		title: "Configuration",
+		items: [
+			{
+				id: "coach-settings",
+				label: "Settings",
+				icon: Settings,
+				path: ROUTES.coachSettings.root,
+				allowedGroups: [COGNITO_COACH_GROUP],
+				requiredSubmodule: SUBMODULE_KEYS.COACH_DASHBOARD_VIEW,
+			},
+		],
+	},
+];
 
 export const USER_DROPDOWN_LABELS = {
 	profileOverview: "Profile Overview",

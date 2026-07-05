@@ -1479,6 +1479,7 @@ export function UserDirectoryContent() {
 				onOpenChange={(open) => {
 					if (!open) setScheduleSessionUser(null);
 				}}
+				defaultClientId={scheduleSessionUser?.cognitoSub}
 			/>
 		</>
 	);

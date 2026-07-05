@@ -29,6 +29,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { COACH_DASHBOARD_CONTENT } from "@/const";
 import { cn } from "@/lib/utils";
+import { useCoachDashboardStore } from "@/store";
 import { TimeRangeField } from "./TimeRangeField";
 
 const S = COACH_DASHBOARD_CONTENT.scheduleModal;
@@ -47,13 +48,18 @@ export interface ScheduleSessionModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onConfirm?: (values: ScheduleSessionValues) => Promise<boolean> | boolean;
+	/** Pre-select a client (e.g. from User Directory row action). */
+	defaultClientId?: string;
 }
 
 export function ScheduleSessionModal({
 	open,
 	onOpenChange,
 	onConfirm,
+	defaultClientId,
 }: ScheduleSessionModalProps) {
+	const clients = useCoachDashboardStore((s) => s.clients);
+	const fetchClients = useCoachDashboardStore((s) => s.fetchClients);
 	const [title, setTitle] = useState("");
 	const [date, setDate] = useState("");
 	const [startTime, setStartTime] = useState("");
@@ -62,6 +68,7 @@ export function ScheduleSessionModal({
 	const [description, setDescription] = useState("");
 	const [notify, setNotify] = useState(true);
 	const [saving, setSaving] = useState(false);
+	const [clientsLoading, setClientsLoading] = useState(false);
 	const [errors, setErrors] = useState<{
 		title?: string;
 		date?: string;
@@ -75,12 +82,18 @@ export function ScheduleSessionModal({
 		setDate("");
 		setStartTime("");
 		setEndTime("");
-		setClientId("");
+		setClientId(defaultClientId ?? "");
 		setDescription("");
 		setNotify(true);
 		setSaving(false);
 		setErrors({});
-	}, [open]);
+	}, [open, defaultClientId]);
+
+	useEffect(() => {
+		if (!open) return;
+		setClientsLoading(true);
+		void fetchClients().finally(() => setClientsLoading(false));
+	}, [open, fetchClients]);
 
 	const handleConfirm = async () => {
 		const nextErrors: typeof errors = {};
@@ -199,7 +212,11 @@ export function ScheduleSessionModal({
 						</span>
 						{S.clientLabel}
 					</Label>
-					<Select value={clientId} onValueChange={setClientId}>
+					<Select
+						value={clientId}
+						onValueChange={setClientId}
+						disabled={clientsLoading}
+					>
 						<SelectTrigger
 							id="schedule-client"
 							aria-invalid={!!errors.client}
@@ -208,10 +225,14 @@ export function ScheduleSessionModal({
 								errors.client && "border-destructive",
 							)}
 						>
-							<SelectValue placeholder={S.clientPlaceholder} />
+							<SelectValue
+								placeholder={
+									clientsLoading ? "Loading clients…" : S.clientPlaceholder
+								}
+							/>
 						</SelectTrigger>
 						<SelectContent>
-							{S.clients.map((client) => (
+							{clients.map((client) => (
 								<SelectItem key={client.id} value={client.id}>
 									{client.name}
 								</SelectItem>
